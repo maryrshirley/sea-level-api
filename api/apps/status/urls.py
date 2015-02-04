@@ -1,6 +1,7 @@
+from django.conf import settings
 from django.conf.urls import patterns, url
 
-from .views import StatusAll, SurgePredictions, TidePredictions
+from .views import StatusAll, SurgePredictions, TidePredictions, Observations
 
 urlpatterns = patterns(
     '',
@@ -14,4 +15,8 @@ urlpatterns = patterns(
     url(r'^tide-predictions/$',
         TidePredictions.as_view(),
         name='tide-predictions'),
+
+    url(r'^observations/(?P<location_slug>' + settings.SLUG_REGEX + ')/$',
+        Observations.as_view(),
+        name='observations'),
 )
