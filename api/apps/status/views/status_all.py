@@ -18,7 +18,7 @@ LocationStatus = namedtuple('LocationStatus', 'name,checks')
 Check = namedtuple('Check', 'name,status_text,status_class')
 
 
-class StatusIndex(View):
+class StatusAll(View):
     def get(self, request, *args, **kwargs):
 
         all_ok, location_statuses = get_checks_by_location()
@@ -27,7 +27,7 @@ class StatusIndex(View):
 
         return render(
             request,
-            'status/status_index.html',
+            'status/status_all.html',
             {'location_statuses': location_statuses,
              'summary_status': summary_status},
             status=status_code)

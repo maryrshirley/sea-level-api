@@ -13,7 +13,7 @@ from api.apps.predictions.utils import create_tide_prediction
 
 from api.apps.locations.models import Location
 
-from api.apps.status.views.status_index import check_observations
+from api.apps.status.views.status_all import check_observations
 
 from api.apps.status.alert_manager import AlertType, disable_alert_until
 
@@ -22,8 +22,8 @@ from .helpers import (BASE_TIME, _make_good_surge_predictions,
                       _setup_locations, TestCheckBase)
 
 
-class TestStatusIndexView(TestCase):
-    BASE_PATH = '/1/_status/'
+class TestStatusAllView(TestCase):
+    BASE_PATH = '/1/_status/all/'
 
     def _setup_all_ok(self):
         liverpool, southampton = _setup_locations()

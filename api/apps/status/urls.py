@@ -1,11 +1,11 @@
 from django.conf.urls import patterns, url
 
-from .views import StatusIndex, SurgePredictions, TidePredictions
+from .views import StatusAll, SurgePredictions, TidePredictions
 
 urlpatterns = patterns(
     '',
 
-    url(r'^$', StatusIndex.as_view(), name='status-index'),
+    url(r'^all/$', StatusAll.as_view(), name='status-all'),
 
     url(r'^surge-predictions/$',
         SurgePredictions.as_view(),
