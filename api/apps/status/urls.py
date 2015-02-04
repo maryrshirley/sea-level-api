@@ -1,6 +1,6 @@
 from django.conf.urls import patterns, url
 
-from .views import StatusIndex, SurgePredictions
+from .views import StatusIndex, SurgePredictions, TidePredictions
 
 urlpatterns = patterns(
     '',
@@ -10,4 +10,8 @@ urlpatterns = patterns(
     url(r'^surge-predictions/$',
         SurgePredictions.as_view(),
         name='surge-predictions'),
+
+    url(r'^tide-predictions/$',
+        TidePredictions.as_view(),
+        name='tide-predictions'),
 )

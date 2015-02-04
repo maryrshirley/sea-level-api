@@ -7,11 +7,11 @@ from django.shortcuts import render
 from collections import namedtuple
 
 from api.apps.locations.models import Location
-from api.apps.predictions.models import TidePrediction
 from api.apps.observations.models import Observation
 
 from ..alert_manager import AlertType, is_alert_enabled
 from .surge_predictions import check_surge_predictions
+from .tide_predictions import check_tide_predictions
 from .common import Status
 
 LocationStatus = namedtuple('LocationStatus', 'name,checks')
@@ -62,23 +62,6 @@ def get_location_status(location):
             status_class='success' if status.ok else 'danger'))
 
     return all_ok, LocationStatus(name=location.name, checks=checks)
-
-
-def check_tide_predictions(location):
-    if not is_alert_enabled(location, AlertType.tide_predictions):
-        return Status(True, 'OK (alert disabled)')
-
-    one_month_away = (datetime.datetime.now(pytz.UTC)
-                      + datetime.timedelta(days=30))
-
-    ok = TidePrediction.objects.filter(
-        location=location,
-        minute__datetime__gte=one_month_away).exists()
-
-    if ok:
-        return Status(True, 'OK')
-    else:
-        return Status(False, '< 30 days left')
 
 
 def check_observations(location):
