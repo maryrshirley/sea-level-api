@@ -23,6 +23,6 @@ before_script:
 after_success:
   - ./.travis_scripts/push_release_tag.sh
 script:
-  - ./run_tests.sh
+  - make test
 notifications:
   email: false
