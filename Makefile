@@ -6,3 +6,6 @@ clean_python_bytecode:
 	find . -iname '*.pyc' -exec rm {} +
 	find . -iname '__pycache__' -type d -exec rm -rf {} +
 
+.PHONY: test
+test:
+	./run_tests.sh
