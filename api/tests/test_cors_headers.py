@@ -35,6 +35,8 @@ class TestCORSHeaders(TestCase):
             'origin',
             'authorization',
             'x-csrftoken',
+            'user-agent',
+            'accept-encoding',
         ]
         assert_equal(
             ', '.join(expected_headers),
