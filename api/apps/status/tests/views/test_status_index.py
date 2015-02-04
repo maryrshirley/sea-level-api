@@ -1,5 +1,4 @@
 import datetime
-import pytz
 
 from freezegun import freeze_time
 
@@ -10,35 +9,18 @@ from nose.tools import assert_equal
 from api.apps.observations.models import Observation
 from api.apps.observations.utils import create_observation
 from api.apps.predictions.models import TidePrediction, SurgePrediction
-from api.apps.predictions.utils import (
-    create_tide_prediction, create_surge_prediction)
+from api.apps.predictions.utils import create_tide_prediction
 
 from api.apps.locations.models import Location
 
 from api.apps.status.views.status_index import (
-    check_tide_predictions, check_observations, check_surge_predictions)
+    check_tide_predictions, check_observations)
 
 from api.apps.status.alert_manager import AlertType, disable_alert_until
 
-BASE_TIME = datetime.datetime(2014, 8, 1, 10, 0, 0, tzinfo=pytz.UTC)
 
-
-def _make_good_surge_predictions():
-    liverpool, _ = _setup_locations()
-
-    for minute in range((36 * 60) + 10):
-        create_surge_prediction(
-            liverpool,
-            BASE_TIME + datetime.timedelta(minutes=minute),
-            0.2)
-
-
-def _setup_locations():
-    liverpool, _ = Location.objects.get_or_create(
-        slug='liverpool', name='Liverpool')
-    southampton, _ = Location.objects.get_or_create(
-        slug='southampton', name='Southampton')
-    return liverpool, southampton
+from .helpers import (BASE_TIME, _make_good_surge_predictions,
+                      _setup_locations, TestCheckBase)
 
 
 class TestStatusIndexView(TestCase):
@@ -80,16 +62,6 @@ class TestStatusIndexView(TestCase):
         with freeze_time(BASE_TIME):
             response = self.client.get(self.BASE_PATH)
         self.assertContains(response, 'API Status: ERROR', status_code=500)
-
-
-class TestCheckBase(TestCase):
-    def setUp(self):
-        self.liverpool, self.southampton = _setup_locations()
-
-    def tearDown(self):
-        Location.objects.all().delete()
-        TidePrediction.objects.all().delete()
-        SurgePrediction.objects.all().delete()
 
 
 class TestCheckTidePredictions(TestCheckBase):
@@ -196,52 +168,3 @@ class TestCheckObservations(TestCheckBase):
 
         assert_equal(False, ok)
         assert_equal('> 2 hours old', text)
-
-
-class TestCheckSurgePredictions(TestCheckBase):
-    @classmethod
-    def setUpClass(self):
-        _make_good_surge_predictions()
-
-    @classmethod
-    def tearDownClass(self):
-        Location.objects.all().delete()
-        SurgePrediction.objects.all().delete()
-
-    def test_that_surge_predictions_for_next_36_hours_every_minute_is_ok(self):
-        with freeze_time(BASE_TIME):
-            (ok, text) = check_surge_predictions(self.liverpool)
-
-        assert_equal('OK', text)
-        assert_equal(True, ok)
-
-    def _make_bad_surge_location(self):
-        prediction = SurgePrediction.objects.get(
-            location=self.liverpool,
-            minute__datetime=BASE_TIME + datetime.timedelta(minutes=10))
-        prediction.delete()
-
-    def test_that_a_missing_surge_prediction_in_next_36_hours_not_ok(self):
-        self._make_bad_surge_location()
-        with freeze_time(BASE_TIME):
-            (ok, text) = check_surge_predictions(self.liverpool)
-
-        assert_equal(False, ok)
-        assert_equal('Missing data for next 36 hours: 2159 vs 2160', text)
-
-    def test_that_surge_prediction_alerts_can_be_disabled(self):
-        self._make_bad_surge_location()
-
-        with freeze_time(BASE_TIME):
-            disable_alert_until(self.liverpool, AlertType.surge_predictions,
-                                BASE_TIME + datetime.timedelta(hours=1))
-            (ok, text) = check_surge_predictions(self.liverpool)
-
-        assert_equal(True, ok)
-        assert_equal('OK (alert disabled)', text)
-
-    def test_that_predictions_for_liverpool_dont_affect_southampton(self):
-        with freeze_time(BASE_TIME):
-            (ok, text) = check_surge_predictions(self.southampton)
-
-        assert_equal(False, ok)
