@@ -1,0 +1,43 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="refresh" content="30" />
+        <title>{{ summary_status }} - API</title>
+        <link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/bootstrap.min.css" %}"/>
+        <link rel="stylesheet" href="http://bootswatch.com/darkly/bootstrap.min.css" type="text/css">
+    </head>
+
+    <body>
+        <div class="container">
+            <div class="page-header">
+              <h1>{{ check_type }}: {{ summary_status }}</h1>
+            </div>
+
+            <table class="table">
+                <thead>
+                  <tr>
+                    <th>Location</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                    {% for location_status in location_statuses %}
+
+                    {% if location_status.status.ok %}
+                    <tr class="success">
+                    {% else %}
+                    <tr class="danger">
+                    {% endif %}
+
+                        <td>{{ location_status.location_name }}</td>
+                        <td>{{ location_status.status.text }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </body>
+</html>

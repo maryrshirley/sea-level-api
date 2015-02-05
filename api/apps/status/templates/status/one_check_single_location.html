@@ -1,0 +1,25 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="refresh" content="30" />
+        <title>{{ summary_status }} - {{ check_type }} {{location_name }}</title>
+        <link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/bootstrap.min.css" %}"/>
+        <link rel="stylesheet" href="http://bootswatch.com/darkly/bootstrap.min.css" type="text/css">
+    </head>
+
+    <body>
+        <div class="container">
+            <div class="page-header">
+              <h1>{{ check_type }}: {{ summary_status }}</h1>
+              <h2>{{ location_name }}</h2>
+
+              <p class="lead">
+              {{ status.text }}
+              </p>
+            </div>
+
+        </div>
+    </body>
+</html>

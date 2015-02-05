@@ -12,25 +12,32 @@
     <body>
         <div class="container">
             <div class="page-header">
-              <h1>API Status: {{ summary_status }}</h1>
+              <h1>API Health: {{ summary_status }}</h1>
+              {% if ok %}
+              <div class="alert alert-success">{{ long_status }}</div>
+              {% else %}
+              <div class="alert alert-danger">{{ long_status }}</div>
+              {% endif %}
+
+              <p class="lead">
+                This page <b>only</b> checks database connectivity - the
+                following pages check for data freshness.
+              </p>
             </div>
 
-            <table class="table table-striped">
-                <tbody>
-                    {% for location in location_statuses %}
+            <div>
+              <h2><a href="{% url 'tide-predictions' %}">Check Tide Predictions</a></h3>
+              <h2><a href="{% url 'surge-predictions' %}">Check Surge predictions</a></h3>
 
-                    <tr>
-                        <th colspan="2">{{ location.name }}</th>
-                    </tr>
-                        {% for check in location.checks %}
-                        <tr class="{{ check.status_class }}">
-                            <td>{{ check.name }}</td>
-                            <td>{{ check.status_text }}</td>
-                        </tr>
-                        {% endfor %}
-                    {% endfor %}
-                </tbody>
-            </table>
+              <h2>Check Observations</h3>
+
+              <ul>
+                {% for location in locations %}
+                <li><a href="{% url 'observations' location.slug %}">{{ location.name }}</a></li>
+                {% endfor %}
+              </ul>
+            </div>
+
         </div>
     </body>
 </html>
