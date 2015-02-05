@@ -1,0 +1,43 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="refresh" content="30" />
+        <title>{{ summary_status }} - API</title>
+        <link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/bootstrap.min.css" %}"/>
+        <link rel="stylesheet" href="http://bootswatch.com/darkly/bootstrap.min.css" type="text/css">
+    </head>
+
+    <body>
+        <div class="container">
+            <div class="page-header">
+              <h1>API Health: {{ summary_status }}</h1>
+              {% if ok %}
+              <div class="alert alert-success">{{ long_status }}</div>
+              {% else %}
+              <div class="alert alert-danger">{{ long_status }}</div>
+              {% endif %}
+
+              <p class="lead">
+                This page <b>only</b> checks database connectivity - the
+                following pages check for data freshness.
+              </p>
+            </div>
+
+            <div>
+              <h2><a href="{% url 'tide-predictions' %}">Check Tide Predictions</a></h3>
+              <h2><a href="{% url 'surge-predictions' %}">Check Surge predictions</a></h3>
+
+              <h2>Check Observations</h3>
+
+              <ul>
+                {% for location in locations %}
+                <li><a href="{% url 'observations' location.slug %}">{{ location.name }}</a></li>
+                {% endfor %}
+              </ul>
+            </div>
+
+        </div>
+    </body>
+</html>
