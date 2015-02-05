@@ -3,7 +3,6 @@ import datetime
 from freezegun import freeze_time
 
 from django.test import TestCase
-from nose.tools import assert_equal
 
 
 from api.apps.observations.models import Observation
@@ -11,15 +10,9 @@ from api.apps.observations.utils import create_observation
 from api.apps.predictions.models import TidePrediction, SurgePrediction
 from api.apps.predictions.utils import create_tide_prediction
 
-from api.apps.locations.models import Location
-
-from api.apps.status.views.status_all import check_observations
-
-from api.apps.status.alert_manager import AlertType, disable_alert_until
-
 
 from .helpers import (BASE_TIME, _make_good_surge_predictions,
-                      _setup_locations, TestCheckBase)
+                      _setup_locations)
 
 
 class TestStatusAllView(TestCase):
