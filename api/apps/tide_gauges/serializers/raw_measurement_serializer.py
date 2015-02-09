@@ -1,8 +1,8 @@
-import logging
-logger = logging.getLogger(__name__)
-
 from rest_framework import serializers
 from ..models import RawMeasurement
+
+import logging
+logger = logging.getLogger(__name__)
 
 
 class RawMeasurementSerializer(serializers.Serializer):
