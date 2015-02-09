@@ -1,19 +1,18 @@
+from collections import namedtuple
+from itertools import tee
+from api.libs.param_parsers import parse_location, parse_time_range
+from ..models import TidePrediction
+
 import datetime
 
 import logging
 logger = logging.getLogger(__name__)
 
-from collections import namedtuple
-from itertools import tee
 
 try:
     from itertools import izip as zip  # On 2, replace zip with izip
 except ImportError:
     pass  # Python 3 has zip already
-
-from api.libs.param_parsers import parse_location, parse_time_range
-
-from ..models import TidePrediction
 
 
 TimeRange = namedtuple('TimeRange', 'start,end')
