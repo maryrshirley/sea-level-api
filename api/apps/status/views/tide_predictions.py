@@ -46,8 +46,8 @@ def check_tide_predictions(location):
     if not is_alert_enabled(location, AlertType.tide_predictions):
         return Status(True, 'OK (alert disabled)')
 
-    one_month_away = (datetime.datetime.now(pytz.UTC)
-                      + datetime.timedelta(days=30))
+    one_month_away = (datetime.datetime.now(pytz.UTC) +
+                      datetime.timedelta(days=30))
 
     ok = TidePrediction.objects.filter(
         location=location,
