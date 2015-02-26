@@ -25,8 +25,8 @@ class Command(BaseCommand):
 
     def get_missing_minute_datetimes(self):
         self.stdout.write("Finding missing Minute objects")
-        return (set(p.datetime for p in Prediction.objects.all())
-                - set(m.datetime for m in Minute.objects.all()))
+        return (set(p.datetime for p in Prediction.objects.all()) -
+                set(m.datetime for m in Minute.objects.all()))
 
     def bulk_create_minutes(self, datetimes):
         self.stdout.write("Bulk creating {} minutes".format(len(datetimes)))

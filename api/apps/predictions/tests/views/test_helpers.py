@@ -30,9 +30,9 @@ class FakeTideWindow(object):
         return int((dt - BASE_DATETIME).total_seconds() / 60)
 
     def __eq__(self, other):
-        return (self.start_minute == other.start_minute
-                and self.end_minute == other.end_minute
-                and self.high_tide_minute == other.high_tide_minute)
+        return (self.start_minute == other.start_minute and
+                self.end_minute == other.end_minute and
+                self.high_tide_minute == other.high_tide_minute)
 
     def __repr__(self):
         return 'FakeTideWindow(start={}, end={}, high={})'.format(

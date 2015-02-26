@@ -86,13 +86,13 @@ class TideWindow(object):
             logger.info('TideWindow invalid: no end prediction')
             return False
 
-        if (self.high_tide_prediction.minute.datetime
-                < self.start_prediction.minute.datetime):
+        if (self.high_tide_prediction.minute.datetime <
+                self.start_prediction.minute.datetime):
             logger.info('TideWindow invalid: high tide before start')
             return False
 
-        if (self.high_tide_prediction.minute.datetime
-                > self.end_prediction.minute.datetime):
+        if (self.high_tide_prediction.minute.datetime >
+                self.end_prediction.minute.datetime):
             logger.info('TideWindow invalid: high tide after end')
             return False
 
@@ -134,8 +134,8 @@ class TideWindow(object):
 
         where first <------> last
         """
-        return (self.start_prediction.minute.datetime <= time_range.end
-                and self.end_prediction.minute.datetime >= time_range.start)
+        return (self.start_prediction.minute.datetime <= time_range.end and
+                self.end_prediction.minute.datetime >= time_range.start)
 
     def truncate_end(self, to_datetime):
         self.end_prediction = TidePrediction.objects.get(
@@ -146,8 +146,8 @@ class TideWindow(object):
             minute__datetime=to_datetime)
 
     def extends_after(self, when):
-        return (self.end_prediction.minute.datetime
-                >= when - datetime.timedelta(minutes=1))  # TODO ratty?
+        return (self.end_prediction.minute.datetime >=
+                when - datetime.timedelta(minutes=1))  # TODO ratty?
 
     def extends_before(self, when):
         return self.start_prediction.minute.datetime <= when

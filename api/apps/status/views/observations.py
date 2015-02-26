@@ -39,8 +39,8 @@ def check_observations(location):
     if not is_alert_enabled(location, AlertType.observations):
         return Status(True, 'OK (alert disabled)')
 
-    one_hour_ago = (datetime.datetime.now(pytz.UTC)
-                    - datetime.timedelta(minutes=120))
+    one_hour_ago = (datetime.datetime.now(pytz.UTC) -
+                    datetime.timedelta(minutes=120))
 
     ok = Observation.objects.filter(
         location=location,

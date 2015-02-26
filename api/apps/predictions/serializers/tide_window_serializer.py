@@ -31,8 +31,8 @@ class TideWindowSerializer(serializers.Serializer):
         and last minute where the level is above a certain amount. That means
         the duration is *inclusive* of the final time - so we add a minute.
         """
-        timediff = (obj.end_prediction.minute.datetime
-                    - obj.start_prediction.minute.datetime)
+        timediff = (obj.end_prediction.minute.datetime -
+                    obj.start_prediction.minute.datetime)
         return {'total_seconds': timediff.total_seconds() + 60}
 
     def get_high_tide(self, obj):
