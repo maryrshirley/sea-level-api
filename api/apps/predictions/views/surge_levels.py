@@ -1,6 +1,6 @@
 from django.db import transaction
 
-from rest_framework import status
+from rest_framework import status, serializers
 from rest_framework.exceptions import APIException
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import DjangoModelPermissionsOrAnonReadOnly
@@ -13,10 +13,6 @@ from ..serializers import SurgeLevelSerializer
 
 
 class JsonFormatError(APIException):
-    status_code = 400
-
-
-class InvalidDataError(APIException):
     status_code = 400
 
 
@@ -54,7 +50,7 @@ class SurgeLevels(GenericAPIView):
                 error_dict = {
                     'detail': 'Failed to deserialize item [{}].'.format(i)}
                 error_dict.update(serializer.errors)
-                raise InvalidDataError(error_dict)
+                raise serializers.ValidationError(detail=error_dict)
 
         return Response({'detail': 'OK.'}, status=status.HTTP_200_OK)
 

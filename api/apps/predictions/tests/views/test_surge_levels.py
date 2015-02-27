@@ -147,13 +147,17 @@ class TestSurgeLevelsEndpoint(APITestCase, PostJsonMixin):
         }
         response = self._post_json([doc])
         assert_equal(400, response.status_code)
+        response_data = decode_json(response.content)
+
+        assert_equal(set(['detail', 'datetime']), set(response_data.keys()))
+
         assert_equal(
             {
                 'detail': 'Failed to deserialize item [0].',
                 'datetime': ['Datetime has wrong format. Use one of these '
                              'formats instead: YYYY-MM-DDThh:mm:00Z']
             },
-            decode_json(response.content))
+            response_data)
 
     def test_that_datetime_with_seconds_is_rejected(self):
         doc = {
