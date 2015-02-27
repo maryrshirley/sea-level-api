@@ -1,4 +1,3 @@
-from rest_framework.exceptions import APIException
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import DjangoModelPermissionsOrAnonReadOnly
 from rest_framework.response import Response
@@ -6,10 +5,6 @@ from rest_framework import status
 
 from ..serializers import RawMeasurementListSerializer
 from ..models import RawMeasurement, TideGauge
-
-
-class InvalidDataError(APIException):
-    status_code = 400
 
 
 class RawMeasurements(GenericAPIView):
@@ -27,9 +22,8 @@ class RawMeasurements(GenericAPIView):
 
         serializer = RawMeasurementListSerializer(data=request.data)
 
-        if not serializer.is_valid():
-            raise InvalidDataError(serializer.errors)
-        serializer.save(tide_gauge=tide_gauge)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save(tide_gauge=tide_gauge)
 
         return Response({'detail': 'OK.'}, status=status.HTTP_200_OK)
 
