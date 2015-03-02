@@ -16,6 +16,7 @@ class RawMeasurements(GenericAPIView):
 
     permission_classes = (DjangoModelPermissionsOrAnonReadOnly,)
     queryset = RawMeasurement.objects.none()  # req for DjangoModelPermissions
+    serializer_class = RawMeasurementListSerializer
 
     def post(self, request, *args, **kwargs):
         tide_gauge = TideGauge.objects.get(slug=self.kwargs['tide_gauge_slug'])
@@ -26,13 +27,3 @@ class RawMeasurements(GenericAPIView):
             serializer.save(tide_gauge=tide_gauge)
 
         return Response({'detail': 'OK.'}, status=status.HTTP_200_OK)
-
-    def get_serializer(self, instance=None, data=None):
-        # This is used to work out the endpoint's metadata, ie what fields it
-        # supports and so on.
-        assert instance is None and data is None, (
-            'instance={}, data={}'.format(instance, data))
-
-        # TODO: Remove this workaround once this bug is fixed:
-        # https://github.com/tomchristie/django-rest-framework/issues/2035
-        return RawMeasurementListSerializer.child
