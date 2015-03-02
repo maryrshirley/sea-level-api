@@ -19,14 +19,10 @@ from api.apps.locations.models import Location
 _URL = '/1/tide-gauges/raw-measurements/gladstone/'
 
 
-def assert_ok_json_response(response, expected_json):
-    assert_equal(200, response.status_code)
-    assert_equal(expected_json, decode_json(response.content))
-
-
-def assert_error_json_response(response, expected_json, status_code=400):
-    assert_equal(status_code, response.status_code)
-    assert_equal(expected_json, decode_json(response.content))
+def assert_json_response(response, expected_json=None, expected_status=201):
+    assert_equal(expected_status, response.status_code)
+    if expected_json is not None:
+        assert_equal(expected_json, decode_json(response.content))
 
 
 class TestPutRawMeasurementsBase(APITestCase):
@@ -105,11 +101,16 @@ class TestPostRawMeasurements(TestPutRawMeasurementsBase):
 
     def test_that_valid_http_post_returns_json_message(self):
         response = self._post_json([self.PREDICTION_A])
-        assert_equal({"detail": "OK."}, decode_json(response.content))
+        assert_json_response(response, expected_json=[
+            {
+                'datetime': '2014-06-10T10:34:00Z',
+                'height': 0.23,
+            }
+        ])
 
-    def test_that_valid_http_post_returns_http_200(self):
+    def test_that_valid_http_post_returns_http_201_created(self):
         response = self._post_json([self.PREDICTION_A])
-        assert_equal(200, response.status_code)
+        assert_json_response(response, expected_status=201)
 
     def test_that_passing_a_non_list_json_object_gives_sane_error(self):
         response = self._post_json(self.PREDICTION_A)
@@ -122,7 +123,7 @@ class TestPostRawMeasurements(TestPutRawMeasurementsBase):
 
     def test_that_http_post_can_create_single_measurement(self):
         response = self._post_json([self.PREDICTION_A])
-        assert_equal(200, response.status_code)
+        assert_json_response(response, expected_status=201)
 
         assert_equal(1, RawMeasurement.objects.all().count())
         assert_equal(self.PREDICTION_A,
@@ -131,7 +132,7 @@ class TestPostRawMeasurements(TestPutRawMeasurementsBase):
     def test_that_http_post_can_create_multiple_measurements(self):
         response = self._post_json([self.PREDICTION_A, self.PREDICTION_C])
 
-        assert_equal(200, response.status_code)
+        assert_json_response(response, expected_status=201)
         assert_equal(2, RawMeasurement.objects.all().count())
 
         ob_1, ob_2 = RawMeasurement.objects.all()
@@ -140,9 +141,10 @@ class TestPostRawMeasurements(TestPutRawMeasurementsBase):
 
     def test_that_http_post_can_overwrite_measurement(self):
         response = self._post_json([self.PREDICTION_A])
-        assert_equal(200, response.status_code)
+        assert_json_response(response, expected_status=201)
+
         response = self._post_json([self.PREDICTION_B])
-        assert_equal(200, response.status_code)
+        assert_json_response(response, expected_status=201)
 
         assert_equal(1, RawMeasurement.objects.all().count())
         assert_equal(self.PREDICTION_B,
@@ -229,7 +231,7 @@ class TestTideGaugeLocationLink(TestPutRawMeasurementsBase):
 
     def test_that_creating_raw_measurement_creates_linked_observation(self):
         response = self._post_json([self.PREDICTION_A])
-        assert_equal(200, response.status_code)
+        assert_json_response(response, expected_status=201)
 
         all_observations = Observation.objects.all()
         assert_equal(1, all_observations.count())
@@ -272,13 +274,12 @@ class TestRawMeasurementsEndpointAuthentication(TestPutRawMeasurementsBase):
         token = Token.objects.get(user__username='forbidden').key
         response = self._post_json(
             [self.good_data], HTTP_AUTHORIZATION='Token {}'.format(token))
-        assert_equal(403, response.status_code)
-        assert_equal(
-            {'detail': 'You do not have permission to perform this action.'},
-            decode_json(response.content))
+        assert_json_response(response, expected_status=403, expected_json={
+            'detail': 'You do not have permission to perform this action.'},
+        )
 
     def test_that_user_with__add_surgeprediction__permission_can_post(self):
         token = Token.objects.get(user__username='permitted').key
         response = self._post_json(
             [self.good_data], HTTP_AUTHORIZATION='Token {}'.format(token))
-        assert_equal(200, response.status_code)
+        assert_json_response(response, expected_status=201)
