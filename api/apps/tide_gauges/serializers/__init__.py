@@ -1,1 +1,1 @@
-from .raw_measurement_serializer import RawMeasurementListSerializer
+from .raw_measurement_serializer import RawMeasurementSerializer
