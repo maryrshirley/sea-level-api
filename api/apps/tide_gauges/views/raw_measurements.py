@@ -1,4 +1,4 @@
-from rest_framework.generics import CreateAPIView
+from rest_framework.generics import ListCreateAPIView
 from rest_framework.permissions import DjangoModelPermissionsOrAnonReadOnly
 
 from ..serializers import RawMeasurementSerializer
@@ -7,7 +7,7 @@ from ..models import RawMeasurement, TideGauge
 import functools
 
 
-class RawMeasurements(CreateAPIView):
+class RawMeasurements(ListCreateAPIView):
     """
     Save raw measurements for a tide gauge. Measurements must be given in a
     JSON array.
@@ -34,7 +34,8 @@ class RawMeasurements(CreateAPIView):
         # This allows access to the serializer so it can create and query
         # RawMeasurement models.
 
-        c = super(CreateAPIView, self).get_serializer_context(*args, **kwargs)
+        c = super(ListCreateAPIView, self).get_serializer_context(
+            *args, **kwargs)
         tide_gauge = TideGauge.objects.get(slug=self.kwargs['tide_gauge_slug'])
 
         def combine_dicts(a, b):
