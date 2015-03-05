@@ -1,3 +1,4 @@
+from django.conf import settings
 from rest_framework.exceptions import APIException
 
 
@@ -19,6 +20,18 @@ class NoEndTimeGivenError(MissingParameterError):
     default_detail = 'Missing parameter `end`. Format: 2014-11-30T00:00:00Z'
 
 
-class InvalidLocationError(InvalidParameterError):
+class TimeRangeError(InvalidParameterError):
+    pass
+
+
+class InvalidDatetimeError(InvalidParameterError):
+    default_detail = 'Invalid datetime. Expected format: {}'.format(
+        settings.DATETIME_FORMAT)
+
+
+class ObjectNotFoundError(InvalidParameterError):
     status_code = 404
+
+
+class InvalidLocationError(ObjectNotFoundError):
     default_detail = 'Invalid location specified. See the locations endpoint.'

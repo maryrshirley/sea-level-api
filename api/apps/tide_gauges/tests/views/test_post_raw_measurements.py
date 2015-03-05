@@ -87,18 +87,6 @@ class TestPostRawMeasurements(TestPutRawMeasurementsBase):
         self.client.force_authenticate(self.permitted)
         RawMeasurement.objects.all().delete()
 
-    def test_that_http_options_allowed_methods_are_post_and_options(self):
-        response = self.client.options(_URL)
-        assert_equal(200, response.status_code)
-        assert_equal('POST, OPTIONS', response['Allow'])
-
-    def test_that_http_get_is_not_allowed(self):
-        response = self.client.get(_URL)
-        assert_equal(405, response.status_code)
-        assert_equal(
-            {'detail': "Method 'GET' not allowed."},
-            decode_json(response.content))
-
     def test_that_valid_http_post_returns_json_message(self):
         response = self._post_json([self.PREDICTION_A])
         assert_json_response(response, expected_json=[

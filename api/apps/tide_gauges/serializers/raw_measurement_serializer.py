@@ -5,12 +5,17 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+class RawMeasurementListSerializer(serializers.ListSerializer):
+    class Meta:
+        resource_name = 'raw_measurements'
+
+
 class RawMeasurementSerializer(serializers.Serializer):
     datetime = serializers.DateTimeField()
     height = serializers.FloatField()
 
     class Meta:
-        list_serializer_class = serializers.ListSerializer  # Be explicit.
+        list_serializer_class = RawMeasurementListSerializer
 
     def create(self, validated_data):
         """

@@ -15,8 +15,8 @@ from django.conf import settings
 
 from api.apps.locations.models import Location
 
-from .exceptions import (InvalidLocationError, NoStartTimeGivenError,
-                         NoEndTimeGivenError)
+from .exceptions import (InvalidLocationError, InvalidDatetimeError,
+                         NoStartTimeGivenError, NoEndTimeGivenError)
 
 TimeRange = namedtuple('TimeRange', 'start,end')
 
@@ -50,8 +50,13 @@ def parse_time_range(start, end):
 
 
 def parse_datetime(datetime_string):
-    return datetime.datetime.strptime(
-        datetime_string, settings.DATETIME_FORMAT).replace(tzinfo=pytz.UTC)
+    try:
+        return datetime.datetime.strptime(
+            datetime_string, settings.DATETIME_FORMAT).replace(tzinfo=pytz.UTC)
+    except ValueError:
+        raise InvalidDatetimeError(
+            'Invalid datetime `{}`. Expected format: {}'.format(
+                datetime_string, settings.DATETIME_FORMAT))
 
 
 def pairwise(iterable):
