@@ -1,6 +1,8 @@
 from rest_framework.generics import ListCreateAPIView
 from rest_framework.permissions import DjangoModelPermissionsOrAnonReadOnly
 
+from api.libs.json_envelope_renderer import replace_json_renderer
+
 from ..serializers import RawMeasurementSerializer
 from ..models import RawMeasurement, TideGauge
 
@@ -20,6 +22,8 @@ class RawMeasurements(ListCreateAPIView):
     dropped.
     """
 
+    renderer_classes = replace_json_renderer(
+        ListCreateAPIView.renderer_classes)
     permission_classes = (DjangoModelPermissionsOrAnonReadOnly,)
     queryset = RawMeasurement.objects.none()  # req for DjangoModelPermissions
 
