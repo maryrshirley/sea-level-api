@@ -2,6 +2,7 @@ from .common import *
 
 import os
 
+
 STATIC_ROOT = os.path.join(BASE_DIR, 'static_collected')
 STATIC_URL = '/static/'
 
@@ -53,6 +54,14 @@ LOGGING = {
         },
     },
 }
+
+# Email
+# https://docs.djangoproject.com/en/dev/topics/email/
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
+EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
+
 
 if os.environ.get('EMERGENCY_DEBUG', 'false') == 'true':
     DEBUG = True

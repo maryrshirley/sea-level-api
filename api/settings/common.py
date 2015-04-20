@@ -44,6 +44,16 @@ MANAGERS = (
     ('Heroku Managers', 'herokmanagers@sealevelresearch.com'),
 )
 
+# https://docs.djangoproject.com/en/1.7/ref/settings/#server-email
+SERVER_EMAIL = 'heroku@sealevelresearch.com'
+
+# Amazon SES settings
+EMAIL_HOST = 'email-smtp.us-west-2.amazonaws.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+
+
 ALLOWED_HOSTS = [
     'api.sealevelresearch.com',
     'api-staging.sealevelresearch.com',
