@@ -23,6 +23,11 @@ LOGGING = {
             'level': 'DEBUG',
             'class': 'django.utils.log.NullHandler',
         },
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+            'formatter': 'standard',
+        },
         'console': {
             'level': 'INFO',
             'class': 'logging.StreamHandler',
@@ -31,24 +36,24 @@ LOGGING = {
     },
     'loggers': {
         'django.request': {
-            'handlers': ['console'],
+            'handlers': ['console', 'mail_admins'],
             'level': 'INFO',
             'propagate': True,  # also handle in parent handler
         },
 
         'django.db.backends': {
-            'handlers': ['console'],
+            'handlers': ['console', 'mail_admins'],
             'level': 'ERROR',
             'propagate': False,
         },
 
         'api.apps': {
-            'handlers': ['console'],
+            'handlers': ['console', 'mail_admins'],
             'level': 'INFO',
             'propagate': True,
         },
         'api.libs': {
-            'handlers': ['console'],
+            'handlers': ['console', 'mail_admins'],
             'level': 'INFO',
             'propagate': True,
         },
