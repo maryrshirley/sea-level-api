@@ -36,6 +36,14 @@ SECRET_KEY = os.environ.get('SECRET_KEY', None)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = TEMPLATE_DEBUG = False
 
+ADMINS = (
+    ('Heroku Admins', 'herokuadmins@sealevelresearch.com'),
+)
+
+MANAGERS = (
+    ('Heroku Managers', 'herokmanagers@sealevelresearch.com'),
+)
+
 ALLOWED_HOSTS = [
     'api.sealevelresearch.com',
     'api-staging.sealevelresearch.com',
