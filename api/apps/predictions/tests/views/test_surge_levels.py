@@ -72,7 +72,7 @@ class TestSurgeLevelsEndpoint(APITestCase, PostJsonMixin):
         response = self.client.get(_URL)
         assert_equal(405, response.status_code)
         assert_equal(
-            {'detail': "Method 'GET' not allowed."},
+            {'detail': "Method \"GET\" not allowed."},
             decode_json(response.content))
 
     def test_that_valid_http_post_returns_json_message(self):
@@ -136,7 +136,7 @@ class TestSurgeLevelsEndpoint(APITestCase, PostJsonMixin):
             {
                 'detail': 'Failed to deserialize item [0].',
                 'datetime': ['Datetime has wrong format. Use one of these '
-                             'formats instead: YYYY-MM-DDThh:mm:00Z']
+                             'formats instead: YYYY-MM-DDThh:mm:00Z.']
             },
             decode_json(response.content))
 
@@ -155,7 +155,7 @@ class TestSurgeLevelsEndpoint(APITestCase, PostJsonMixin):
             {
                 'detail': 'Failed to deserialize item [0].',
                 'datetime': ['Datetime has wrong format. Use one of these '
-                             'formats instead: YYYY-MM-DDThh:mm:00Z']
+                             'formats instead: YYYY-MM-DDThh:mm:00Z.']
             },
             response_data)
 
@@ -170,7 +170,7 @@ class TestSurgeLevelsEndpoint(APITestCase, PostJsonMixin):
             {
                 'detail': 'Failed to deserialize item [0].',
                 'datetime': ['Datetime has wrong format. Use one of these '
-                             'formats instead: YYYY-MM-DDThh:mm:00Z']
+                             'formats instead: YYYY-MM-DDThh:mm:00Z.']
             },
             decode_json(response.content))
 
