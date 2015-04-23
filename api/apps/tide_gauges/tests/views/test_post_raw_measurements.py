@@ -106,7 +106,7 @@ class TestPostRawMeasurements(TestPutRawMeasurementsBase):
         assert_equal(400, response.status_code)
         assert_equal(
             {'non_field_errors': [
-                'Expected a list of items but got type `dict`.']},
+                'Expected a list of items but got type "dict".']},
             decode_json(response.content))
 
     def test_that_http_post_can_create_single_measurement(self):
@@ -155,7 +155,7 @@ class TestPostRawMeasurements(TestPutRawMeasurementsBase):
         assert_equal(
             [{
                 'datetime': ['Datetime has wrong format. Use one of these '
-                             'formats instead: YYYY-MM-DDThh:mm:00Z']
+                             'formats instead: YYYY-MM-DDThh:mm:00Z.']
             }],
             decode_json(response.content))
 
@@ -169,7 +169,7 @@ class TestPostRawMeasurements(TestPutRawMeasurementsBase):
         assert_equal(
             [{
                 'datetime': ['Datetime has wrong format. Use one of these '
-                             'formats instead: YYYY-MM-DDThh:mm:00Z']
+                             'formats instead: YYYY-MM-DDThh:mm:00Z.']
             }],
             decode_json(response.content))
 
@@ -183,7 +183,7 @@ class TestPostRawMeasurements(TestPutRawMeasurementsBase):
         assert_equal(
             [{
                 'datetime': ['Datetime has wrong format. Use one of these '
-                             'formats instead: YYYY-MM-DDThh:mm:00Z']
+                             'formats instead: YYYY-MM-DDThh:mm:00Z.']
             }],
             decode_json(response.content))
 
