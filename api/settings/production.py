@@ -2,6 +2,7 @@ from .common import *
 
 import os
 
+
 STATIC_ROOT = os.path.join(BASE_DIR, 'static_collected')
 STATIC_URL = '/static/'
 
@@ -22,6 +23,11 @@ LOGGING = {
             'level': 'DEBUG',
             'class': 'django.utils.log.NullHandler',
         },
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+            'formatter': 'standard',
+        },
         'console': {
             'level': 'INFO',
             'class': 'logging.StreamHandler',
@@ -30,29 +36,37 @@ LOGGING = {
     },
     'loggers': {
         'django.request': {
-            'handlers': ['console'],
+            'handlers': ['console', 'mail_admins'],
             'level': 'INFO',
             'propagate': True,  # also handle in parent handler
         },
 
         'django.db.backends': {
-            'handlers': ['console'],
+            'handlers': ['console', 'mail_admins'],
             'level': 'ERROR',
             'propagate': False,
         },
 
         'api.apps': {
-            'handlers': ['console'],
+            'handlers': ['console', 'mail_admins'],
             'level': 'INFO',
             'propagate': True,
         },
         'api.libs': {
-            'handlers': ['console'],
+            'handlers': ['console', 'mail_admins'],
             'level': 'INFO',
             'propagate': True,
         },
     },
 }
+
+# Email
+# https://docs.djangoproject.com/en/dev/topics/email/
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
+EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
+
 
 if os.environ.get('EMERGENCY_DEBUG', 'false') == 'true':
     DEBUG = True

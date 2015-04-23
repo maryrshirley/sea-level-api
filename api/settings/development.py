@@ -22,6 +22,11 @@ INSTALLED_APPS += (
     'debug_toolbar.apps.DebugToolbarConfig',
 )
 
+
+# https://docs.djangoproject.com/en/1.7/topics/email/#console-backend
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+
 LOG_DIR = pjoin(BASE_DIR, '..', 'log')
 
 LOGGING = {
