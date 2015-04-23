@@ -8,4 +8,5 @@ clean_python_bytecode:
 
 .PHONY: test
 test:
+	pip install -r requirements_for_tests.txt
 	./run_tests.sh
