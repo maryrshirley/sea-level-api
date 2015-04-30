@@ -4,7 +4,7 @@ function get_latest_database_dump {
     DUMP_FILE=heroku_production_database.dump
 
     if [ ! -f ${DUMP_FILE} ]; then
-        BACKUP_URL=$(heroku pgbackups:url -a DATABASE_URL --app sea-level-api)
+        BACKUP_URL=$(heroku pg:backups public-url -a DATABASE_URL --app sea-level-api)
         curl -o ${DUMP_FILE} ${BACKUP_URL}
     fi
 }

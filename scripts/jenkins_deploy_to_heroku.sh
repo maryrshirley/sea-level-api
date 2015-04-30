@@ -66,12 +66,12 @@ function copy_production_database_to_staging {
     backup_production_database
     nuke_staging_database
 
-    BACKUP_URL="$(heroku pgbackups:url --app ${PRODUCTION_APP})"
-    heroku pgbackups:restore DATABASE_URL ${BACKUP_URL} --confirm ${STAGING_APP} --app ${STAGING_APP}
+    BACKUP_URL="$(heroku pg:backups public-url --app ${PRODUCTION_APP})"
+    heroku pg:backups restore ${BACKUP_URL} DATABASE_URL --confirm ${STAGING_APP} --app ${STAGING_APP}
 }
 
 function backup_production_database {
-    heroku pgbackups:capture --expire --app ${PRODUCTION_APP}
+    heroku pg:backups capture --app ${PRODUCTION_APP}
 }
 
 function nuke_staging_database {
