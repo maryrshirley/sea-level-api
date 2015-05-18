@@ -123,7 +123,6 @@ heroku config:set DJANGO_SETTINGS_MODULE=api.settings.production --app ${APP_NAM
 # DATABASE
 heroku addons:add heroku-postgresql:dev --app ${APP_NAME}
 heroku pg:promote <name of database ie HEROKU_POSTGRESQL_ROSE_URL> --app ${APP_NAME}
-heroku addons:add pgbackups --app ${APP_NAME}
 
 # SECRET_KEY
 heroku config:set SECRET_KEY=$(openssl rand -base64 64) --app ${APP_NAME}
