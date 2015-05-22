@@ -139,10 +139,12 @@ class TideWindow(object):
 
     def truncate_end(self, to_datetime):
         self.end_prediction = TidePrediction.objects.get(
+            location=self.start_prediction.location,
             minute__datetime=to_datetime)
 
     def truncate_start(self, to_datetime):
         self.start_prediction = TidePrediction.objects.get(
+            location=self.start_prediction.location,
             minute__datetime=to_datetime)
 
     def extends_after(self, when):
