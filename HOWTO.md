@@ -59,6 +59,7 @@ types of data, which have writeable endpoints.*
 
 - Pull the **latest version** of the API.
 - Activate your python environment for the API (virtualenv etc)
+- Set the environment variable `export DJANGO_SETTINGS_MODULE=api.settings.development` (you might want to do this in your `.bashrc` or similar)
 - Confirm that Django's working ok with `python manage.py --help`. It should
   give you a list of commands (and not an error)
 
