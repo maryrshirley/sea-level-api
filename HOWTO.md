@@ -26,13 +26,14 @@ wrangle interpolate_linear <file.csv> predicted_tide_level
 
 # Create a new Location in the APi
 
+Do the following on staging for practice before you do it on production! It's
+exactly the same, but this way you can break staging.
+
 As soon as you create a Location you'll start getting alerts that there are
 no tide predictions, surge predictions and observations.
 
 These can be **temporarily** disabled (note don't ever disable alerts forever
 or effectively forever as you'll *never* remember to re-enable them)
-
-Do the following on staging for practice, then on production (by changing the URL)
 
 - Browse to the [API admin interface](https://sea-level-api-staging.herokuapp.com/admin/login/?next=/admin/)
   Be patient as it might have to spin a heroku worker up.
