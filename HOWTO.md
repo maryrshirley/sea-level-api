@@ -122,6 +122,16 @@ expected.
 
 Also visit the [staging status URL](http://api-staging.sealevelresearch.com/1/_status/tide-predictions/) where you should see a green OK for predictions in that location.
 
+# Backup the Production database
+
+Create a postgres snapshot with the heroku command:
+
+```
+heroku pg:backups capture DATABASE_URL --app sea-level-api
+```
+
+Hopefully you won't need to use this, but it's good to have!
+
 # Repeat on Production
 
 Now follow exactly the same procedure but use the `DATABASE_URL` for production
