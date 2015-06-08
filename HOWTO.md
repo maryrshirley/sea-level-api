@@ -113,3 +113,21 @@ Creating TidePredictions
 3000
 ...
 ```
+
+## Verify the data in staging
+
+Visit the API endpoint [example URL](http://api-staging.sealevelresearch.com/1/predictions/tide-levels/liverpool-gladstone-dock/?start=2015-01-01T00:00:00Z&end=2015-01-02T00:00:00Z),
+adjusting the location and dates in the URL to ensure that the data is as you
+expected.
+
+Also visit the [staging status URL](http://api-staging.sealevelresearch.com/1/_status/tide-predictions/) where you should see a green OK for predictions in that location.
+
+# Repeat on Production
+
+Now follow exactly the same procedure but use the `DATABASE_URL` for production
+rather than staging:
+
+```
+heroku config --app sea-level-api | grep DATABASE_URL
+export DATABASE_URL="postgres....."
+```
