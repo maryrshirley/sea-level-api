@@ -4,7 +4,7 @@ from api.apps.locations.serializers import LocationSerializer
 
 from api.libs.json_envelope_renderer import replace_json_renderer
 
-from .get_queryset import get_queryset
+from api.libs.user_permissions import get_location_queryset
 
 
 class LocationList(ListAPIView):
@@ -16,4 +16,4 @@ class LocationList(ListAPIView):
     serializer_class = LocationSerializer
 
     def get_queryset(self, *args, **kwargs):
-        return get_queryset(user=self.request.user)
+        return get_location_queryset(user=self.request.user)
