@@ -12,5 +12,7 @@ class LocationList(ListAPIView):
     """
     renderer_classes = replace_json_renderer(ListAPIView.renderer_classes)
 
-    queryset = Location.objects.filter(visible=True)
     serializer_class = LocationSerializer
+
+    def get_queryset(self, *args, **kwargs):
+        return Location.objects.filter(visible=True)
