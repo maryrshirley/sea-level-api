@@ -1,9 +1,10 @@
 from rest_framework.generics import ListAPIView
 
-from api.apps.locations.models import Location
 from api.apps.locations.serializers import LocationSerializer
 
 from api.libs.json_envelope_renderer import replace_json_renderer
+
+from .get_queryset import get_queryset
 
 
 class LocationList(ListAPIView):
@@ -15,4 +16,4 @@ class LocationList(ListAPIView):
     serializer_class = LocationSerializer
 
     def get_queryset(self, *args, **kwargs):
-        return Location.objects.filter(visible=True)
+        return get_queryset(user=self.request.user)
