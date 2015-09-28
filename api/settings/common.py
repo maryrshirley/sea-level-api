@@ -84,6 +84,7 @@ INSTALLED_APPS = (
     'api.apps.debug',
     'api.apps.surge_model_converter',
     'api.apps.tide_gauges',
+    'api.apps.users',
 
     'api.libs.minute_in_time',
 )
