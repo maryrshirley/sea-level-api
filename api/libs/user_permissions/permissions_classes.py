@@ -2,7 +2,8 @@ import logging
 
 from rest_framework import permissions
 
-from . import is_read_request, user_can_see_location
+from .get_location_queryset import user_can_see_location
+from .is_read_request import is_read_request
 
 LOG = logging.getLogger(__name__)
 
