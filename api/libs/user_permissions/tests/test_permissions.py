@@ -7,8 +7,7 @@ from django.contrib.auth.models import AnonymousUser, User
 
 from api.apps.locations.models import Location
 
-from ..permissions_classes import (
-    AllowUserSpecificAccess, AllowAnonymousReadPublicLocations)
+from ..permissions_classes import AllowUserSpecificAccess
 
 
 PermissionsTestCase = collections.namedtuple(
