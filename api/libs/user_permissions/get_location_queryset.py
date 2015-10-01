@@ -5,8 +5,12 @@ from api.apps.locations.models import Location
 LOG = logging.getLogger(__name__)
 
 
-def get_queryset(user):
-    LOG.info('get_queryset({})'.format(repr(user)))
+def get_location_queryset(user):
+    """
+    Return a QuerySet of Locations that a particular User (including an
+    anonymous one) is allowed to view.
+    """
+    LOG.debug('get_location_queryset({})'.format(repr(user)))
 
     if user.is_anonymous():
         return get_queryset_anonymous()
@@ -16,6 +20,14 @@ def get_queryset(user):
 
     else:
         return get_queryset_user(user)
+
+
+def user_can_see_location(user, location):
+    """
+    Return True if the given User is allowed to view the given Location.
+    """
+    locations_for_this_user = get_location_queryset(user)
+    return locations_for_this_user.filter(id=location.id).exists()
 
 
 def get_queryset_anonymous():
