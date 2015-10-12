@@ -1,11 +1,14 @@
 from rest_framework.generics import ListAPIView
 
 from api.libs.json_envelope_renderer import replace_json_renderer
-from api.libs.param_parsers import parse_interval
+from api.libs.param_parsers import (
+    parse_interval, parse_location, parse_time_range)
+from api.libs.user_permissions.permissions_classes import (
+    AllowUserSpecificAccess,)
 
 from ..serializers import TideLevelSerializer
 
-from .helpers import parse_and_get_queryset
+from .helpers import get_queryset
 
 
 class TideLevels(ListAPIView):
@@ -22,9 +25,13 @@ class TideLevels(ListAPIView):
             query_params = self.request.query_params
 
         interval_mins = parse_interval(query_params.get('interval', '1'))
+        location = parse_location(self.kwargs.get('location_slug', None))
 
-        return parse_and_get_queryset(
-            self.kwargs.get('location_slug', None),
+
+        time_range = parse_time_range(
             query_params.get('start', None),
             query_params.get('end', None)
-        )[:24 * 60:interval_mins]  # limit to 24 hours of data
+        )
+
+        # limit to 24 hours of data
+        return get_queryset(location, time_range)[:24 * 60:interval_mins]
