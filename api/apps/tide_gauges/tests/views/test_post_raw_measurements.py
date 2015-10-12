@@ -32,7 +32,6 @@ class TestPutRawMeasurementsBase(APITestCase):
         TideGauge.objects.create(slug='gladstone')
         cls.permitted = create_user(
             'permitted', is_internal_collector=True)
-        Token.objects.create(user=cls.permitted)
 
         cls.forbidden = create_user(
             'forbidden', is_internal_collector=False)
