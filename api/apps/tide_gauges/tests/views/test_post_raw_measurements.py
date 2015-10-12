@@ -7,13 +7,13 @@ from django.conf import settings
 from rest_framework.test import APITestCase
 from rest_framework.authtoken.models import Token
 
-from api.libs.test_utils import (decode_json, make_permitted_forbidden_users,
-                                 delete_users)
+from api.libs.test_utils import decode_json
 
 from api.apps.tide_gauges.models import (RawMeasurement, TideGauge,
                                          TideGaugeLocationLink)
 from api.apps.observations.models import Observation
 from api.apps.locations.models import Location
+from api.apps.users.helpers import create_user
 
 
 _URL = '/1/tide-gauges/raw-measurements/gladstone/'
@@ -30,13 +30,18 @@ class TestPutRawMeasurementsBase(APITestCase):
     def setUpClass(cls):
         TideGauge.objects.all().delete()
         TideGauge.objects.create(slug='gladstone')
-        (cls.permitted, cls.forbidden) = make_permitted_forbidden_users(
-            ['add_rawmeasurement'])
+        cls.permitted = create_user(
+            'permitted', is_internal_collector=True)
+        Token.objects.create(user=cls.permitted)
+
+        cls.forbidden = create_user(
+            'forbidden', is_internal_collector=False)
 
     @classmethod
     def tearDownClass(cls):
         TideGauge.objects.all().delete()
-        delete_users()
+        cls.permitted.delete()
+        cls.forbidden.delete()
 
     def _post_json(self, data, **extras):
         return self.client.post(
@@ -246,27 +251,14 @@ class TestTideGaugeLocationLink(TestPutRawMeasurementsBase):
             self._serialize(all_observations[0]))
 
 
-class TestRawMeasurementsEndpointAuthentication(TestPutRawMeasurementsBase):
+class TestTokenAuthentication(TestPutRawMeasurementsBase):
     def setUp(self):
         self.good_data = {
             "datetime": "2014-06-10T10:34:00Z",
             "height": 0.23
         }
 
-    def test_that_no_authentication_header_returns_http_401(self):
-        # 401 vs 403: http://stackoverflow.com/a/6937030
-        response = self._post_json([])
-        assert_equal(401, response.status_code)
-
-    def test_that_user_without__add_surgeprediction__permission_gets_403(self):
-        token = Token.objects.get(user__username='forbidden').key
-        response = self._post_json(
-            [self.good_data], HTTP_AUTHORIZATION='Token {}'.format(token))
-        assert_json_response(response, expected_status=403, expected_json={
-            'detail': 'You do not have permission to perform this action.'},
-        )
-
-    def test_that_user_with__add_surgeprediction__permission_can_post(self):
+    def test_that_collector_user_can_authenticate_with_token_and_post(self):
         token = Token.objects.get(user__username='permitted').key
         response = self._post_json(
             [self.good_data], HTTP_AUTHORIZATION='Token {}'.format(token))

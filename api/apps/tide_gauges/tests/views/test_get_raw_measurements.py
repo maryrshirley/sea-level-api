@@ -7,6 +7,7 @@ from rest_framework.test import APITestCase
 from api.libs.test_utils import (assert_json_response, decode_json,
                                  DatetimeParameterTestsMixin)
 from api.apps.tide_gauges.models import RawMeasurement, TideGauge
+from api.apps.users.helpers import create_user
 
 
 BASE_PATH = '/1/tide-gauges/raw-measurements/'
@@ -36,6 +37,8 @@ MEASUREMENTS = [
     },
 ]
 
+COLLECTOR_USER = None
+
 
 def setUpModule():
     # https://docs.python.org
@@ -43,6 +46,9 @@ def setUpModule():
 
     TideGauge.objects.create(slug='gladstone-1')
     TideGauge.objects.create(slug='gladstone-2')
+
+    global COLLECTOR_USER
+    COLLECTOR_USER = create_user('user-collector', is_internal_collector=True)
 
     for m in MEASUREMENTS:
         tide_gauge = TideGauge.objects.get(slug=m.pop('tide_gauge__slug'))
@@ -54,17 +60,26 @@ def setUpModule():
 def tearDownModule():
     TideGauge.objects.all().delete()
     RawMeasurement.objects.all().delete()
+    COLLECTOR_USER.delete()
 
 
 class TestStartParameterValidation(APITestCase, DatetimeParameterTestsMixin):
+    def setUp(self):
+        self.client.force_authenticate(COLLECTOR_USER)
+
     TEST_PATH = PATH + '?start={test_datetime}&end=2014-01-01T00:00:00Z'
 
 
 class TestEndParameterValidation(APITestCase, DatetimeParameterTestsMixin):
+    def setUp(self):
+        self.client.force_authenticate(COLLECTOR_USER)
+
     TEST_PATH = PATH + '?start=2014-01-01T00:00:00Z&end={test_datetime}'
 
 
 class TestErrorHandling(APITestCase):
+    def setUp(self):
+        self.client.force_authenticate(COLLECTOR_USER)
 
     def test_that_no_gauge_in_url_gives_an_http_404_with_json(self):
         expected = {'detail': 'No tide gauge specified in URL.'}
@@ -100,6 +115,7 @@ class TestErrorHandling(APITestCase):
 class TestResultStructure(APITestCase):
 
     def setUp(self):
+        self.client.force_authenticate(COLLECTOR_USER)
         path = PATH + '?start=2014-06-10T10:00:00Z&end=2014-06-10T10:01:00Z'
         self.data = decode_json(self.client.get(path).content)
 
@@ -123,6 +139,9 @@ class TestResultStructure(APITestCase):
 
 
 class TestLocationFiltering(APITestCase):
+    def setUp(self):
+        self.client.force_authenticate(COLLECTOR_USER)
+
     def test_that_measurements_can_be_retrieved_for_gauge_1(self):
         path = (BASE_PATH + 'gladstone-1/'
                 '?start=2014-06-10T09:00:00Z&end=2014-06-10T11:00:00Z')
@@ -147,6 +166,9 @@ class TestLocationFiltering(APITestCase):
 
 
 class TestStartEndParameterFiltering(APITestCase):
+    def setUp(self):
+        self.client.force_authenticate(COLLECTOR_USER)
+
     @staticmethod
     def _make_path(start_hour, start_min, end_hour, end_min):
         return (BASE_PATH + 'gladstone-1/'
