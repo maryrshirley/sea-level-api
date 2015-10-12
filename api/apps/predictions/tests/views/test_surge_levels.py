@@ -9,8 +9,8 @@ from rest_framework.authtoken.models import Token
 
 from api.apps.locations.models import Location
 from api.apps.predictions.models import SurgePrediction
-from api.libs.test_utils import (decode_json, make_permitted_forbidden_users,
-                                 delete_users)
+from api.apps.users.helpers import create_user
+from api.libs.test_utils import decode_json
 
 _URL = '/1/predictions/surge-levels/liverpool/'
 ADD_SURGE_PERMISSIONS = ['add_surgeprediction']
@@ -44,12 +44,12 @@ class TestSurgeLevelsEndpoint(APITestCase, PostJsonMixin):
             "datetime": "2014-06-10T11:00:00Z",
             "surge_level": 0.50
         }
-        (cls.user, _) = make_permitted_forbidden_users(ADD_SURGE_PERMISSIONS)
+        cls.user = create_user('collector', is_internal_collector=True)
 
     @classmethod
     def tearDownClass(cls):
         cls.liverpool.delete()
-        delete_users()
+        cls.user.delete()
 
     def setUp(self):
         self.client.force_authenticate(user=self.user)
@@ -175,13 +175,14 @@ class TestSurgeLevelsEndpoint(APITestCase, PostJsonMixin):
             decode_json(response.content))
 
 
-class TestSurgeLevelsEndpointAuthentication(APITestCase, PostJsonMixin):
+class TestSurgeLevelsTokenAuthentication(APITestCase, PostJsonMixin):
     @classmethod
     def setUpClass(cls):
         cls.liverpool = Location.objects.create(
             slug='liverpool', name='Liverpool')
-        (cls.permitted, cls.forbidden) = make_permitted_forbidden_users(
-            ADD_SURGE_PERMISSIONS)
+        cls.permitted = create_user('permitted', is_internal_collector=True)
+        cls.forbidden = create_user('forbidden', is_internal_collector=False)
+
         cls.good_data = {
             "datetime": "2014-06-10T10:34:00Z",
             "surge_level": 0.23
@@ -190,7 +191,8 @@ class TestSurgeLevelsEndpointAuthentication(APITestCase, PostJsonMixin):
     @classmethod
     def tearDownClass(cls):
         cls.liverpool.delete()
-        delete_users()
+        cls.permitted.delete()
+        cls.forbidden.delete()
 
     def test_that_no_authentication_header_returns_http_401(self):
         # 401 vs 403: http://stackoverflow.com/a/6937030
