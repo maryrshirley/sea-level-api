@@ -22,18 +22,13 @@ class SeaLevels(ListAPIView):
             query_params = self.request.query_params
 
         interval_mins = parse_interval(query_params.get('interval', '1'))
-
-        return parse_and_get_queryset(
-            self.kwargs.get('location_slug', None),
+        location = parse_location(self.kwargs.get('location_slug', None))
+        time_range = parse_time_range(
             query_params.get('start', None),
-            query_params.get('end', None)
-        )[:24 * 60:interval_mins]  # limit to 24 hours of data
+            query_params.get('end', None))
 
-
-def parse_and_get_queryset(location_slug, start_param, end_param):
-    location = parse_location(location_slug)
-    time_range = parse_time_range(start_param, end_param)
-    return get_queryset(location, time_range)
+        # limit to 24 hours of data
+        return get_queryset(location, time_range)[:24 * 60:interval_mins]
 
 
 def get_queryset(location, time_range):
