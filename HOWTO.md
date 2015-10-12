@@ -26,13 +26,14 @@ wrangle interpolate_linear <file.csv> predicted_tide_level
 
 # Create a new Location in the APi
 
+Do the following on staging for practice before you do it on production! It's
+exactly the same, but this way you can break staging.
+
 As soon as you create a Location you'll start getting alerts that there are
 no tide predictions, surge predictions and observations.
 
 These can be **temporarily** disabled (note don't ever disable alerts forever
 or effectively forever as you'll *never* remember to re-enable them)
-
-Do the following on staging for practice, then on production (by changing the URL)
 
 - Browse to the [API admin interface](https://sea-level-api-staging.herokuapp.com/admin/login/?next=/admin/)
   Be patient as it might have to spin a heroku worker up.
@@ -47,3 +48,96 @@ Do the following on staging for practice, then on production (by changing the UR
 
 Now go and configure a new observations alert in Pingdom for the new location,
 if applicable.
+
+
+# Import predictions into API
+
+*This uses a Django management command which is a bit different from the other
+types of data, which have writeable endpoints.*
+
+## Get the latest sea-level-api code
+
+- Pull the **latest version** of the API.
+- Activate your python environment for the API (virtualenv etc)
+- Set the environment variable `export DJANGO_SETTINGS_MODULE=api.settings.development` (you might want to do this in your `.bashrc` or similar)
+- Confirm that Django's working ok with `python manage.py --help`. It should
+  give you a list of commands (and not an error)
+
+## Find the database URL of staging
+
+You're going to run the **local** API code against the **remote** database. To
+do that you need to find the postgres URL of the remote database and set it as
+an environment variable. The local code will use this instead of its own
+database.
+
+It should look something like this:
+```
+$ heroku config --app sea-level-api-staging |grep DATABASE_URL
+postgres://someusername:somepassword@ec2-54-217-238-179.eu-west-1.compute.amazonaws.com:5432/fndakjgfkdjbads
+```
+
+Now set that in your environment:
+
+```
+export DATABASE_URL="postgres://someusername:somepassword@ec2-54-217-238-179.eu-west-1.compute.amazonaws.com:5432/fndakjgfkdjbads"
+```
+
+## Actually import the data
+
+**WARNING:** destructive! This will delete all tide predictions in the date
+range of the CSV file you are about to upload!
+
+**TIP:** If you've already got data in the API, it's probably better not to
+overwrite what's already in there. Start your data file immediately after the
+last prediction in the API.
+
+You can use the `import_predictions` Django management command to actually push
+the data. This will take a little while.
+
+You refer to the location using the `slug` field in the `Location` database
+object.
+
+```
+# Don't forget `export DATABASE_URL=...` from the previous section
+
+$ python manage.py import_predictions liverpool-gladstone-dock <filename.csv>
+
+Getting all datetimes from CSV
+Finding existing Minutes between 2015-07-04 00:00:00+00:00 and 2016-07-03 23:55:00+00:00
+Creating missing Minute objects
+Making hash datetime -> Minute
+Deleting predictions for Liverpool, Gladstone Dock from 2015-07-04 00:00:00+00:00 to 2016-07-03 23:55:00+00:00
+Creating TidePredictions
+1000
+2000
+3000
+...
+```
+
+## Verify the data in staging
+
+Visit the API endpoint [example URL](http://api-staging.sealevelresearch.com/1/predictions/tide-levels/liverpool-gladstone-dock/?start=2015-01-01T00:00:00Z&end=2015-01-02T00:00:00Z),
+adjusting the location and dates in the URL to ensure that the data is as you
+expected.
+
+Also visit the [staging status URL](http://api-staging.sealevelresearch.com/1/_status/tide-predictions/) where you should see a green OK for predictions in that location.
+
+# Backup the Production database
+
+Create a postgres snapshot with the heroku command:
+
+```
+heroku pg:backups capture DATABASE_URL --app sea-level-api
+```
+
+Hopefully you won't need to use this, but it's good to have!
+
+# Repeat on Production
+
+Now follow exactly the same procedure but use the `DATABASE_URL` for production
+rather than staging:
+
+```
+heroku config --app sea-level-api | grep DATABASE_URL
+export DATABASE_URL="postgres....."
+```
