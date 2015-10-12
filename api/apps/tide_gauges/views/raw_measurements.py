@@ -3,12 +3,13 @@ import datetime
 from django.core.exceptions import ObjectDoesNotExist
 
 from rest_framework.generics import ListCreateAPIView
-from rest_framework.permissions import DjangoModelPermissionsOrAnonReadOnly
 
 from api.libs.param_parsers import (parse_time_range, MissingParameterError,
                                     ObjectNotFoundError, TimeRangeError)
 
 from api.libs.json_envelope_renderer import replace_json_renderer
+from api.libs.user_permissions.permissions_classes import (
+    AllowInternalCollectorsReadAndWrite)
 
 from ..serializers import RawMeasurementSerializer
 from ..models import RawMeasurement, TideGauge
@@ -31,8 +32,7 @@ class RawMeasurements(ListCreateAPIView):
 
     renderer_classes = replace_json_renderer(
         ListCreateAPIView.renderer_classes)
-    permission_classes = (DjangoModelPermissionsOrAnonReadOnly,)
-    queryset = RawMeasurement.objects.none()  # req for DjangoModelPermissions
+    permission_classes = (AllowInternalCollectorsReadAndWrite,)
 
     # I prefer not to override `get_serializer()` just to pass in `many=True`.
     # There may be a better way than using `partial` though.
