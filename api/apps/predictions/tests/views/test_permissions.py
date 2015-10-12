@@ -48,3 +48,7 @@ class TestPermissionsMixin(object):
 
 class TestTideLevelsPermissions(TestPermissionsMixin, APITestCase):
     URL = '/1/predictions/tide-levels/{location}/now/'
+
+
+class TestTideWindowsPermissions(TestPermissionsMixin, APITestCase):
+    URL = '/1/predictions/tide-windows/{location}/now/?tide_level=5.0'
