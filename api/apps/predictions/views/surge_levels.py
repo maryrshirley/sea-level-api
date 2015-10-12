@@ -3,12 +3,12 @@ from django.db import transaction
 from rest_framework import status, serializers
 from rest_framework.exceptions import APIException
 from rest_framework.generics import GenericAPIView
-from rest_framework.permissions import DjangoModelPermissionsOrAnonReadOnly
 from rest_framework.response import Response
 
 from api.apps.locations.models import Location
+from api.libs.user_permissions.permissions_classes import (
+    AllowInternalCollectorsReadAndWrite)
 
-from ..models import SurgePrediction
 from ..serializers import SurgeLevelSerializer
 
 
@@ -22,8 +22,7 @@ class SurgeLevels(GenericAPIView):
     given in a JSON array. Note that any bad prediction in the list will
     cause the entire batch to be dropped.
     """
-    permission_classes = (DjangoModelPermissionsOrAnonReadOnly,)
-    queryset = SurgePrediction.objects.none()  # Req for DjangoModelPermissions
+    permission_classes = (AllowInternalCollectorsReadAndWrite,)
 
     @transaction.atomic
     def post(self, request, *args, **kwargs):
