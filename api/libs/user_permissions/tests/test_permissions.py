@@ -3,11 +3,11 @@ import collections
 from nose.tools import assert_equal
 
 from django.test import TestCase, RequestFactory
-from django.contrib.auth.models import AnonymousUser, User
-
-from api.apps.locations.models import Location
+from django.contrib.auth.models import AnonymousUser
 
 from ..permissions_classes import AllowUserSpecificAccess
+
+from .create_test_users_locations import create_test_users_locations
 
 
 PermissionsTestCase = collections.namedtuple(
@@ -19,45 +19,18 @@ PermissionsTestCase = collections.namedtuple(
         'location',
         'write_request']))
 
-USERS = {}
-LOCATIONS = {}
+USERS_AND_LOCATIONS = None
 
 
 def setUpModule():
-    global USERS, LOCATIONS
+    global USERS_AND_LOCATIONS
 
-    LOCATIONS = {
-        'location-public-1': Location.objects.create(
-            slug='public-1', name='public-1', visible=True),
-
-        'location-private-1': Location.objects.create(
-            slug='private-1', name='private-1', visible=False),
-
-        'location-private-2': Location.objects.create(
-            slug='private-2', name='private-2', visible=False),
-    }
-
-    USERS = {
-        'user-1': User.objects.create(
-            username='user-1'),
-
-        'user-collector': User.objects.create(
-            username='user-collector'),
-    }
-
-    user_1_profile = USERS['user-1'].user_profile
-    user_1_profile.available_locations.add(
-        LOCATIONS['location-private-1'])
-    user_1_profile.save()
-
-    user_collector_profile = USERS['user-collector'].user_profile
-    user_collector_profile.is_internal_collector = True
-    user_collector_profile.save()
+    USERS_AND_LOCATIONS = create_test_users_locations()
 
 
 def tearDownModule():
-    global USERS, LOCATIONS
-    for obj in list(USERS.values()) + list(LOCATIONS.values()):
+    global USERS_AND_LOCATIONS
+    for obj in USERS_AND_LOCATIONS.values():
         obj.delete()
 
 
@@ -193,7 +166,7 @@ def _assert_permissions(permissions_class, case):
     if case.username is None:
         user = None
     else:
-        user = USERS[case.username]
+        user = USERS_AND_LOCATIONS[case.username]
 
     request = _make_request(case.write_request, user)
 
@@ -214,7 +187,7 @@ def _assert_permissions(permissions_class, case):
     assert_equal(
         case.expected_has_object_permission,
         permissions_ob.has_object_permission(
-            request, None, LOCATIONS[case.location])
+            request, None, USERS_AND_LOCATIONS[case.location])
     )
 
 
