@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from rest_framework.authtoken.models import Token
 
 
 def create_user(username, *args, **kwargs):
@@ -15,4 +16,6 @@ def create_user(username, *args, **kwargs):
         profile.available_locations.add(location)
 
     profile.save()
+
+    Token.objects.create(user=user)  # Create an auth token for the user
     return user
