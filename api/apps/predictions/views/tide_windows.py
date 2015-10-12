@@ -14,6 +14,8 @@ from rest_framework.generics import ListAPIView
 from api.libs.json_envelope_renderer import replace_json_renderer
 from api.libs.param_parsers import (parse_location, parse_time_range,
                                     parse_tide_level)
+from api.libs.user_permissions.permissions_classes import (
+    AllowUserSpecificAccess)
 
 from ..serializers import TideWindowSerializer
 
@@ -32,12 +34,16 @@ class TideWindows(ListAPIView):
     """
     renderer_classes = replace_json_renderer(ListAPIView.renderer_classes)
     serializer_class = TideWindowSerializer
+    permission_classes = (AllowUserSpecificAccess,)
 
     def get_queryset(self, query_params=None, *args, **kwargs):
         if query_params is None:
             query_params = self.request.query_params
 
         location = parse_location(self.kwargs.get('location_slug', None))
+
+        self.check_object_permissions(self.request, location)
+
         time_range = parse_time_range(
             query_params.get('start', None),
             query_params.get('end', None)

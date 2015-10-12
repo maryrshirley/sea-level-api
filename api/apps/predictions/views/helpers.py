@@ -1,6 +1,5 @@
 from collections import namedtuple
 from itertools import tee
-from api.libs.param_parsers import parse_location, parse_time_range
 from ..models import TidePrediction
 
 import datetime
@@ -18,12 +17,6 @@ except ImportError:
 TimeRange = namedtuple('TimeRange', 'start,end')
 ONE_DAY = datetime.timedelta(hours=24)
 ONE_MIN = datetime.timedelta(seconds=60)
-
-
-def parse_and_get_queryset(location_slug, start_param, end_param):
-    location = parse_location(location_slug)
-    time_range = parse_time_range(start_param, end_param)
-    return get_queryset(location, time_range)
 
 
 def get_queryset(location, time_range):
