@@ -19,6 +19,7 @@ class TideLevels(ListAPIView):
     """
     renderer_classes = replace_json_renderer(ListAPIView.renderer_classes)
     serializer_class = TideLevelSerializer
+    permission_classes = (AllowUserSpecificAccess,)
 
     def get_queryset(self, query_params=None, *args, **kwargs):
         if query_params is None:
@@ -27,6 +28,7 @@ class TideLevels(ListAPIView):
         interval_mins = parse_interval(query_params.get('interval', '1'))
         location = parse_location(self.kwargs.get('location_slug', None))
 
+        self.check_object_permissions(self.request, location)
 
         time_range = parse_time_range(
             query_params.get('start', None),
