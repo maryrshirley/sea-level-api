@@ -3,6 +3,8 @@ from rest_framework.generics import ListAPIView
 from api.libs.json_envelope_renderer import replace_json_renderer
 from api.libs.param_parsers import (parse_location, parse_time_range,
                                     parse_interval)
+from api.libs.user_permissions.permissions_classes import (
+    AllowUserSpecificAccess)
 
 from ..models import CombinedPredictionObservation
 from ..serializers import SeaLevelSerializer
@@ -16,24 +18,23 @@ class SeaLevels(ListAPIView):
     """
     renderer_classes = replace_json_renderer(ListAPIView.renderer_classes)
     serializer_class = SeaLevelSerializer
+    permission_classes = (AllowUserSpecificAccess,)
 
     def get_queryset(self, query_params=None, *args, **kwargs):
         if query_params is None:
             query_params = self.request.query_params
 
         interval_mins = parse_interval(query_params.get('interval', '1'))
+        location = parse_location(self.kwargs.get('location_slug', None))
 
-        return parse_and_get_queryset(
-            self.kwargs.get('location_slug', None),
+        self.check_object_permissions(self.request, location)
+
+        time_range = parse_time_range(
             query_params.get('start', None),
-            query_params.get('end', None)
-        )[:24 * 60:interval_mins]  # limit to 24 hours of data
+            query_params.get('end', None))
 
-
-def parse_and_get_queryset(location_slug, start_param, end_param):
-    location = parse_location(location_slug)
-    time_range = parse_time_range(start_param, end_param)
-    return get_queryset(location, time_range)
+        # limit to 24 hours of data
+        return get_queryset(location, time_range)[:24 * 60:interval_mins]
 
 
 def get_queryset(location, time_range):
