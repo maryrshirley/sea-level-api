@@ -1,9 +1,9 @@
 from rest_framework.test import APITestCase
-from django.contrib.auth.models import User
 
 from nose.tools import assert_equal
 
 from api.apps.locations.models import Location
+from api.apps.users.helpers import create_user
 from api.libs.test_utils import decode_json
 
 
@@ -17,16 +17,17 @@ class TestLocationListFiltering(APITestCase):
         cls.location_private_2 = Location.objects.create(
             slug='private-2', visible=False)
 
-        cls.user_1 = User.objects.create(username='user-1')
-        cls.user_1.user_profile.available_locations.add(cls.location_private_1)
+        cls.user_1 = create_user(
+            'user-1', available_locations=[cls.location_private_1])
 
-        cls.user_2 = User.objects.create(username='user-2')
-        for location in (cls.location_private_1, cls.location_private_2):
-            cls.user_2.user_profile.available_locations.add(location)
+        cls.user_2 = create_user(
+            'user-2',
+            available_locations=[
+                cls.location_private_1, cls.location_private_2]
+        )
 
-        cls.user_collector = User.objects.create(username='user-collector')
-        cls.user_collector.user_profile.is_internal_collector = True
-        cls.user_collector.user_profile.save()
+        cls.user_collector = create_user(
+            'user-collector', is_internal_collector=True)
 
     @classmethod
     def tearDownClass(cls):

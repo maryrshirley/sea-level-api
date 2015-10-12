@@ -1,7 +1,5 @@
-
-from django.contrib.auth.models import User
-
 from api.apps.locations.models import Location
+from api.apps.users.helpers import create_user
 
 
 def create_test_users_locations():
@@ -21,20 +19,16 @@ def create_test_users_locations():
             slug='location-private-2',
             name='location-private-2',
             visible=False),
-
-        'user-1': User.objects.create(
-            username='user-1'),
-
-        'user-collector': User.objects.create(
-            username='user-collector'),
     }
 
-    user_1_profile = test_objects['user-1'].user_profile
-    user_1_profile.available_locations.add(
-        test_objects['location-private-1'])
-    user_1_profile.save()
+    test_objects['user-1'] = create_user(
+        'user-1',
+        available_locations=[test_objects['location-private-1']]
+    )
 
-    user_collector_profile = test_objects['user-collector'].user_profile
-    user_collector_profile.is_internal_collector = True
-    user_collector_profile.save()
+    test_objects['user-collector'] = create_user(
+        'user-collector',
+        is_internal_collector=True
+    )
+
     return test_objects
