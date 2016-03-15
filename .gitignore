@@ -1,6 +1,15 @@
+# python 
 *.pyc
-.*.swp
+*.pyo
 
+# py.test
+.cache
+
+# vim
+.*.sw*
+
+
+# project specific
 api/static_collected/*
 
 log/*.log*
