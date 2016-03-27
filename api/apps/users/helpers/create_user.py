@@ -19,3 +19,9 @@ def create_user(username, *args, **kwargs):
 
     Token.objects.create(user=user)  # Create an auth token for the user
     return user
+
+
+def get_or_create_user(username, *args, **kwargs):
+    if User.objects.filter(username=username).exists():
+        return User.objects.get(username=username)
+    return create_user(username, *args, **kwargs)

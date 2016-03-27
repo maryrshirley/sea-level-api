@@ -6,27 +6,23 @@ from api.libs.user_permissions.tests.create_test_users_locations import (
 
 from api.apps.tide_gauges.models import TideGauge
 
-TIDE_GAUGE = None
-TEST_USERS_LOCATIONS = None
-
-
-def setUpModule():
-    global TIDE_GAUGE, TEST_USERS_LOCATIONS
-    TIDE_GAUGE = TideGauge.objects.create(
-        slug='tide-gauge-1', comment='Tide Gauge 1')
-
-    TEST_USERS_LOCATIONS = create_test_users_locations()
-
-
-def tearDownModule():
-    global TIDE_GAUGE, TEST_USERS_LOCATIONS
-    TIDE_GAUGE.delete()
-
-    for obj in TEST_USERS_LOCATIONS.values():
-        obj.delete()
-
 
 class TestRawMeasurementsPermissions(APITestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.tide_gauage = TideGauge.objects.create(
+            slug='tide-gauge-1', comment='Tide Gauge 1')
+
+        cls.test_users_locations = create_test_users_locations()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.tide_gauage.delete()
+
+        for obj in cls.test_users_locations.values():
+            obj.delete()
+
     READ_URL = (
         '/1/tide-gauges/raw-measurements/tide-gauge-1/'
         '?start=2014-11-30T00:00:00Z&end=2014-11-30T00:00:00Z'
@@ -36,7 +32,7 @@ class TestRawMeasurementsPermissions(APITestCase):
 
     def assert_status(self, expected_status, method, user):
         if user is not None:
-            self.client.force_authenticate(TEST_USERS_LOCATIONS[user])
+            self.client.force_authenticate(self.test_users_locations[user])
 
         if method == 'GET':
             response = self.client.get(self.READ_URL)
