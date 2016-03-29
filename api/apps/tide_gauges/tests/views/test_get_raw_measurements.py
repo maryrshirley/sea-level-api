@@ -1,3 +1,5 @@
+import copy
+
 from dateutil.parser import parse as parse_dt
 
 from nose.tools import assert_equal, assert_in, assert_is_instance
@@ -7,7 +9,7 @@ from rest_framework.test import APITestCase
 from api.libs.test_utils import (assert_json_response, decode_json,
                                  DatetimeParameterTestsMixin)
 from api.apps.tide_gauges.models import RawMeasurement, TideGauge
-from api.apps.users.helpers import create_user
+from api.apps.users.helpers import get_or_create_user
 
 
 BASE_PATH = '/1/tide-gauges/raw-measurements/'
@@ -37,49 +39,56 @@ MEASUREMENTS = [
     },
 ]
 
-COLLECTOR_USER = None
+
+class CollectorAPITestCase(APITestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        super(CollectorAPITestCase, cls).setUpClass()
+        # https://docs.python.org
+        # /3/library/unittest.html#setupmodule-and-teardownmodule
+
+        cls.gladstone1, c = TideGauge.objects.get_or_create(slug='gladstone-1')
+        cls.gladstone2, c = TideGauge.objects.get_or_create(slug='gladstone-2')
+
+        cls.collector_user = get_or_create_user('user-collector',
+                                                is_internal_collector=True)
+
+        for m in copy.deepcopy(MEASUREMENTS):
+            tide_gauge = TideGauge.objects.get(slug=m.pop('tide_gauge__slug'))
+            m['tide_gauge'] = tide_gauge
+
+            RawMeasurement.objects.get_or_create(**m)
+
+    @classmethod
+    def tearDownClass(cls):
+        RawMeasurement.objects.all().delete()
+        cls.collector_user.delete()
+
+        cls.gladstone1.delete()
+        cls.gladstone2.delete()
+        super(CollectorAPITestCase, cls).tearDownClass()
 
 
-def setUpModule():
-    # https://docs.python.org
-    # /3/library/unittest.html#setupmodule-and-teardownmodule
-
-    TideGauge.objects.create(slug='gladstone-1')
-    TideGauge.objects.create(slug='gladstone-2')
-
-    global COLLECTOR_USER
-    COLLECTOR_USER = create_user('user-collector', is_internal_collector=True)
-
-    for m in MEASUREMENTS:
-        tide_gauge = TideGauge.objects.get(slug=m.pop('tide_gauge__slug'))
-        m['tide_gauge'] = tide_gauge
-
-        RawMeasurement.objects.create(**m)
-
-
-def tearDownModule():
-    TideGauge.objects.all().delete()
-    RawMeasurement.objects.all().delete()
-    COLLECTOR_USER.delete()
-
-
-class TestStartParameterValidation(APITestCase, DatetimeParameterTestsMixin):
+class TestStartParameterValidation(CollectorAPITestCase,
+                                   DatetimeParameterTestsMixin):
     def setUp(self):
-        self.client.force_authenticate(COLLECTOR_USER)
+        self.client.force_authenticate(self.collector_user)
 
     TEST_PATH = PATH + '?start={test_datetime}&end=2014-01-01T00:00:00Z'
 
 
-class TestEndParameterValidation(APITestCase, DatetimeParameterTestsMixin):
+class TestEndParameterValidation(CollectorAPITestCase,
+                                 DatetimeParameterTestsMixin):
     def setUp(self):
-        self.client.force_authenticate(COLLECTOR_USER)
+        self.client.force_authenticate(self.collector_user)
 
     TEST_PATH = PATH + '?start=2014-01-01T00:00:00Z&end={test_datetime}'
 
 
-class TestErrorHandling(APITestCase):
+class TestErrorHandling(CollectorAPITestCase):
     def setUp(self):
-        self.client.force_authenticate(COLLECTOR_USER)
+        self.client.force_authenticate(self.collector_user)
 
     def test_that_no_gauge_in_url_gives_an_http_404_with_json(self):
         expected = {'detail': 'No tide gauge specified in URL.'}
@@ -112,10 +121,10 @@ class TestErrorHandling(APITestCase):
         assert_json_response(self.client.get(path), 400, expected)
 
 
-class TestResultStructure(APITestCase):
+class TestResultStructure(CollectorAPITestCase):
 
     def setUp(self):
-        self.client.force_authenticate(COLLECTOR_USER)
+        self.client.force_authenticate(self.collector_user)
         path = PATH + '?start=2014-06-10T10:00:00Z&end=2014-06-10T10:01:00Z'
         self.data = decode_json(self.client.get(path).content)
 
@@ -138,9 +147,9 @@ class TestResultStructure(APITestCase):
             float)
 
 
-class TestLocationFiltering(APITestCase):
+class TestLocationFiltering(CollectorAPITestCase):
     def setUp(self):
-        self.client.force_authenticate(COLLECTOR_USER)
+        self.client.force_authenticate(self.collector_user)
 
     def test_that_measurements_can_be_retrieved_for_gauge_1(self):
         path = (BASE_PATH + 'gladstone-1/'
@@ -165,9 +174,9 @@ class TestLocationFiltering(APITestCase):
             data['raw_measurements'])
 
 
-class TestStartEndParameterFiltering(APITestCase):
+class TestStartEndParameterFiltering(CollectorAPITestCase):
     def setUp(self):
-        self.client.force_authenticate(COLLECTOR_USER)
+        self.client.force_authenticate(self.collector_user)
 
     @staticmethod
     def _make_path(start_hour, start_min, end_hour, end_min):
