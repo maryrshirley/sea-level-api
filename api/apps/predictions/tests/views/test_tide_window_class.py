@@ -33,10 +33,12 @@ class TestTideWindow(TestCase):
         cls.liv_time_window = liv_time_window
 
         south_time_window = TideWindow()
-        south_time_window.start_prediction, south_time_window.end_prediction = (
+        start_prediction, end_prediction = (
             create_tide_prediction(cls.southampton, TIME_START, 1.0, False),
             create_tide_prediction(cls.southampton, TIME_HW, 5.0, False)
         )
+        south_time_window.start_prediction = start_prediction
+        south_time_window.end_prediction = end_prediction
         south_time_window.high_tide_predictions = [
             create_tide_prediction(cls.southampton, TIME_HW, 5.0, False)
         ]
