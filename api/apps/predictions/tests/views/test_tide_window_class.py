@@ -22,23 +22,25 @@ class TestTideWindow(TestCase):
         cls.liverpool = Location.objects.create(slug='liverpool')
         cls.southampton = Location.objects.create(slug='southampton')
 
-        cls.liv_time_window = TideWindow()
-        cls.liv_time_window.start_prediction, cls.liv_time_window.end_prediction = (
+        liv_time_window = TideWindow()
+        liv_time_window.start_prediction, liv_time_window.end_prediction = (
             create_tide_prediction(cls.liverpool, TIME_START, 1.0, False),
             create_tide_prediction(cls.liverpool, TIME_END, 1.0, False)
         )
-        cls.liv_time_window.high_tide_predictions = [
+        liv_time_window.high_tide_predictions = [
             create_tide_prediction(cls.liverpool, TIME_HW, 5.0, False)
         ]
+        cls.liv_time_window = liv_time_window
 
-        cls.south_time_window = TideWindow()
-        cls.south_time_window.start_prediction, cls.south_time_window.end_prediction = (
+        south_time_window = TideWindow()
+        south_time_window.start_prediction, south_time_window.end_prediction = (
             create_tide_prediction(cls.southampton, TIME_START, 1.0, False),
             create_tide_prediction(cls.southampton, TIME_HW, 5.0, False)
         )
-        cls.south_time_window.high_tide_predictions = [
+        south_time_window.high_tide_predictions = [
             create_tide_prediction(cls.southampton, TIME_HW, 5.0, False)
         ]
+        cls.south_time_window = south_time_window
 
     @classmethod
     def tearDownClass(cls):

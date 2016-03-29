@@ -48,10 +48,11 @@ class CollectorAPITestCase(APITestCase):
         # https://docs.python.org
         # /3/library/unittest.html#setupmodule-and-teardownmodule
 
-        cls.gladstone1, created = TideGauge.objects.get_or_create(slug='gladstone-1')
-        cls.gladstone2, created = TideGauge.objects.get_or_create(slug='gladstone-2')
+        cls.gladstone1, c = TideGauge.objects.get_or_create(slug='gladstone-1')
+        cls.gladstone2, c = TideGauge.objects.get_or_create(slug='gladstone-2')
 
-        cls.collector_user = get_or_create_user('user-collector', is_internal_collector=True)
+        cls.collector_user = get_or_create_user('user-collector',
+                                                is_internal_collector=True)
 
         for m in copy.deepcopy(MEASUREMENTS):
             tide_gauge = TideGauge.objects.get(slug=m.pop('tide_gauge__slug'))
@@ -69,14 +70,16 @@ class CollectorAPITestCase(APITestCase):
         super(CollectorAPITestCase, cls).tearDownClass()
 
 
-class TestStartParameterValidation(CollectorAPITestCase, DatetimeParameterTestsMixin):
+class TestStartParameterValidation(CollectorAPITestCase,
+                                   DatetimeParameterTestsMixin):
     def setUp(self):
         self.client.force_authenticate(self.collector_user)
 
     TEST_PATH = PATH + '?start={test_datetime}&end=2014-01-01T00:00:00Z'
 
 
-class TestEndParameterValidation(CollectorAPITestCase, DatetimeParameterTestsMixin):
+class TestEndParameterValidation(CollectorAPITestCase,
+                                 DatetimeParameterTestsMixin):
     def setUp(self):
         self.client.force_authenticate(self.collector_user)
 
