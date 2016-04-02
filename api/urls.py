@@ -16,6 +16,7 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
 
     url(r'^1/locations/', include('api.apps.locations.urls')),
+    url(r'^1/observations/', include('api.apps.observations.urls')),
     url(r'^1/predictions/', include('api.apps.predictions.urls')),
 
     url(r'^1/sea-levels/', include('api.apps.sea_levels.urls')),
