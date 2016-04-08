@@ -111,3 +111,41 @@ class PredictionWeatherTest(FunctionalTest):
         # The user data matches the original payload
         for index, elem in enumerate(data):
             self.assertPayloadMatchesData(data[index], payload[index])
+
+    def test_will_update_forecast(self):
+        # A user has forecast data
+        payload = [
+            {
+                'precipitation': 10,
+                'pressure': 11,
+                'wind_gust': 12,
+                'wind_speed': 13,
+                'wind_direction': 'S',
+                'wind_degrees': 15,
+                'temperature': 16,
+                'supplier': 'met_office',
+                'valid_from': format_datetime(delta()),
+                'valid_to': format_datetime(delta(hours=2)),
+            }
+        ]
+
+        base_url = self.live_server_url + self.endpoint
+
+        # The user submits the data to the endpoint
+        self.assertSubmitPayload(base_url, payload)
+
+        # The user submits the data to the endpoint again
+        payload[0]['pressure'] = 12
+        self.assertSubmitPayload(base_url, payload, 200)
+
+        # The user queries for the latest record
+        base_url = self.live_server_url + self.endpoint
+        latest_url = "{0}/now".format(base_url)
+        data = self.assertRecordJSONExists(latest_url)
+
+        # A single record exists
+        self.assertEqual(1, len(data))
+
+        # The user data matches the second payload
+        for index, elem in enumerate(data):
+            self.assertPayloadMatchesData(data[index], payload[index])

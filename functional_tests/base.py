@@ -1,3 +1,5 @@
+import json
+
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
 import requests
@@ -35,12 +37,16 @@ class FunctionalTest(StaticLiveServerTestCase):
         value = json[0][key]
         self.assertEqual(value, payload[0][key])
 
-    def assertSubmitPayload(self, url, payload):
+    def assertSubmitPayload(self, url, payload, status_code=201):
         response = requests.post(url, json=payload,
                                  headers=self.authentication_headers)
 
         # The user receives a valid CREATE response
-        self.assertEqual(201, response.status_code)
+        self.assertEqual(status_code, response.status_code)
+
+        # The user receives a confirmation payload
+        data = json.loads(response.content.decode('utf-8'))
+        self.assertEqual(len(payload), len(data))
 
     def assertRecordJSONExists(self, url):
         response = requests.get(url, headers=self.authentication_headers)

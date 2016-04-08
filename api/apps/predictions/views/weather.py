@@ -1,9 +1,12 @@
+import copy
+
 from django.core.exceptions import ImproperlyConfigured
 from django.http import Http404
 
 from rest_framework import serializers
 from rest_framework import mixins, viewsets
 from rest_framework.generics import GenericAPIView
+from rest_framework.response import Response
 
 from ..models import WeatherPrediction
 
@@ -77,8 +80,39 @@ class WeatherRange(Weather):
 
 
 class WeatherListCreate(WeatherRange, mixins.CreateModelMixin):
+
+    def existing_object(self, slug, record):
+        model = self.get_serializer().Meta.model
+        return model.objects.existing_object(slug, record['valid_from'],
+                                             record['valid_to'])
+
     def post(self, request, *args, **kwargs):
-        return self.create(request, *args, **kwargs)
+        update_data = []
+
+        data = [request.data] if type(request.data) is dict else request.data
+        data = copy.copy(data)
+
+        for record in data:
+            instance = self.existing_object(kwargs['location_slug'],
+                                            record)
+            if instance is not None:
+                update_data.append(self.update_object(instance, record))
+                request.data.remove(record)
+
+        create_response = self.create(request, *args, **kwargs)
+        if not update_data:
+            return create_response
+
+        return Response(create_response.data + update_data)
+
+    def update_object(self, instance, data, partial=False):
+        serializer = self.get_serializer(instance, data=data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return serializer.data
+
+    def perform_update(self, serializer):
+        serializer.save()
 
     def perform_create(self, serializer):
         try:

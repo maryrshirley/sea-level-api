@@ -1,6 +1,7 @@
 import copy
 import json
 
+from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext as _
 
 from nose.tools import assert_equal
@@ -195,18 +196,18 @@ class TestWeatherView(APITestCase):
         assert_equal(1 if _valid else 0, len(data))
         observation.delete()
 
-    def test_that_http_get_range_prediction(self):
-        prediction = self.create_observation_now()
+    def test_that_http_get_range_observation(self):
+        observation = self.create_observation_now()
         data = {'start': format_datetime(delta()),
                 'end': format_datetime(delta())}
         response = self.client.get(_URL, data)
         assert_equal(200, response.status_code)
 
-        prediction.delete()
+        observation.delete()
 
     @parameterized.expand(load_recent_range_test_cases)
-    def test_that_http_get_range_prediction_edges(self, _start, _end, _valid):
-        prediction = self.create_observation(datetime=delta())
+    def test_that_http_get_range_observation_edges(self, _start, _end, _valid):
+        observation = self.create_observation(datetime=delta())
         payload = {'start': format_datetime(_start),
                    'end': format_datetime(_end)}
         response = self.client.get(_URL, payload)
@@ -215,42 +216,52 @@ class TestWeatherView(APITestCase):
         data = json.loads(response.content.decode('utf-8'))
 
         assert_equal(1 if _valid else 0, len(data))
-        prediction.delete()
+        observation.delete()
 
     def test_that_http_get_range_future_invalid(self):
-        prediction = self.create_observation_now()
+        observation = self.create_observation_now()
         payload = {'start': format_datetime(delta()),
                    'end': format_datetime(delta(minutes=1))}
         response = self.client.get(_URL, payload)
-        prediction.delete()
+        observation.delete()
 
         assert_equal(400, response.status_code)
         assert_equal(_(u'End range cannot be in the future'),
                      json.loads(response.content.decode('utf-8'))['detail'])
 
     def test_that_http_get_no_range_returns_bad_request(self):
-        prediction = self.create_observation_now()
+        observation = self.create_observation_now()
         data = {}
         response = self.client.get(_URL, data)
         assert_equal(400, response.status_code)
 
-        prediction.delete()
+        observation.delete()
 
     def test_that_http_get_no_start_returns_bad_request(self):
-        prediction = self.create_observation_now()
+        observation = self.create_observation_now()
         data = {'end': delta(hours=1)}
         response = self.client.get(_URL, data)
         assert_equal(400, response.status_code)
 
-        prediction.delete()
+        observation.delete()
 
     def test_that_http_get_no_end_returns_bad_request(self):
-        prediction = self.create_observation_now()
+        observation = self.create_observation_now()
         data = {'start': delta()}
         response = self.client.get(_URL, data)
         assert_equal(400, response.status_code)
 
-        prediction.delete()
+        observation.delete()
+
+    def test_that_duplicate_records_raise(self):
+        observation = self.create_observation()
+        with self.assertRaises(ValidationError) as validationError:
+            self.create_observation()
+        error = u'Weather observation with this Location and Minute'\
+            ' already exists.'
+        errors = validationError.exception.message_dict['__all__']
+        self.assertEquals(error, errors[0])
+        observation.delete()
 
 
 class TestWeatherTokenAuthentication(ViewAuthenticationTest):

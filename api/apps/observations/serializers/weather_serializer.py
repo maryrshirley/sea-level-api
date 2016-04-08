@@ -12,7 +12,10 @@ class WeatherObservationSerializer(serializers.ModelSerializer):
         exclude = ('location', 'minute', 'id')
 
     def update(self, instance, validated_data):
+        super(WeatherObservationSerializer, self)\
+            .update(instance, validated_data)
         assert instance.minute.datetime == validated_data['datetime']
+        return instance
 
 
 class WeatherPrecipitationObservationSerializer(WeatherObservationSerializer):
