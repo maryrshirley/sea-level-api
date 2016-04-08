@@ -1,7 +1,10 @@
 import datetime
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.db.models import Q
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
 from django.utils.encoding import python_2_unicode_compatible
 
 from api.apps.locations.models import Location
@@ -53,6 +56,15 @@ class WeatherPredictionManager(models.Manager):
                    .exclude(minute_from__datetime__gt=end) \
                    .exclude(minute_to__datetime__lt=start)
 
+    def existing_object(self, slug, valid_from, valid_to):
+        try:
+            return self.filter(location__slug=slug) \
+                       .filter(Q(minute_from__datetime=valid_from)
+                               | Q(minute_to__datetime=valid_to)).get()
+
+        except ObjectDoesNotExist:
+            return None
+
 
 @python_2_unicode_compatible
 class WeatherPrediction(models.Model):
@@ -70,6 +82,10 @@ class WeatherPrediction(models.Model):
     minute_from = models.ForeignKey(Minute, related_name='weather-minute-from')
     minute_to = models.ForeignKey(Minute, related_name='weather-minute-to')
     objects = WeatherPredictionManager()
+
+    class Meta:
+        unique_together = (('location', 'minute_from'),
+                           ('location', 'minute_to'))
 
     def __str__(self):
         return "{}".format(self.location)
@@ -93,3 +109,8 @@ class WeatherPrediction(models.Model):
         if type(value) is str:
             value = parse_datetime(value)
         self.minute_to, created = Minute.objects.get_or_create(datetime=value)
+
+
+@receiver(pre_save, sender=WeatherPrediction)
+def run_unique_validator(sender, instance, *args, **kwargs):
+    instance.full_clean()

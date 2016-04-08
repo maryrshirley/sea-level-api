@@ -54,3 +54,34 @@ class ObservationWeatherTest(FunctionalTest):
             # The JSON response contains the observation data
             self.assertIn(endpoint, data[0])
             self.assertEqual(payload[0][endpoint], data[0][endpoint])
+
+    def test_will_update_observation(self):
+        # A user has observation data
+        payload = [{
+            'precipitation': 1,
+            'pressure': 2,
+            'wind_gust': 3,
+            'wind_speed': 4,
+            'wind_direction': 'SSW',
+            'wind_degrees': 1,
+            'temperature': 6,
+            'datetime': format_datetime(delta()),
+        }]
+
+        # The user submits the data to the endpoint
+        self.assertSubmitPayload(self.live_server_url + self.endpoint, payload)
+
+        # The user submits modified data to the endpoint
+        payload[0]['wind_gust'] = 5
+        self.assertSubmitPayload(self.live_server_url + self.endpoint, payload, 200)
+
+        # The user queries for the recent record
+        base_url = self.live_server_url + self.endpoint
+        recent_url = "{0}/recent".format(base_url)
+        data = self.assertRecordJSONExists(recent_url)
+
+        # A single record exists
+        self.assertEqual(1, len(data))
+
+        # The user data matches the original payload
+        self.assertPayloadMatchesData(data[0], payload[0])

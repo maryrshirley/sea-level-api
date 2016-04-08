@@ -1,6 +1,9 @@
 import datetime
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
 from django.utils.encoding import python_2_unicode_compatible
 
 from api.apps.locations.models import Location
@@ -48,6 +51,14 @@ class WeatherObservationManager(models.Manager):
     def location_exists(self, slug):
         return self.filter(location__slug=slug).exists()
 
+    def existing_object(self, slug, datetime):
+        try:
+            return self.filter(location__slug=slug,
+                               minute__datetime=datetime).get()
+
+        except ObjectDoesNotExist:
+            return None
+
 
 @python_2_unicode_compatible
 class WeatherObservation(models.Model):
@@ -64,6 +75,9 @@ class WeatherObservation(models.Model):
 
     objects = WeatherObservationManager()
 
+    class Meta:
+        unique_together = ('location', 'minute')
+
     @property
     def datetime(self):
         return self.minute.datetime
@@ -77,3 +91,8 @@ class WeatherObservation(models.Model):
 
     def __str__(self):
         return "{}".format(self.location)
+
+
+@receiver(pre_save, sender=WeatherObservation)
+def run_unique_validator(sender, instance, *args, **kwargs):
+    instance.full_clean()

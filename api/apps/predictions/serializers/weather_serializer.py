@@ -13,8 +13,10 @@ class WeatherSerializer(serializers.ModelSerializer):
         model = WeatherPrediction
 
     def update(self, instance, validated_data):
-        assert instance.minute.valid_from == validated_data['valid_from']
-        assert instance.minute.valid_to == validated_data['valid_to']
+        super(WeatherSerializer, self).update(instance, validated_data)
+        assert instance.minute_from.datetime == validated_data['valid_from']
+        assert instance.minute_to.datetime == validated_data['valid_to']
+        return instance
 
 
 class WeatherPrecipitationSerializer(WeatherSerializer):

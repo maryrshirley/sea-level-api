@@ -1,6 +1,8 @@
 import copy
 import json
 
+from django.core.exceptions import ValidationError
+
 from nose.tools import assert_equal
 from nose_parameterized import parameterized
 
@@ -283,6 +285,41 @@ class TestWeatherView(APITestCase, PostJsonMixin):
         response = self.client.get(_URL, data)
         assert_equal(400, response.status_code)
 
+        prediction.delete()
+
+    def test_that_duplicate_records_raise(self):
+        prediction = self.create_prediction()
+        with self.assertRaises(ValidationError) as validationError:
+            self.create_prediction()
+        error_base = u'Weather prediction with this Location and Minute {0}'\
+            ' already exists.'
+        error1 = error_base.format('from')
+        error2 = error_base.format('to')
+        errors = validationError.exception.message_dict['__all__']
+        self.assertEquals(error1, errors[0])
+        self.assertEquals(error2, errors[1])
+        prediction.delete()
+
+    def test_that_duplicate_from_raises(self):
+        prediction = self.create_prediction()
+        with self.assertRaises(ValidationError) as validationError:
+            self.create_prediction(valid_to=delta())
+        error_base = u'Weather prediction with this Location and Minute {0}'\
+            ' already exists.'
+        error1 = error_base.format('from')
+        errors = validationError.exception.message_dict['__all__']
+        self.assertEquals(error1, errors[0])
+        prediction.delete()
+
+    def test_that_duplicate_to_raises(self):
+        prediction = self.create_prediction()
+        with self.assertRaises(ValidationError) as validationError:
+            self.create_prediction(valid_from=delta())
+        error_base = u'Weather prediction with this Location and Minute {0}'\
+            ' already exists.'
+        error1 = error_base.format('to')
+        errors = validationError.exception.message_dict['__all__']
+        self.assertEquals(error1, errors[0])
         prediction.delete()
 
 
