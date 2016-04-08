@@ -73,7 +73,8 @@ class ObservationWeatherTest(FunctionalTest):
 
         # The user submits modified data to the endpoint
         payload[0]['wind_gust'] = 5
-        self.assertSubmitPayload(self.live_server_url + self.endpoint, payload, 200)
+        self.assertSubmitPayload(self.live_server_url + self.endpoint, payload,
+                                 200)
 
         # The user queries for the recent record
         base_url = self.live_server_url + self.endpoint
