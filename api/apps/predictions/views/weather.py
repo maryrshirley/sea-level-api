@@ -1,3 +1,5 @@
+import copy
+
 from django.core.exceptions import ImproperlyConfigured
 from django.http import Http404
 
@@ -88,6 +90,7 @@ class WeatherListCreate(WeatherRange, mixins.CreateModelMixin):
         update_data = []
 
         data = [request.data] if type(request.data) is dict else request.data
+        data = copy.copy(data)
 
         for record in data:
             instance = self.existing_object(kwargs['location_slug'],
