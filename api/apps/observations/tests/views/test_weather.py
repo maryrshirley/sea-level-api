@@ -267,6 +267,18 @@ class TestWeatherView(APITestCase):
         self.assertEquals(error, errors[0])
         observation.delete()
 
+    def test_that_existing_objects_order_by_datetime(self):
+        observation1 = self.create_observation(datetime=delta(hours=-4))
+        observation2 = self.create_observation(datetime=delta(hours=-2))
+
+        observations = WeatherObservation.objects.now_minus_24(self.liverpool)
+
+        self.assertEqual(observation2, observations[0])
+        self.assertEqual(observation1, observations[1])
+
+        observation2.delete()
+        observation1.delete()
+
 
 class TestWeatherTokenAuthentication(ViewAuthenticationTest):
 
