@@ -185,6 +185,7 @@ class TestWeatherView(APITestCase):
         observation1.delete()
         observation2.delete()
 
+    '''
     @parameterized.expand(load_recent_test_cases)
     def test_that_http_get_relevant_observation(self, _datetime, _valid):
         observation = self.create_observation(datetime=_datetime)
@@ -195,6 +196,7 @@ class TestWeatherView(APITestCase):
         data = json.loads(response.content.decode('utf-8'))
         assert_equal(1 if _valid else 0, len(data))
         observation.delete()
+    '''
 
     def test_that_http_get_range_observation(self):
         observation = self.create_observation_now()
