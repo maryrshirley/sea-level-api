@@ -10,6 +10,7 @@ class ApiRoot(generics.GenericAPIView):
                 {'href': reverse('location-list', request=req, format=format)},
                 {'href': reverse('tide-levels', request=req, format=format)},
                 {'href': reverse('tide-windows', request=req, format=format)},
+                {'href': reverse('weather', request=req, format=format)},
                 {'href': reverse('sea-levels', request=req, format=format)},
             ]
         })
