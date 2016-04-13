@@ -140,6 +140,58 @@ class PredictionWeatherTest(FunctionalTest):
         for index, elem in enumerate(data):
             self.assertPayloadMatchesData(data[index], payload[index])
 
+    def test_forecast_date_order(self):
+        base_url = self.live_server_url + self.endpoint
+
+        # A user has forecast data
+        payload = [
+            {
+                'precipitation': 10,
+                'pressure': 11,
+                'wind_gust': 12,
+                'wind_speed': 13,
+                'wind_direction': 'S',
+                'wind_degrees': 15,
+                'temperature': 16,
+                'supplier': 'met_office',
+                'valid_from': format_datetime(delta(hours=4)),
+                'valid_to': format_datetime(delta(hours=6)),
+            }
+        ]
+
+        # The user submits the data to the endpoint
+        self.assertSubmitPayload(base_url, payload)
+
+        # A user has previous forecast data
+        payload_2 = [
+            {
+                'precipitation': 20,
+                'pressure': 21,
+                'wind_gust': 22,
+                'wind_speed': 23,
+                'wind_direction': 'S',
+                'wind_degrees': 15,
+                'temperature': 26,
+                'supplier': 'met_office',
+                'valid_from': format_datetime(delta(hours=2)),
+                'valid_to': format_datetime(delta(hours=4)),
+            }
+        ]
+
+        # The user submits the data to the endpoint
+        self.assertSubmitPayload(base_url, payload_2)
+
+        # The user queries for the latest record
+        base_url = self.live_server_url + self.endpoint
+        latest_url = "{0}/now".format(base_url)
+        data = self.assertRecordJSONExists(latest_url)
+
+        # record-0 matches the second payload
+        self.assertPayloadMatchesData(data[0], payload_2[0])
+
+        # record-1 matches the first payload
+        self.assertPayloadMatchesData(data[1], payload[0])
+
     def test_will_update_forecast(self):
         # A user has forecast data
         payload = [

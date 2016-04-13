@@ -322,6 +322,20 @@ class TestWeatherView(APITestCase, PostJsonMixin):
         self.assertEquals(error1, errors[0])
         prediction.delete()
 
+    def test_that_existing_objects_order_by_datetime(self):
+        prediction1 = self.create_prediction(valid_from=delta(hours=4),
+                                             valid_to=delta(hours=6))
+        prediction2 = self.create_prediction(valid_from=delta(hours=2),
+                                             valid_to=delta(hours=4))
+
+        predictions = WeatherPrediction.objects.now_plus_24(self.liverpool)
+
+        self.assertEqual(prediction2, predictions[0])
+        self.assertEqual(prediction1, predictions[1])
+
+        prediction2.delete()
+        prediction1.delete()
+
 
 class TestWeatherTokenAuthentication(APITestCase, PostJsonMixin):
     @classmethod
