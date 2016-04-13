@@ -12,7 +12,7 @@ from .serializers.weather_serializer import (
     WeatherTemperatureSerializer)
 from .views import (TideLevels, TideLevelsNow, TideWindows, TideWindowsNow,
                     SurgeLevels)
-from .views.weather import WeatherListCreate, WeatherRange, WeatherNow
+from .views.weather import WeatherPredictions, WeatherRange, WeatherNow
 
 SLUG_RE = settings.SLUG_REGEX
 
@@ -43,12 +43,12 @@ urlpatterns = patterns(
         name='tide-windows'),
 
     url(r'^weather/$',
-        WeatherListCreate.as_view(),
+        WeatherPredictions.as_view(),
         {'serializer': WeatherSerializer},
         name='weather'),
 
     url(r'^weather/(?P<location_slug>' + SLUG_RE + ')$',
-        WeatherListCreate.as_view(),
+        WeatherPredictions.as_view(),
         {'serializer': WeatherSerializer},
         name='weather'),
     url(r'^weather/(?P<location_slug>' + SLUG_RE + ')/now$',

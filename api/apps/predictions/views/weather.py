@@ -79,7 +79,7 @@ class WeatherRange(Weather):
         return queryset
 
 
-class WeatherListCreate(WeatherRange, mixins.CreateModelMixin):
+class WeatherPredictions(WeatherRange, mixins.CreateModelMixin):
 
     def existing_object(self, slug, record):
         model = self.get_serializer().Meta.model

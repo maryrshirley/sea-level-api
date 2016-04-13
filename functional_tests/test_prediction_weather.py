@@ -1,7 +1,35 @@
 from .base import FunctionalTest
 
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+
+from selenium import webdriver
+
 from api.libs.test_utils.datetime_utils import delta
 from api.libs.view_helpers import format_datetime
+
+DEFAULT_WAIT = 5
+
+
+class PredictionWeatherBrowser(StaticLiveServerTestCase):
+
+    endpoint = '/1/predictions/weather/'
+
+    def setUp(self):
+        self.browser = webdriver.Firefox()
+        self.browser.implicitly_wait(DEFAULT_WAIT)
+
+    def tearDown(self):
+        self.browser.quit()
+
+    def test_has_documentation(self):
+        # User visits the weather api
+        self.browser.get(self.live_server_url + self.endpoint)
+
+        # User notices the page-header
+        page_header = self.browser.find_element_by_class_name('page-header')
+
+        # The page header matches the expected value
+        self.assertEquals("Weather Predictions", page_header.text)
 
 
 class PredictionWeatherTest(FunctionalTest):
