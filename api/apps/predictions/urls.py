@@ -1,4 +1,6 @@
-from django.conf.urls import patterns, url
+from collections import namedtuple
+
+from django.conf.urls import url
 from django.conf import settings
 
 from .serializers.weather_serializer import (
@@ -16,9 +18,19 @@ from .views.weather import WeatherPredictions, WeatherRange, WeatherNow
 
 SLUG_RE = settings.SLUG_REGEX
 
-urlpatterns = patterns(
-    '',
+EndPoint = namedtuple('EndPoint', 'endpoint, serializer')
 
+endpoints = (
+    EndPoint('precipitation', WeatherPrecipitationSerializer),
+    EndPoint('pressure', WeatherPressureSerializer),
+    EndPoint('wind-gust', WeatherWindGustSerializer),
+    EndPoint('wind-speed', WeatherWindSpeedSerializer),
+    EndPoint('wind-direction', WeatherWindDirectionSerializer),
+    EndPoint('wind-degrees', WeatherWindDegreesSerializer),
+    EndPoint('temperature', WeatherTemperatureSerializer)
+)
+
+urlpatterns = [
     url(r'^tide-levels/$', TideLevels.as_view(), name='tide-levels'),
     url(r'^tide-windows/$', TideWindows.as_view(), name='tide-windows'),
 
@@ -51,67 +63,29 @@ urlpatterns = patterns(
         WeatherPredictions.as_view(),
         {'serializer': WeatherSerializer},
         name='weather'),
+
     url(r'^weather/(?P<location_slug>' + SLUG_RE + ')/now$',
         WeatherNow.as_view(),
         {'serializer': WeatherSerializer},
         name='weather-now'),
-    url(r'^weather/(?P<location_slug>' + SLUG_RE + ')/precipitation$',
-        WeatherRange.as_view(),
-        {'serializer': WeatherPrecipitationSerializer},
-        name='weather-precipitation'),
-    url(r'^weather/(?P<location_slug>' + SLUG_RE + ')/precipitation/now$',
-        WeatherNow.as_view(),
-        {'serializer': WeatherPrecipitationSerializer},
-        name='weather-precipitation'),
-    url(r'^weather/(?P<location_slug>' + SLUG_RE + ')/pressure$',
-        WeatherRange.as_view(),
-        {'serializer': WeatherPressureSerializer},
-        name='weather-pressure'),
-    url(r'^weather/(?P<location_slug>' + SLUG_RE + ')/pressure/now$',
-        WeatherNow.as_view(),
-        {'serializer': WeatherPressureSerializer},
-        name='weather-pressure'),
-    url(r'^weather/(?P<location_slug>' + SLUG_RE + ')/wind-gust$',
-        WeatherRange.as_view(),
-        {'serializer': WeatherWindGustSerializer},
-        name='weather-wind-gust'),
-    url(r'^weather/(?P<location_slug>' + SLUG_RE + ')/wind-gust/now$',
-        WeatherNow.as_view(),
-        {'serializer': WeatherWindGustSerializer},
-        name='weather-wind-gust'),
-    url(r'^weather/(?P<location_slug>' + SLUG_RE + ')/wind-speed$',
-        WeatherRange.as_view(),
-        {'serializer': WeatherWindSpeedSerializer},
-        name='weather-wind-speed'),
-    url(r'^weather/(?P<location_slug>' + SLUG_RE + ')/wind-speed/now$',
-        WeatherNow.as_view(),
-        {'serializer': WeatherWindSpeedSerializer},
-        name='weather-wind-speed'),
-    url(r'^weather/(?P<location_slug>' + SLUG_RE + ')/wind-direction$',
-        WeatherRange.as_view(),
-        {'serializer': WeatherWindDirectionSerializer},
-        name='weather-wind-direction'),
-    url(r'^weather/(?P<location_slug>' + SLUG_RE + ')/wind-direction/now$',
-        WeatherNow.as_view(),
-        {'serializer': WeatherWindDirectionSerializer},
-        name='weather-wind-direction'),
-    url(r'^weather/(?P<location_slug>' + SLUG_RE + ')/wind-degrees$',
-        WeatherRange.as_view(),
-        {'serializer': WeatherWindDegreesSerializer},
-        name='weather-wind-degrees'),
-    url(r'^weather/(?P<location_slug>' + SLUG_RE + ')/wind-degrees/now$',
-        WeatherNow.as_view(),
-        {'serializer': WeatherWindDegreesSerializer},
-        name='weather-wind-degrees'),
-    url(r'^weather/(?P<location_slug>' + SLUG_RE + ')/temperature$',
-        WeatherRange.as_view(),
-        {'serializer': WeatherTemperatureSerializer},
-        name='weather-temperature'),
-    url(r'^weather/(?P<location_slug>' + SLUG_RE + ')/temperature/now$',
-        WeatherNow.as_view(),
-        {'serializer': WeatherTemperatureSerializer},
-        name='weather-temperature'),
-)
+]
+
+
+for endpoint in endpoints:
+    urlpatterns.append(
+        url(r'^weather/(?P<location_slug>{0})/{1}$'
+            .format(SLUG_RE, endpoint.endpoint),
+            WeatherRange.as_view(),
+            {'serializer': endpoint.serializer},
+            name='weather-{0}'.format(endpoint)),
+    )
+    urlpatterns.append(
+        url(r'^weather/(?P<location_slug>{0})/{1}/now$'
+            .format(SLUG_RE, endpoint.endpoint),
+            WeatherNow.as_view(),
+            {'serializer': endpoint.serializer},
+            name='weather-{0}'.format(endpoint)),
+    )
 
 '''
     url(r'^weather/(?P<location_slug>' + SLUG_REGEX + ')/precipitation$',
