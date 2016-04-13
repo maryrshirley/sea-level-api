@@ -1,5 +1,4 @@
 import requests
-import json
 
 from .base import FunctionalTest
 
@@ -20,7 +19,7 @@ class RootTest(FunctionalTest):
         self.assertEqual(200, response.status_code)
 
         # JSON data is returned from the API
-        data = json.loads(response.content)
+        data = response.json()
 
         # The JSON data contains a links element
         links = [link['href'][len(root_url):]
