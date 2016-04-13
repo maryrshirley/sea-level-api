@@ -32,6 +32,7 @@ class TestAPIRootView(TestCase):
             '/1/locations/',
             '/1/predictions/tide-levels/',
             '/1/predictions/tide-windows/',
+            '/1/predictions/weather/',
             '/1/sea-levels/',
         ]
 
