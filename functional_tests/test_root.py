@@ -37,6 +37,7 @@ class RootTest(FunctionalTest):
             # The response is JSON
             data = response.json()
 
+            # Chec the response output
             if response.status_code in [400, 404]:
                 self.assertIn('detail', data.keys())
             else:
