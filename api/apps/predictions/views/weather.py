@@ -37,7 +37,7 @@ class Weather(mixins.ListModelMixin, GenericAPIView):
     lookup_url_kwarg = "location_slug"
 
     def get_location(self):
-        slug = self.kwargs['location_slug']
+        slug = self.kwargs.get('location_slug', None)
         try:
             return Location.objects.get(slug=slug)
         except Location.DoesNotExist:
@@ -93,7 +93,7 @@ class WeatherListCreate(WeatherRange, mixins.CreateModelMixin):
         data = copy.copy(data)
 
         for record in data:
-            instance = self.existing_object(kwargs['location_slug'],
+            instance = self.existing_object(kwargs.get('location_slug', None),
                                             record)
             if instance is not None:
                 update_data.append(self.update_object(instance, record))
@@ -116,7 +116,8 @@ class WeatherListCreate(WeatherRange, mixins.CreateModelMixin):
 
     def perform_create(self, serializer):
         try:
-            location = Location.objects.get(slug=self.kwargs['location_slug'])
+            location = Location.objects.get(
+                slug=self.kwargs.get('location_slug', None))
         except Location.DoesNotExist:
             error = "Could not find location {}" \
                 .format(self.kwargs['location_slug'])

@@ -42,6 +42,11 @@ urlpatterns = patterns(
         TideWindowsNow.as_view(),
         name='tide-windows'),
 
+    url(r'^weather/$',
+        WeatherListCreate.as_view(),
+        {'serializer': WeatherSerializer},
+        name='weather'),
+
     url(r'^weather/(?P<location_slug>' + SLUG_RE + ')$',
         WeatherListCreate.as_view(),
         {'serializer': WeatherSerializer},
