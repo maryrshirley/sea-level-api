@@ -39,7 +39,8 @@ class WeatherObservationManager(models.Manager):
         now_minus_24 = now - datetime.timedelta(hours=24)
 
         return self.filter(location=location,
-                           minute__datetime__range=(now_minus_24, now))
+                           minute__datetime__range=(now_minus_24, now)) \
+                   .order_by('-minute')
 
     def date_range(self, location, time_range):
         start = time_range.start
