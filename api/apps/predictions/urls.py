@@ -57,17 +57,17 @@ urlpatterns = [
     url(r'^weather/$',
         WeatherPredictions.as_view(),
         {'serializer': WeatherSerializer},
-        name='weather'),
+        name='prediction-weather'),
 
     url(r'^weather/(?P<location_slug>' + SLUG_RE + ')$',
         WeatherPredictions.as_view(),
         {'serializer': WeatherSerializer},
-        name='weather'),
+        name='prediction-weather'),
 
     url(r'^weather/(?P<location_slug>' + SLUG_RE + ')/now$',
         WeatherNow.as_view(),
         {'serializer': WeatherSerializer},
-        name='weather-now'),
+        name='prediction-weather-now'),
 ]
 
 
@@ -77,36 +77,36 @@ for endpoint in endpoints:
             .format(SLUG_RE, endpoint.endpoint),
             WeatherRange.as_view(),
             {'serializer': endpoint.serializer},
-            name='weather-{0}'.format(endpoint)),
+            name='prediction-weather-{0}'.format(endpoint)),
     )
     urlpatterns.append(
         url(r'^weather/(?P<location_slug>{0})/{1}/now$'
             .format(SLUG_RE, endpoint.endpoint),
             WeatherNow.as_view(),
             {'serializer': endpoint.serializer},
-            name='weather-{0}'.format(endpoint)),
+            name='prediction-weather-{0}'.format(endpoint)),
     )
 
 '''
     url(r'^weather/(?P<location_slug>' + SLUG_REGEX + ')/precipitation$',
         WeatherPrecipitation.as_view({'get': 'retrieve'}),
-        name='weather-precipitation'),
+        name='prediction-weather-precipitation'),
     url(r'^weather/(?P<location_slug>' + SLUG_REGEX + ')/pressure$',
         WeatherPressure.as_view({'get': 'retrieve'}),
-        name='weather-pressure'),
+        name='prediction-weather-pressure'),
     url(r'^weather/(?P<location_slug>' + SLUG_REGEX + ')/wind-gust$',
         WeatherWindGust.as_view({'get': 'retrieve'}),
-        name='weather-wind-gust'),
+        name='prediction-weather-wind-gust'),
     url(r'^weather/(?P<location_slug>' + SLUG_REGEX + ')/wind-speed$',
         WeatherWindSpeed.as_view({'get': 'retrieve'}),
-        name='weather-wind-speed'),
+        name='prediction-weather-wind-speed'),
     url(r'^weather/(?P<location_slug>' + SLUG_REGEX + ')/wind-direction$',
         WeatherWindDirection.as_view({'get': 'retrieve'}),
-        name='weather-wind-direction'),
+        name='prediction-weather-wind-direction'),
     url(r'^weather/(?P<location_slug>' + SLUG_REGEX + ')/wind-degrees$',
         WeatherWindDegrees.as_view({'get': 'retrieve'}),
-        name='weather-wind-degrees'),
+        name='prediction-weather-wind-degrees'),
     url(r'^weather/(?P<location_slug>' + SLUG_REGEX + ')/temperature$',
         WeatherTemperature.as_view({'get': 'retrieve'}),
-        name='weather-temperature'),
+        name='prediction-weather-temperature'),
 '''
