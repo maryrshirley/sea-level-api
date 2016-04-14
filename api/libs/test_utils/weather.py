@@ -19,6 +19,19 @@ PREDICTION_WEATHER = {
     'valid_to': '2016-03-26T18:00:00Z',
 }
 
+PREDICTION_WEATHER_B = {
+    'precipitation': 20,
+    'pressure': 21,
+    'wind_gust': 22,
+    'wind_direction': u'S',
+    'wind_degrees': 24,
+    'wind_speed': 25,
+    'temperature': 26,
+    'supplier': u'met_office',
+    'valid_from': '2016-03-27T12:00:00Z',
+    'valid_to': '2016-03-27T18:00:00Z',
+}
+
 OBSERVATION_WEATHER = {
     'precipitation': 7,
     'pressure': 8,
@@ -30,23 +43,47 @@ OBSERVATION_WEATHER = {
     'datetime': '2014-06-10T10:34:00Z',
 }
 
+OBSERVATION_WEATHER_B = {
+    'precipitation': 17,
+    'pressure': 18,
+    'wind_gust': 19,
+    'wind_speed': 20,
+    'wind_direction': u'WS',
+    'wind_degrees': 25,
+    'temperature': 26,
+    'datetime': '2014-06-12T10:34:00Z',
+}
+
 
 class CreatePredictionMixin(object):
     def create_prediction(self, **kwargs):
-        data = copy.copy(PREDICTION_WEATHER)
-        data['location'] = self.location
-        data.update(**kwargs)
+        payload = self.payload_prediction(**kwargs)
+        payload['location'] = self.location
 
-        return WeatherPrediction.objects.create(**data)
+        return WeatherPrediction.objects.create(**payload)
 
     def create_prediction_now(self, **kwargs):
+        payload = self.payload_prediction_now(**kwargs)
+
+        return self.create_prediction(**payload)
+
+    def payload_prediction(self, alternative=False, **kwargs):
+        if alternative:
+            data = copy.copy(PREDICTION_WEATHER_B)
+        else:
+            data = copy.copy(PREDICTION_WEATHER)
+        data.update(**kwargs)
+
+        return data
+
+    def payload_prediction_now(self, alternative=False, **kwargs):
         data = {
             'valid_from': delta(),
             'valid_to': delta(hours=2)
         }
         data.update(**kwargs)
 
-        return self.create_prediction(**data)
+        return self.payload_prediction(alternative, **data)
 
 
 class CreateObservationMixin(object):
