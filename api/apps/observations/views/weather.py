@@ -39,7 +39,7 @@ class Weather(mixins.ListModelMixin, GenericAPIView):
     lookup_url_kwarg = "location_slug"
 
     def get_location(self):
-        slug = self.kwargs['location_slug']
+        slug = self.kwargs.get('location_slug')
         try:
             return Location.objects.get(slug=slug)
         except Location.DoesNotExist:
@@ -90,7 +90,11 @@ class WeatherRecent(Weather):
         return WeatherObservation.objects.now_minus_24(location)
 
 
-class WeatherListCreate(WeatherRange, mixins.CreateModelMixin):
+class WeatherObservations(WeatherRange, mixins.CreateModelMixin):
+    """
+    Get weather observations.
+    Valid parameters are `start` and `end` (in format `2014-05-01T00:17:00Z`)
+    """
 
     def existing_object(self, slug, record):
         model = self.get_serializer().Meta.model

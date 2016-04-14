@@ -13,7 +13,7 @@ from .serializers.weather_serializer import (
     WeatherWindDegreesObservationSerializer,
     WeatherTemperatureObservationSerializer)
 
-from .views.weather import WeatherListCreate, WeatherRange, WeatherRecent
+from .views.weather import WeatherObservations, WeatherRange, WeatherRecent
 
 SLUG_RE = settings.SLUG_REGEX
 
@@ -30,8 +30,12 @@ endpoints = (
 )
 
 urlpatterns = [
+    url(r'^weather/$',
+        WeatherObservations.as_view(),
+        {'serializer': WeatherObservationSerializer},
+        name='weather'),
     url(r'^weather/(?P<location_slug>' + SLUG_RE + ')$',
-        WeatherListCreate.as_view(),
+        WeatherObservations.as_view(),
         {'serializer': WeatherObservationSerializer},
         name='weather'),
     url(r'^weather/(?P<location_slug>' + SLUG_RE + ')/recent$',

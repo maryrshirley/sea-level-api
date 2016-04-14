@@ -1,7 +1,44 @@
 from .base import FunctionalTest
 
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+
+from selenium import webdriver
+
 from api.libs.test_utils.datetime_utils import delta
 from api.libs.view_helpers import format_datetime
+
+DEFAULT_WAIT = 5
+
+
+class ObservationWeatherBrowser(StaticLiveServerTestCase):
+
+    endpoint = '/1/observations/weather/'
+
+    def setUp(self):
+        self.browser = webdriver.Firefox()
+        self.browser.implicitly_wait(DEFAULT_WAIT)
+
+    def tearDown(self):
+        self.browser.quit()
+
+    def test_has_documentation(self):
+        # User visits the weather api
+        self.browser.get(self.live_server_url + self.endpoint)
+
+        # User notices the page-header
+        page_header = self.browser.find_element_by_class_name('page-header')
+
+        # The page header matches the expected value
+        self.assertEquals("Weather Observations", page_header.text)
+
+        # User notices the page description
+        xpath = ".//div[@id='content']/div[@class='content-main']/div/p"
+        page_desc = self.browser.find_element_by_xpath(xpath)
+
+        # THe page description matches the expected value
+        expected = 'Get weather observations. Valid parameters are start and'\
+                   ' end (in format 2014-05-01T00:17:00Z)'
+        self.assertEquals(expected, page_desc.text)
 
 
 class ObservationWeatherTest(FunctionalTest):
