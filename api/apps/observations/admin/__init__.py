@@ -1,1 +1,2 @@
 from .observation_admin import ObservationAdmin
+from .weather_observation_admin import WeatherObservationAdmin
