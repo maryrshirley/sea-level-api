@@ -1,9 +1,11 @@
 import copy
+import datetime
 
 from api.libs.test_utils.datetime_utils import delta
 
 from api.apps.predictions.models import WeatherPrediction
 from api.apps.observations.models import WeatherObservation
+from api.libs.view_helpers import format_datetime
 
 
 PREDICTION_WEATHER = {
@@ -48,7 +50,7 @@ OBSERVATION_WEATHER_B = {
     'pressure': 18,
     'wind_gust': 19,
     'wind_speed': 20,
-    'wind_direction': u'WS',
+    'wind_direction': u'W',
     'wind_degrees': 25,
     'temperature': 26,
     'datetime': '2014-06-12T10:34:00Z',
@@ -88,10 +90,28 @@ class CreatePredictionMixin(object):
 
 class CreateObservationMixin(object):
     def create_observation(self, **kwargs):
-        data = copy.copy(OBSERVATION_WEATHER)
-        data['location_id'] = self.location.id
-        data.update(**kwargs)
-        return WeatherObservation.objects.create(**data)
+        payload = self.payload_observation(**kwargs)
+        payload['location'] = self.location
+
+        return WeatherObservation.objects.create(**payload)
 
     def create_observation_now(self, **kwargs):
-        return self.create_observation(datetime=delta())
+        payload = self.payload_observation_now(**kwargs)
+
+        return self.create_observation(**payload)
+
+    def payload_observation(self, alternative=False, **kwargs):
+        if alternative:
+            data = copy.copy(OBSERVATION_WEATHER)
+        else:
+            data = copy.copy(OBSERVATION_WEATHER_B)
+        data.update(**kwargs)
+        return data
+
+    def payload_observation_now(self, alternative=False, **kwargs):
+        return self.payload_observation(alternative, datetime=delta())
+
+
+def encode_datetime(payload):
+    return {k: format_datetime(v) if type(v) is datetime.datetime else v
+            for k, v in payload.items()}

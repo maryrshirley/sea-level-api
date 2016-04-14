@@ -1,5 +1,3 @@
-import datetime
-
 from .base import FunctionalTest
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
@@ -7,7 +5,7 @@ from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium import webdriver
 
 from api.libs.test_utils.datetime_utils import delta
-from api.libs.test_utils.weather import CreatePredictionMixin
+from api.libs.test_utils.weather import CreatePredictionMixin, encode_datetime
 from api.libs.view_helpers import format_datetime
 
 DEFAULT_WAIT = 5
@@ -33,11 +31,6 @@ class PredictionWeatherBrowser(StaticLiveServerTestCase):
 
         # The page header matches the expected value
         self.assertEquals("Weather Predictions", page_header.text)
-
-
-def encode_datetime(payload):
-    return {k: format_datetime(v) if type(v) is datetime.datetime else v
-            for k, v in payload.items()}
 
 
 class PredictionWeatherTest(FunctionalTest, CreatePredictionMixin):
