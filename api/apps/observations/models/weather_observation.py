@@ -40,14 +40,15 @@ class WeatherObservationManager(models.Manager):
 
         return self.filter(location=location,
                            minute__datetime__range=(now_minus_24, now)) \
-                   .order_by('-minute')
+                   .order_by('-minute__datetime')
 
     def date_range(self, location, time_range):
         start = time_range.start
         end = time_range.end
 
         return self.filter(location=location) \
-                   .filter(minute__datetime__range=(start, end))
+                   .filter(minute__datetime__range=(start, end)) \
+                   .order_by('-minute__datetime')
 
     def location_exists(self, slug):
         return self.filter(location__slug=slug).exists()
