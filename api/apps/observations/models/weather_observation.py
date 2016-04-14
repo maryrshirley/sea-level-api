@@ -66,14 +66,14 @@ class WeatherObservationManager(models.Manager):
 class WeatherObservation(models.Model):
     location = models.ForeignKey(Location)
     minute = models.ForeignKey(Minute, related_name='weather-observations')
-    precipitation = models.IntegerField()
-    pressure = models.IntegerField()
-    wind_gust = models.IntegerField()
-    wind_speed = models.IntegerField()
+    precipitation = models.FloatField()
+    pressure = models.FloatField()
+    wind_gust = models.FloatField()
+    wind_speed = models.FloatField()
     wind_direction = models.CharField(max_length=3,
                                       choices=CARDINAL_DIRECTIONS)
-    wind_degrees = models.IntegerField()
-    temperature = models.IntegerField()
+    wind_degrees = models.FloatField()
+    temperature = models.FloatField()
 
     objects = WeatherObservationManager()
 

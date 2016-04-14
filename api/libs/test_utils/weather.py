@@ -35,24 +35,24 @@ PREDICTION_WEATHER_B = {
 }
 
 OBSERVATION_WEATHER = {
-    'precipitation': 7,
-    'pressure': 8,
-    'wind_gust': 9,
-    'wind_speed': 10,
+    'precipitation': 7.1,
+    'pressure': 8.2,
+    'wind_gust': 9.3,
+    'wind_speed': 10.4,
     'wind_direction': u'S',
-    'wind_degrees': 12,
-    'temperature': 13,
+    'wind_degrees': 12.5,
+    'temperature': 13.6,
     'datetime': '2014-06-10T10:34:00Z',
 }
 
 OBSERVATION_WEATHER_B = {
-    'precipitation': 17,
-    'pressure': 18,
-    'wind_gust': 19,
-    'wind_speed': 20,
+    'precipitation': 17.9,
+    'pressure': 18.8,
+    'wind_gust': 19.7,
+    'wind_speed': 20.6,
     'wind_direction': u'W',
-    'wind_degrees': 25,
-    'temperature': 26,
+    'wind_degrees': 25.5,
+    'temperature': 26.4,
     'datetime': '2014-06-12T10:34:00Z',
 }
 
