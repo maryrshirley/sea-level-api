@@ -80,6 +80,10 @@ class WeatherRange(Weather):
 
 
 class WeatherPredictions(WeatherRange, mixins.CreateModelMixin):
+    """
+    Get weather predictions.
+    Valid parameters are `start` and `end` (in format `2014-05-01T00:17:00Z`)
+    """
 
     def existing_object(self, slug, record):
         model = self.get_serializer().Meta.model

@@ -31,6 +31,15 @@ class PredictionWeatherBrowser(StaticLiveServerTestCase):
         # The page header matches the expected value
         self.assertEquals("Weather Predictions", page_header.text)
 
+        # User notices the page description
+        xpath = ".//div[@id='content']/div[@class='content-main']/div/p"
+        page_desc = self.browser.find_element_by_xpath(xpath)
+
+        # THe page description matches the expected value
+        expected = 'Get weather predictions. Valid parameters are start and'\
+                   ' end (in format 2014-05-01T00:17:00Z)'
+        self.assertEquals(expected, page_desc.text)
+
 
 class PredictionWeatherTest(FunctionalTest):
 
