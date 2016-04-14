@@ -15,23 +15,12 @@ from api.apps.users.helpers import create_user
 from api.libs.param_parsers.parse_time import parse_datetime
 from api.libs.test_utils import decode_json
 from api.libs.test_utils.datetime_utils import delta
+from api.libs.test_utils.weather import (PREDICTION_WEATHER,
+                                         CreatePredictionMixin)
 from api.libs.view_helpers import format_datetime
 
 _URL = '/1/predictions/weather/liverpool'
 _URL_NOW = _URL + '/now'
-
-WEATHER_A = {
-    'precipitation': 10,
-    'pressure': 11,
-    'wind_gust': 12,
-    'wind_direction': u'E',
-    'wind_degrees': 14,
-    'wind_speed': 15,
-    'temperature': 16,
-    'supplier': u'met_office',
-    'valid_from': '2016-03-26T12:00:00Z',
-    'valid_to': '2016-03-26T18:00:00Z',
-}
 
 
 def load_now_test_cases():
@@ -77,7 +66,7 @@ def load_now_test_cases():
 
 def load_test_cases():
     cases = [(_URL, 'GET, POST, HEAD, OPTIONS',)]
-    for uri in [key for key in WEATHER_A.keys() if key not in
+    for uri in [key for key in PREDICTION_WEATHER.keys() if key not in
                 ['datetime', 'supplier', 'valid_from', 'valid_to']]:
         uri = uri.replace('_', '-')
         cases.append(("{0}/{1}".format(_URL, uri),
@@ -95,12 +84,13 @@ class PostJsonMixin(object):
                                 **extras)
 
 
-class TestWeatherView(APITestCase, PostJsonMixin):
+class TestWeatherView(APITestCase, PostJsonMixin, CreatePredictionMixin):
 
     @classmethod
     def setUpClass(cls):
         cls.liverpool = Location.objects.create(
             slug='liverpool', name='Liverpool')
+        cls.location = cls.liverpool
 
         cls.user = create_user('collector', is_internal_collector=True)
 
@@ -116,36 +106,20 @@ class TestWeatherView(APITestCase, PostJsonMixin):
     def _serialize(prediction, keys):
         return WeatherPrediction.objects.filter(id=prediction.id).values(*keys)
 
-    def create_prediction(self, **kwargs):
-        data = copy.copy(WEATHER_A)
-        data['location'] = self.liverpool
-        data.update(**kwargs)
-
-        return WeatherPrediction.objects.create(**data)
-
-    def create_prediction_now(self, **kwargs):
-        data = {
-            'valid_from': delta(),
-            'valid_to': delta(hours=2)
-        }
-        data.update(**kwargs)
-
-        return self.create_prediction(**data)
-
     @parameterized.expand(load_test_cases)
     def test_that_endpoint_exists(self, url, allow):
         response = self.client.options(url)
         assert_equal(200, response.status_code)
 
     def test_that_http_post_can_create_single_weather_prediction(self):
-        response = self._post_json([WEATHER_A])
+        response = self._post_json([PREDICTION_WEATHER])
         assert_equal(201, response.status_code)
 
         assert_equal(1, WeatherPrediction.objects.all().count())
         keys = map(lambda x: str.replace(x,
                                          'valid_to',
                                          'minute_to__datetime'),
-                   WEATHER_A.keys())
+                   PREDICTION_WEATHER.keys())
         keys = map(lambda x: str.replace(x,
                                          'valid_from',
                                          'minute_from__datetime'),
@@ -158,7 +132,7 @@ class TestWeatherView(APITestCase, PostJsonMixin):
         del ser_data['minute_from__datetime']
         del ser_data['minute_to__datetime']
 
-        weather_data = copy.copy(WEATHER_A)
+        weather_data = copy.copy(PREDICTION_WEATHER)
         weather_data['valid_from'] = parse_datetime(weather_data['valid_from'])
         weather_data['valid_to'] = parse_datetime(weather_data['valid_to'])
 
@@ -169,7 +143,7 @@ class TestWeatherView(APITestCase, PostJsonMixin):
         assert_equal(400, response.status_code)
 
     def test_that_http_post_invalid_location_errors(self):
-        response = self._post_json([WEATHER_A],
+        response = self._post_json([PREDICTION_WEATHER],
                                    _URL.replace('liverpool', 'badname'))
         assert_equal(400, response.status_code)
 
@@ -342,10 +316,11 @@ class TestWeatherTokenAuthentication(APITestCase, PostJsonMixin):
     def setUpClass(cls):
         cls.liverpool = Location.objects.create(
             slug='liverpool', name='Liverpool')
+        cls.location = cls.liverpool
         cls.permitted = create_user('permitted', is_internal_collector=True)
         cls.forbidden = create_user('forbidden', is_internal_collector=False)
 
-        cls.good_data = WEATHER_A
+        cls.good_data = PREDICTION_WEATHER
 
     @classmethod
     def tearDownClass(cls):

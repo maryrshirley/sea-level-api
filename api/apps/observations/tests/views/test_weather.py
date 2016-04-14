@@ -15,23 +15,14 @@ from api.libs.test_utils import ViewAuthenticationTest
 from api.libs.test_utils.datetime_utils import delta
 from api.libs.param_parsers.parse_time import parse_datetime
 from api.libs.view_helpers import format_datetime
+from api.libs.test_utils.weather import (OBSERVATION_WEATHER,
+                                         CreateObservationMixin)
 
 from ...models import WeatherObservation
 
 
 _URL = '/1/observations/weather/liverpool'
 _URL_RECENT = _URL + '/recent'
-
-WEATHER_A = {
-    'precipitation': 7,
-    'pressure': 8,
-    'wind_gust': 9,
-    'wind_speed': 10,
-    'wind_direction': u'S',
-    'wind_degrees': 12,
-    'temperature': 13,
-    'datetime': '2014-06-10T10:34:00Z',
-}
 
 
 def load_recent_test_cases():
@@ -82,7 +73,8 @@ def load_recent_range_test_cases():
 
 def load_test_cases():
     cases = [(_URL, 'GET, POST, HEAD, OPTIONS',)]
-    for uri in [key for key in WEATHER_A.keys() if not key == 'datetime']:
+    keys = OBSERVATION_WEATHER.keys()
+    for uri in [key for key in keys if not key == 'datetime']:
         uri = uri.replace('_', '-')
         cases.append(("{0}/{1}".format(_URL, uri),
                      'GET, HEAD, OPTIONS',))
@@ -91,13 +83,14 @@ def load_test_cases():
     return cases
 
 
-class TestWeatherView(APITestCase):
+class TestWeatherView(APITestCase, CreateObservationMixin):
 
     @classmethod
     def setUpClass(cls):
         super(TestWeatherView, cls).setUpClass()
         cls.liverpool = Location.objects.create(slug='liverpool',
                                                 name='Liverpool')
+        cls.location = cls.liverpool
         cls.user = create_user('collector', is_internal_collector=True)
 
     @classmethod
@@ -105,15 +98,6 @@ class TestWeatherView(APITestCase):
         cls.user.delete()
         cls.liverpool.delete()
         super(TestWeatherView, cls).tearDownClass()
-
-    def create_observation(self, **kwargs):
-        data = copy.copy(WEATHER_A)
-        data['location_id'] = self.liverpool.id
-        data.update(**kwargs)
-        return WeatherObservation.objects.create(**data)
-
-    def create_observation_now(self, **kwargs):
-        return self.create_observation(datetime=delta())
 
     def setUp(self):
         self.client.force_authenticate(user=self.user)
@@ -146,7 +130,8 @@ class TestWeatherView(APITestCase):
         assert_equal(allow, response['Allow'])
 
     def test_that_http_post_can_create_single_weather_observation(self):
-        response = self.client.post(_URL, data=json.dumps([WEATHER_A]),
+        data = json.dumps([OBSERVATION_WEATHER])
+        response = self.client.post(_URL, data=data,
                                     content_type='application/json')
         assert_equal(201, response.status_code)
 
@@ -154,12 +139,12 @@ class TestWeatherView(APITestCase):
         observation = WeatherObservation.objects.get()
 
         keys = map(lambda x: str.replace(x, 'datetime', 'minute__datetime'),
-                   WEATHER_A.keys())
+                   OBSERVATION_WEATHER.keys())
         serialized_data = WeatherObservation.objects.filter(id=observation.id) \
             .values(*keys)[0]
         serialized_data['datetime'] = serialized_data['minute__datetime']
         del serialized_data['minute__datetime']
-        weather_data = copy.copy(WEATHER_A)
+        weather_data = copy.copy(OBSERVATION_WEATHER)
         weather_data['datetime'] = parse_datetime(weather_data['datetime'])
         assert_equal(weather_data, serialized_data)
 
@@ -284,7 +269,8 @@ class TestWeatherTokenAuthentication(ViewAuthenticationTest):
 
     @classmethod
     def setUpClass(cls):
-        super(TestWeatherTokenAuthentication, cls).setUpClass(_URL, WEATHER_A)
+        super(TestWeatherTokenAuthentication, cls) \
+            .setUpClass(_URL, OBSERVATION_WEATHER)
 
     def test_that_no_authentication_header_returns_http_401(self):
         self._test_that_no_authentication_header_returns_http_401()
