@@ -47,7 +47,7 @@ class WeatherPredictionManager(models.Manager):
         return self.filter(location=location) \
                    .filter(Q(minute_from__datetime__range=(now, now_24))
                            | Q(minute_to__datetime__range=(now, now_24))) \
-                   .order_by('-minute_from')
+                   .order_by('minute_from__datetime')
 
     def date_range(self, location, time_range):
         start = time_range.start
@@ -55,7 +55,8 @@ class WeatherPredictionManager(models.Manager):
 
         return self.filter(location=location) \
                    .exclude(minute_from__datetime__gt=end) \
-                   .exclude(minute_to__datetime__lt=start)
+                   .exclude(minute_to__datetime__lt=start) \
+                   .order_by('minute_from__datetime')
 
     def existing_object(self, slug, valid_from, valid_to):
         try:

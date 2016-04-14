@@ -140,6 +140,50 @@ class PredictionWeatherTest(FunctionalTest):
         for index, elem in enumerate(data):
             self.assertPayloadMatchesData(data[index], payload[index])
 
+    def test_multiple_day_range_forecasts(self):
+        base_url = self.live_server_url + self.endpoint
+
+        # A user has forecast data
+        payload = [
+            {
+                'precipitation': 10,
+                'pressure': 11,
+                'wind_gust': 12,
+                'wind_speed': 13,
+                'wind_direction': 'S',
+                'wind_degrees': 15,
+                'temperature': 16,
+                'supplier': 'met_office',
+                'valid_from': format_datetime(delta(hours=2)),
+                'valid_to': format_datetime(delta(hours=4)),
+            },
+            {
+                'precipitation': 20,
+                'pressure': 21,
+                'wind_gust': 22,
+                'wind_speed': 23,
+                'wind_direction': 'S',
+                'wind_degrees': 25,
+                'temperature': 26,
+                'supplier': 'met_office',
+                'valid_from': format_datetime(delta(days=1, hours=2)),
+                'valid_to': format_datetime(delta(days=1, hours=4)),
+            }
+
+        ]
+
+        # The user submits the data to the endpoint
+        self.assertSubmitPayload(base_url, payload)
+
+        # The user queries for a range record
+        base_url = self.live_server_url + self.endpoint
+        range_url = "{0}?start={1}&end={2}" \
+            .format(base_url, format_datetime(delta()),
+                    format_datetime(delta(days=2)))
+        data = self.assertRecordJSONExists(range_url)
+
+        self.assertEqual(2, len(data))
+
     def test_forecast_date_order(self):
         base_url = self.live_server_url + self.endpoint
 
