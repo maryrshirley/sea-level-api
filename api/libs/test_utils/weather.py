@@ -7,26 +7,26 @@ from api.apps.observations.models import WeatherObservation
 
 
 PREDICTION_WEATHER = {
-    'precipitation': 10,
-    'pressure': 11,
-    'wind_gust': 12,
+    'precipitation': 10.1,
+    'pressure': 11.2,
+    'wind_gust': 12.3,
     'wind_direction': u'E',
-    'wind_degrees': 14,
-    'wind_speed': 15,
-    'temperature': 16,
+    'wind_degrees': 14.4,
+    'wind_speed': 15.5,
+    'temperature': 16.6,
     'supplier': u'met_office',
     'valid_from': '2016-03-26T12:00:00Z',
     'valid_to': '2016-03-26T18:00:00Z',
 }
 
 PREDICTION_WEATHER_B = {
-    'precipitation': 20,
-    'pressure': 21,
-    'wind_gust': 22,
+    'precipitation': 20.9,
+    'pressure': 21.8,
+    'wind_gust': 22.7,
     'wind_direction': u'S',
-    'wind_degrees': 24,
-    'wind_speed': 25,
-    'temperature': 26,
+    'wind_degrees': 24.5,
+    'wind_speed': 25.4,
+    'temperature': 26.3,
     'supplier': u'met_office',
     'valid_from': '2016-03-27T12:00:00Z',
     'valid_to': '2016-03-27T18:00:00Z',
