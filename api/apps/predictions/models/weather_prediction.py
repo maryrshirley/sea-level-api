@@ -72,14 +72,14 @@ class WeatherPredictionManager(models.Manager):
 class WeatherPrediction(models.Model):
 
     location = models.ForeignKey(Location)
-    precipitation = models.IntegerField()
-    pressure = models.IntegerField()
-    wind_gust = models.IntegerField()
-    wind_speed = models.IntegerField()
+    precipitation = models.FloatField()
+    pressure = models.FloatField()
+    wind_gust = models.FloatField()
+    wind_speed = models.FloatField()
     wind_direction = models.CharField(max_length=3,
                                       choices=CARDINAL_DIRECTIONS)
-    wind_degrees = models.IntegerField()
-    temperature = models.IntegerField()
+    wind_degrees = models.FloatField()
+    temperature = models.FloatField()
     supplier = models.CharField(max_length=10, choices=SUPPLIERS)
     minute_from = models.ForeignKey(Minute, related_name='weather-minute-from')
     minute_to = models.ForeignKey(Minute, related_name='weather-minute-to')

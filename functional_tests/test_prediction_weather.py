@@ -5,6 +5,7 @@ from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium import webdriver
 
 from api.libs.test_utils.datetime_utils import delta
+from api.libs.test_utils.weather import CreatePredictionMixin, encode_datetime
 from api.libs.view_helpers import format_datetime
 
 DEFAULT_WAIT = 5
@@ -41,24 +42,13 @@ class PredictionWeatherBrowser(StaticLiveServerTestCase):
         self.assertEquals(expected, page_desc.text)
 
 
-class PredictionWeatherTest(FunctionalTest):
+class PredictionWeatherTest(FunctionalTest, CreatePredictionMixin):
 
     endpoint = '/1/predictions/weather/liverpool'
 
     def test_can_save_forecast(self):
         # A user has forecast data
-        payload = [{
-            'precipitation': 1,
-            'pressure': 2,
-            'wind_gust': 3,
-            'wind_speed': 4,
-            'wind_direction': 'N',
-            'wind_degrees': 6,
-            'temperature': 7,
-            'supplier': 'met_office',
-            'valid_from': format_datetime(delta()),
-            'valid_to': format_datetime(delta(hours=2)),
-        }]
+        payload = [encode_datetime(self.payload_prediction_now())]
 
         base_url = self.live_server_url + self.endpoint
 
@@ -154,31 +144,15 @@ class PredictionWeatherTest(FunctionalTest):
 
         # A user has forecast data
         payload = [
-            {
-                'precipitation': 10,
-                'pressure': 11,
-                'wind_gust': 12,
-                'wind_speed': 13,
-                'wind_direction': 'S',
-                'wind_degrees': 15,
-                'temperature': 16,
-                'supplier': 'met_office',
-                'valid_from': format_datetime(delta(hours=2)),
-                'valid_to': format_datetime(delta(hours=4)),
-            },
-            {
-                'precipitation': 20,
-                'pressure': 21,
-                'wind_gust': 22,
-                'wind_speed': 23,
-                'wind_direction': 'S',
-                'wind_degrees': 25,
-                'temperature': 26,
-                'supplier': 'met_office',
-                'valid_from': format_datetime(delta(days=1, hours=2)),
-                'valid_to': format_datetime(delta(days=1, hours=4)),
-            }
-
+            encode_datetime(self.payload_prediction(
+                valid_from=delta(hours=2),
+                valid_to=delta(hours=4)
+            )),
+            encode_datetime(self.payload_prediction(
+                True,
+                valid_from=delta(days=1, hours=2),
+                valid_to=delta(days=1, hours=4)
+            ))
         ]
 
         # The user submits the data to the endpoint
@@ -197,39 +171,20 @@ class PredictionWeatherTest(FunctionalTest):
         base_url = self.live_server_url + self.endpoint
 
         # A user has forecast data
-        payload = [
-            {
-                'precipitation': 10,
-                'pressure': 11,
-                'wind_gust': 12,
-                'wind_speed': 13,
-                'wind_direction': 'S',
-                'wind_degrees': 15,
-                'temperature': 16,
-                'supplier': 'met_office',
-                'valid_from': format_datetime(delta(hours=4)),
-                'valid_to': format_datetime(delta(hours=6)),
-            }
-        ]
+        payload = [encode_datetime(self.payload_prediction(
+            valid_from=delta(hours=4),
+            valid_to=delta(hours=6)
+        ))]
 
         # The user submits the data to the endpoint
         self.assertSubmitPayload(base_url, payload)
 
         # A user has previous forecast data
-        payload_2 = [
-            {
-                'precipitation': 20,
-                'pressure': 21,
-                'wind_gust': 22,
-                'wind_speed': 23,
-                'wind_direction': 'S',
-                'wind_degrees': 15,
-                'temperature': 26,
-                'supplier': 'met_office',
-                'valid_from': format_datetime(delta(hours=2)),
-                'valid_to': format_datetime(delta(hours=4)),
-            }
-        ]
+        payload_2 = [encode_datetime(self.payload_prediction(
+            True,
+            valid_from=delta(hours=2),
+            valid_to=delta(hours=4)
+        ))]
 
         # The user submits the data to the endpoint
         self.assertSubmitPayload(base_url, payload_2)
@@ -247,20 +202,7 @@ class PredictionWeatherTest(FunctionalTest):
 
     def test_will_update_forecast(self):
         # A user has forecast data
-        payload = [
-            {
-                'precipitation': 10,
-                'pressure': 11,
-                'wind_gust': 12,
-                'wind_speed': 13,
-                'wind_direction': 'S',
-                'wind_degrees': 15,
-                'temperature': 16,
-                'supplier': 'met_office',
-                'valid_from': format_datetime(delta()),
-                'valid_to': format_datetime(delta(hours=2)),
-            }
-        ]
+        payload = [encode_datetime(self.payload_prediction_now())]
 
         base_url = self.live_server_url + self.endpoint
 

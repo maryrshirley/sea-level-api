@@ -6,6 +6,7 @@ from selenium import webdriver
 
 from api.libs.test_utils.datetime_utils import delta
 from api.libs.view_helpers import format_datetime
+from api.libs.test_utils.weather import CreateObservationMixin, encode_datetime
 
 DEFAULT_WAIT = 5
 
@@ -41,22 +42,13 @@ class ObservationWeatherBrowser(StaticLiveServerTestCase):
         self.assertEquals(expected, page_desc.text)
 
 
-class ObservationWeatherTest(FunctionalTest):
+class ObservationWeatherTest(FunctionalTest, CreateObservationMixin):
 
     endpoint = '/1/observations/weather/liverpool'
 
     def test_can_save_observation(self):
         # A user has observation data
-        payload = [{
-            'precipitation': 1,
-            'pressure': 2,
-            'wind_gust': 3,
-            'wind_speed': 4,
-            'wind_direction': 'SSW',
-            'wind_degrees': 1,
-            'temperature': 6,
-            'datetime': format_datetime(delta()),
-        }]
+        payload = [encode_datetime(self.payload_observation_now())]
 
         # The user submits the data to the endpoint
         self.assertSubmitPayload(self.live_server_url + self.endpoint, payload)
@@ -96,30 +88,17 @@ class ObservationWeatherTest(FunctionalTest):
         url = self.live_server_url + self.endpoint
 
         # A user has observation data
-        payload = [{
-            'precipitation': 1,
-            'pressure': 2,
-            'wind_gust': 3,
-            'wind_speed': 4,
-            'wind_direction': 'SSW',
-            'wind_degrees': 1,
-            'temperature': 6,
-            'datetime': format_datetime(delta(hours=-4)),
-        }]
+        payload = [
+            encode_datetime(self.payload_observation(datetime=delta(hours=-4)))
+        ]
 
         # The user submits the data to the endpoint
         self.assertSubmitPayload(url, payload)
 
-        payload_2 = [{
-            'precipitation': 11,
-            'pressure': 12,
-            'wind_gust': 13,
-            'wind_speed': 14,
-            'wind_direction': 'SSW',
-            'wind_degrees': 15,
-            'temperature': 16,
-            'datetime': format_datetime(delta(hours=-2)),
-        }]
+        payload_2 = [
+            encode_datetime(self.payload_observation(True,
+                                                     datetime=delta(hours=-2)))
+        ]
 
         # The user submits the data to the endpoint
         self.assertSubmitPayload(url, payload_2)
@@ -137,16 +116,7 @@ class ObservationWeatherTest(FunctionalTest):
 
     def test_will_update_observation(self):
         # A user has observation data
-        payload = [{
-            'precipitation': 1,
-            'pressure': 2,
-            'wind_gust': 3,
-            'wind_speed': 4,
-            'wind_direction': 'SSW',
-            'wind_degrees': 1,
-            'temperature': 6,
-            'datetime': format_datetime(delta()),
-        }]
+        payload = [encode_datetime(self.payload_observation_now())]
 
         # The user submits the data to the endpoint
         self.assertSubmitPayload(self.live_server_url + self.endpoint, payload)
