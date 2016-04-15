@@ -90,6 +90,12 @@ class WeatherRecent(Weather):
         return WeatherObservation.objects.now_minus_24(location)
 
 
+class WeatherLatest(Weather):
+    def get_queryset(self):
+        location = self.get_location()
+        return WeatherObservation.objects.latest_object(location)
+
+
 class WeatherObservations(WeatherRange, mixins.CreateModelMixin):
     """
     Get weather observations.

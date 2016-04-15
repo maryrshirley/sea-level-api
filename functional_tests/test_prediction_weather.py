@@ -57,8 +57,8 @@ class PredictionWeatherTest(FunctionalTest, CreatePredictionMixin):
 
         # The user queries for the latest record
         base_url = self.live_server_url + self.endpoint
-        latest_url = "{0}/now".format(base_url)
-        data = self.assertRecordJSONExists(latest_url)
+        now_url = "{0}/now".format(base_url)
+        data = self.assertRecordJSONExists(now_url)
 
         # The user data matches the original payload
         self.assertPayloadMatchesData(data[0], payload[0])
@@ -87,11 +87,28 @@ class PredictionWeatherTest(FunctionalTest, CreatePredictionMixin):
             self.assertIn(endpoint, data[0])
             self.assertEqual(payload[0][endpoint], data[0][endpoint])
 
+            url = "{0}/{1}/latest".format(base_url, endpoint.replace('_', '-'))
+
+            # The user receives a JSON response from the endpoint latest
+            data = self.assertRecordJSONExists(url)
+
             # The JSON response contains valid dates
+            # The JSON response contains the observation data
+            self.assertIn(endpoint, data[0])
+            self.assertEqual(payload[0][endpoint], data[0][endpoint])
             self.assertIn('valid_from', data[0])
             self.assertEquals(payload[0]['valid_from'], data[0]['valid_from'])
+            self.assertEqual(payload[0]['valid_from'], data[0]['valid_from'])
             self.assertIn('valid_to', data[0])
             self.assertEquals(payload[0]['valid_to'], data[0]['valid_to'])
+            self.assertEqual(payload[0]['valid_to'], data[0]['valid_to'])
+
+        # The user queries the latest endpoint
+        latest_url = "{0}/latest".format(base_url)
+        data = self.assertRecordJSONExists(latest_url)
+
+        # The user data matches the original payload
+        self.assertPayloadMatchesData(data[0], payload[0])
 
     def test_can_save_multiple_forecasts(self):
         # A user has multiple forecase data
@@ -129,8 +146,8 @@ class PredictionWeatherTest(FunctionalTest, CreatePredictionMixin):
 
         # The user queries for the latest record
         base_url = self.live_server_url + self.endpoint
-        latest_url = "{0}/now".format(base_url)
-        data = self.assertRecordJSONExists(latest_url)
+        now_url = "{0}/now".format(base_url)
+        data = self.assertRecordJSONExists(now_url)
 
         # The user data matches the original payload
         for index, elem in enumerate(data):
@@ -197,14 +214,46 @@ class PredictionWeatherTest(FunctionalTest, CreatePredictionMixin):
 
         # The user queries for the latest record
         base_url = self.live_server_url + self.endpoint
-        latest_url = "{0}/now".format(base_url)
-        data = self.assertRecordJSONExists(latest_url)
+        now_url = "{0}/now".format(base_url)
+        data = self.assertRecordJSONExists(now_url)
 
         # record-0 matches the second payload
         self.assertPayloadMatchesData(data[0], payload_2[0])
 
         # record-1 matches the first payload
         self.assertPayloadMatchesData(data[1], payload[0])
+
+    def test_prediction_latest(self):
+        base_url = self.live_server_url + self.endpoint
+
+        # A user has forecast data
+        payload = [
+            encode_datetime(self.payload_prediction(valid_from=delta(hours=2),
+                                                    valid_to=delta(hours=4)))
+        ]
+
+        # The user submits the data to the endpoint
+        self.assertSubmitPayload(base_url, payload)
+
+        # A user has forecast data
+        payload_2 = [
+            encode_datetime(self.payload_prediction(True,
+                                                    valid_from=delta(hours=4),
+                                                    valid_to=delta(hours=6)))
+        ]
+
+        # The user submits the data to the endpoint
+        self.assertSubmitPayload(base_url, payload_2)
+
+        # The user queries the latest endpoint
+        latest_url = "{0}/latest".format(base_url)
+        data = self.assertRecordJSONExists(latest_url)
+
+        # A single record is returned
+        self.assertEqual(1, len(data))
+
+        # The user data matches the original payload
+        self.assertPayloadMatchesData(data[0], payload[0])
 
     def test_will_update_forecast(self):
         # A user has forecast data
@@ -221,8 +270,8 @@ class PredictionWeatherTest(FunctionalTest, CreatePredictionMixin):
 
         # The user queries for the latest record
         base_url = self.live_server_url + self.endpoint
-        latest_url = "{0}/now".format(base_url)
-        data = self.assertRecordJSONExists(latest_url)
+        now_url = "{0}/now".format(base_url)
+        data = self.assertRecordJSONExists(now_url)
 
         # A single record exists
         self.assertEqual(1, len(data))

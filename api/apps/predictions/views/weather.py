@@ -133,3 +133,9 @@ class WeatherNow(Weather):
     def get_queryset(self):
         location = self.get_location()
         return WeatherPrediction.objects.now_plus_24(location)
+
+
+class WeatherLatest(Weather):
+    def get_queryset(self):
+        location = self.get_location()
+        return WeatherPrediction.objects.latest_object(location)

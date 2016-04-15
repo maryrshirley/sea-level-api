@@ -58,6 +58,16 @@ class WeatherPredictionManager(models.Manager):
                    .exclude(minute_to__datetime__lt=start) \
                    .order_by('minute_from__datetime')
 
+    def latest_object(self, location):
+        now = now_rounded()
+        objects = self.filter(location=location) \
+                      .filter(minute_from__datetime__gte=now) \
+                      .order_by('minute_from__datetime')
+        if not objects.exists():
+            return []
+
+        return [objects[0]]
+
     def existing_object(self, slug, valid_from, valid_to):
         try:
             return self.filter(location__slug=slug) \
