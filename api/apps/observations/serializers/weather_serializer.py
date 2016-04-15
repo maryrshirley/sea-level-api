@@ -21,40 +21,40 @@ class WeatherObservationSerializer(serializers.ModelSerializer):
 class WeatherPrecipitationObservationSerializer(WeatherObservationSerializer):
     class Meta:
         model = WeatherObservation
-        fields = ('precipitation',)
+        fields = ('datetime', 'precipitation',)
 
 
 class WeatherPressureObservationSerializer(WeatherObservationSerializer):
     class Meta:
         model = WeatherObservation
-        fields = ('pressure',)
+        fields = ('datetime', 'pressure',)
 
 
 class WeatherWindGustObservationSerializer(WeatherObservationSerializer):
     class Meta:
         model = WeatherObservation
-        fields = ('wind_gust',)
+        fields = ('datetime', 'wind_gust',)
 
 
 class WeatherWindSpeedObservationSerializer(WeatherObservationSerializer):
     class Meta:
         model = WeatherObservation
-        fields = ('wind_speed',)
+        fields = ('datetime', 'wind_speed',)
 
 
 class WeatherWindDirectionObservationSerializer(WeatherObservationSerializer):
     class Meta:
         model = WeatherObservation
-        fields = ('wind_direction',)
+        fields = ('datetime', 'wind_direction',)
 
 
 class WeatherWindDegreesObservationSerializer(WeatherObservationSerializer):
     class Meta:
         model = WeatherObservation
-        fields = ('wind_degrees',)
+        fields = ('datetime', 'wind_degrees',)
 
 
 class WeatherTemperatureObservationSerializer(WeatherObservationSerializer):
     class Meta:
         model = WeatherObservation
-        fields = ('temperature',)
+        fields = ('datetime', 'temperature',)

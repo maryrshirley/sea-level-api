@@ -84,6 +84,10 @@ class ObservationWeatherTest(FunctionalTest, CreateObservationMixin):
             self.assertIn(endpoint, data[0])
             self.assertEqual(payload[0][endpoint], data[0][endpoint])
 
+            # The JSON response contains the datetime
+            self.assertIn('datetime', data[0])
+            self.assertEquals(payload[0]['datetime'], data[0]['datetime'])
+
     def test_observation_date_order(self):
         url = self.live_server_url + self.endpoint
 

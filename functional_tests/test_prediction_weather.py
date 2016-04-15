@@ -87,6 +87,12 @@ class PredictionWeatherTest(FunctionalTest, CreatePredictionMixin):
             self.assertIn(endpoint, data[0])
             self.assertEqual(payload[0][endpoint], data[0][endpoint])
 
+            # The JSON response contains valid dates
+            self.assertIn('valid_from', data[0])
+            self.assertEquals(payload[0]['valid_from'], data[0]['valid_from'])
+            self.assertIn('valid_to', data[0])
+            self.assertEquals(payload[0]['valid_to'], data[0]['valid_to'])
+
     def test_can_save_multiple_forecasts(self):
         # A user has multiple forecase data
         payload = [
