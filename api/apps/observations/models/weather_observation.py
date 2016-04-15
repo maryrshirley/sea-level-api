@@ -61,6 +61,14 @@ class WeatherObservationManager(models.Manager):
         except ObjectDoesNotExist:
             return None
 
+    def latest_object(self, location):
+        objects = self.filter(location=location) \
+                      .order_by('-minute__datetime')
+        if not objects.exists():
+            return []
+
+        return [objects[0]]
+
 
 @python_2_unicode_compatible
 class WeatherObservation(models.Model):

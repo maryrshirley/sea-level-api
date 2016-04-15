@@ -80,6 +80,8 @@ def load_test_cases():
                      'GET, HEAD, OPTIONS',))
         cases.append(("{0}/{1}/recent".format(_URL, uri),
                      'GET, HEAD, OPTIONS',))
+        cases.append(("{0}/{1}/latest".format(_URL, uri),
+                     'GET, HEAD, OPTIONS',))
     return cases
 
 

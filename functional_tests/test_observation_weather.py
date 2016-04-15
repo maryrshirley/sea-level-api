@@ -84,6 +84,26 @@ class ObservationWeatherTest(FunctionalTest, CreateObservationMixin):
             self.assertIn(endpoint, data[0])
             self.assertEqual(payload[0][endpoint], data[0][endpoint])
 
+            url = "{0}/{1}/latest".format(base_url, endpoint.replace('_', '-'))
+
+            # The user receives a JSON response from the endpoint latest
+            data = self.assertRecordJSONExists(url)
+
+            # The JSON response contains the datetime
+            # The JSON response contains the observation data
+            self.assertIn(endpoint, data[0])
+            self.assertEqual(payload[0][endpoint], data[0][endpoint])
+            self.assertIn('datetime', data[0])
+            self.assertEquals(payload[0]['datetime'], data[0]['datetime'])
+            self.assertEqual(payload[0]['datetime'], data[0]['datetime'])
+
+        # The user queries the latest endpoint
+        latest_url = "{0}/latest".format(base_url)
+        data = self.assertRecordJSONExists(latest_url)
+
+        # The user data matches the original payload
+        self.assertPayloadMatchesData(data[0], payload[0])
+
     def test_observation_date_order(self):
         url = self.live_server_url + self.endpoint
 
@@ -113,6 +133,35 @@ class ObservationWeatherTest(FunctionalTest, CreateObservationMixin):
 
         # The second data matches the first payload
         self.assertPayloadMatchesData(data[1], payload[0])
+
+    def test_observation_latest(self):
+        base_url = self.live_server_url + self.endpoint
+
+        # A user has observation data
+        payload = [
+            encode_datetime(self.payload_observation(datetime=delta(hours=-4)))
+        ]
+
+        # The user submits the data to the endpoint
+        self.assertSubmitPayload(base_url, payload)
+
+        payload_2 = [
+            encode_datetime(self.payload_observation(True,
+                                                     datetime=delta(hours=-6)))
+        ]
+
+        # The user submits the data to the endpoint
+        self.assertSubmitPayload(base_url, payload_2)
+
+        # The user queries the latest endpoint
+        latest_url = "{0}/latest".format(base_url)
+        data = self.assertRecordJSONExists(latest_url)
+
+        # A single record is returned
+        self.assertEqual(1, len(data))
+
+        # The user data matches the original payload
+        self.assertPayloadMatchesData(data[0], payload[0])
 
     def test_will_update_observation(self):
         # A user has observation data

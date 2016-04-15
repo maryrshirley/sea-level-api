@@ -22,40 +22,40 @@ class WeatherSerializer(serializers.ModelSerializer):
 class WeatherPrecipitationSerializer(WeatherSerializer):
     class Meta:
         model = WeatherPrediction
-        fields = ('precipitation',)
+        fields = ('valid_from', 'valid_to', 'precipitation',)
 
 
 class WeatherPressureSerializer(WeatherSerializer):
     class Meta:
         model = WeatherPrediction
-        fields = ('pressure',)
+        fields = ('valid_from', 'valid_to', 'pressure',)
 
 
 class WeatherWindGustSerializer(WeatherSerializer):
     class Meta:
         model = WeatherPrediction
-        fields = ('wind_gust',)
+        fields = ('valid_from', 'valid_to', 'wind_gust',)
 
 
 class WeatherWindSpeedSerializer(WeatherSerializer):
     class Meta:
         model = WeatherPrediction
-        fields = ('wind_speed',)
+        fields = ('valid_from', 'valid_to', 'wind_speed',)
 
 
 class WeatherWindDirectionSerializer(WeatherSerializer):
     class Meta:
         model = WeatherPrediction
-        fields = ('wind_direction',)
+        fields = ('valid_from', 'valid_to', 'wind_direction',)
 
 
 class WeatherWindDegreesSerializer(WeatherSerializer):
     class Meta:
         model = WeatherPrediction
-        fields = ('wind_degrees',)
+        fields = ('valid_from', 'valid_to', 'wind_degrees',)
 
 
 class WeatherTemperatureSerializer(WeatherSerializer):
     class Meta:
         model = WeatherPrediction
-        fields = ('temperature',)
+        fields = ('valid_from', 'valid_to', 'temperature',)
