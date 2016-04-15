@@ -30,6 +30,7 @@ class TestAPIRootView(TestCase):
 
         expected_paths = [
             '/1/locations/',
+            '/1/observations/weather/',
             '/1/predictions/tide-levels/',
             '/1/predictions/tide-windows/',
             '/1/predictions/weather/',

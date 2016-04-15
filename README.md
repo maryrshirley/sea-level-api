@@ -10,8 +10,10 @@ contacting us first! **
 | point-in-time predictions  | tide level  | astro model | **/predictions/tide-levels/**
 |                            | surge level | hydro model | /predictions/surge-levels/
 |                            | sea level   | *derived*   | /predictions/sea-levels/
+|                            | weather     |             | /predictions/weather/
 | point-in-time observations | sea level   | tide gauge  | /observations/sea-levels/
 |                            | surge level | *derived*   | /observations/surge-levels/
+|                            | weather		 |             | /observations/weather/
 | combined prediction/obs    | sea level   | *derived*   | /sea-levels/
 | time window predictions    | tide level  | *derived*   | **/predictions/tide-windows/**
 |                            | sea level   | *derived*   | /predictions/sea-level-windows/
@@ -101,6 +103,188 @@ Returns time windows during which the tide level will be above a given height in
   ]
 }
 ```
+
+## /predictions/weather/ (draft)
+
+### /predictions/weather/<location>
+
+POST multiple predictions
+
+### /predictions/weather/<location>?start=YYYY-MM-DDThh:mm:ssZ&end=YYYY-MM-DDThh:mm:ssZ
+
+GET a range of predictions between a start and end (inclusive)
+[/predictions/weather/liverpool-demo?start=2016-04-18T00:12:00Z&end=2016-04-19T00:12:00Z](https://api.sealevelresearch.com/1/predictions/weather/liverpool-demo?start=2016-04-18T00:12:00Z&end=2016-04-19T00:12:00Z)
+
+```json
+[
+   {
+    'precipitation': 20.9,
+    'pressure': 21.8,
+    'wind_gust': 22.7,
+    'wind_direction': u'S',
+    'wind_degrees': 24.5,
+    'wind_speed': 25.4,
+    'temperature': 26.3,
+    'supplier': u'met_office',
+    'valid_from': '2016-03-27T12:00:00Z',
+    'valid_to': '2016-03-27T18:00:00Z',
+  }
+]
+```
+
+### /predictions/weather/<location>/recent
+
+GET the last 24 hours of predictions
+
+[/predictions/weather/liverpool-demo/recent](https://api.sealevelresearch.com/1/predictions/weather/liverpool-demo/recent)
+
+```json
+[
+   {
+    'precipitation': 7.1,
+    'pressure': 8.2,
+    'wind_gust': 9.3,
+    'wind_speed': 10.4,
+    'wind_direction': u'S',
+    'wind_degrees': 12.5,
+    'temperature': 13.6,
+    'valid_from': '2016-03-27T12:00:00Z',
+    'valid_to': '2016-03-27T18:00:00Z',
+  }
+]
+```
+
+### /predictions/weather/<location>/precipitation?start=YYYY-MM-DDThh:mm:ssZ&end=YYYY-MM-DDThh:mm:ssZ
+[/predictions/weather/liverpool-demo/precipitation?start=2016-04-18T00:12:00Z&end=2016-04-19T00:12:00Z](https://api.sealevelresearch.com/1/predictions/weather/liverpool-demo/precipitation?start=2016-04-18T00:12:00Z&end=2016-04-19T00:12:00Z)
+
+GET a range of precipitation predictions between a start and end (inclusive)
+
+```json
+[
+   {
+    'precipitation': 7.1,
+    'valid_from': '2016-03-27T12:00:00Z',
+    'valid_to': '2016-03-27T18:00:00Z',
+  }
+]
+```
+
+### /predictions/weather/<location>/precipitation/recent
+[/predictions/weather/liverpool-demo/precipitation/recent](https://api.sealevelresearch.com/1/predictions/weather/liverpool-demo/precipitation/recent)
+
+GET the last 24 hours of precipitation predictions
+
+```json
+[
+   {
+    'precipitation': 7.1,
+    'valid_from': '2016-03-27T12:00:00Z',
+    'valid_to': '2016-03-27T18:00:00Z',
+  }
+]
+```
+
+### Other endpoints
+
+Use the syntax as per precipitation for:
+
+	* pressure
+	* wind_gust
+	* wind_speed
+	* wind_direction
+	* wind_degrees
+	* temperature
+
+
+## /observations/weather/ (draft)
+
+
+### /observations/weather/<location>
+
+POST multiple observations
+
+
+### /observations/weather/<location>?start=YYYY-MM-DDThh:mm:ssZ&end=YYYY-MM-DDThh:mm:ssZ
+
+GET a range of observations between a start and end (inclusive)
+
+[/observations/weather/liverpool-demo?start=2016-04-18T00:12:00Z&end=2016-04-19T00:12:00Z](https://api.sealevelresearch.com/1/observations/weather/liverpool-demo?start=2016-04-18T00:12:00Z&end=2016-04-19T00:12:00Z)
+
+```json
+[
+   {
+    'precipitation': 7.1,
+    'pressure': 8.2,
+    'wind_gust': 9.3,
+    'wind_speed': 10.4,
+    'wind_direction': u'S',
+    'wind_degrees': 12.5,
+    'temperature': 13.6,
+    'datetime': '2014-06-10T10:34:00Z',
+  }
+]
+```
+
+### /observations/weather/<location>/recent
+
+GET the last 24 hours of observations
+
+[/observations/weather/liverpool-demo/recent](https://api.sealevelresearch.com/1/observations/weather/liverpool-demo/recent)
+
+```json
+[
+   {
+    'precipitation': 7.1,
+    'pressure': 8.2,
+    'wind_gust': 9.3,
+    'wind_speed': 10.4,
+    'wind_direction': u'S',
+    'wind_degrees': 12.5,
+    'temperature': 13.6,
+    'datetime': '2014-06-10T10:34:00Z',
+  }
+]
+```
+
+### /observations/weather/<location>/precipitation?start=YYYY-MM-DDThh:mm:ssZ&end=YYYY-MM-DDThh:mm:ssZ
+[/observations/weather/liverpool-demo/precipitation?start=2016-04-18T00:12:00Z&end=2016-04-19T00:12:00Z](https://api.sealevelresearch.com/1/observations/weather/liverpool-demo/precipitation?start=2016-04-18T00:12:00Z&end=2016-04-19T00:12:00Z)
+
+GET a range of precipitation observations between a start and end (inclusive)
+
+```json
+[
+   {
+    'precipitation': 7.1,
+    'datetime': '2014-06-10T10:34:00Z',
+  }
+]
+```
+
+### /observations/weather/<location>/precipitation/recent
+[/observations/weather/liverpool-demo/precipitation/recent](https://api.sealevelresearch.com/1/observations/weather/liverpool-demo/precipitation/recent)
+
+GET the last 24 hours of precipitation observations
+
+```json
+[
+   {
+    'precipitation': 7.1,
+    'datetime': '2014-06-10T10:34:00Z',
+  }
+]
+```
+
+### Other endpoints
+
+Use the syntax as per precipitation for:
+
+	* pressure
+	* wind_gust
+	* wind_speed
+	* wind_direction
+	* wind_degrees
+	* temperature
+
 
 ## Design notes
 
