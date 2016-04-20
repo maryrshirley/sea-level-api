@@ -15,7 +15,7 @@ from api.libs.test_utils import ViewAuthenticationTest
 from api.libs.test_utils.datetime_utils import delta
 from api.libs.param_parsers.parse_time import parse_datetime
 from api.libs.view_helpers import format_datetime
-from api.libs.test_utils.weather import (OBSERVATION_WEATHER,
+from api.libs.test_utils.weather import (OBSERVATION_A,
                                          CreateObservationMixin)
 
 from ...models import WeatherObservation
@@ -73,7 +73,7 @@ def load_recent_range_test_cases():
 
 def load_test_cases():
     cases = [(_URL, 'GET, POST, HEAD, OPTIONS',)]
-    keys = OBSERVATION_WEATHER.keys()
+    keys = OBSERVATION_A.keys()
     for uri in [key for key in keys if not key == 'datetime']:
         uri = uri.replace('_', '-')
         cases.append(("{0}/{1}".format(_URL, uri),
@@ -132,7 +132,7 @@ class TestWeatherView(APITestCase, CreateObservationMixin):
         assert_equal(allow, response['Allow'])
 
     def test_that_http_post_can_create_single_weather_observation(self):
-        data = json.dumps([OBSERVATION_WEATHER])
+        data = json.dumps([OBSERVATION_A])
         response = self.client.post(_URL, data=data,
                                     content_type='application/json')
         assert_equal(201, response.status_code)
@@ -141,12 +141,12 @@ class TestWeatherView(APITestCase, CreateObservationMixin):
         observation = WeatherObservation.objects.get()
 
         keys = map(lambda x: str.replace(x, 'datetime', 'minute__datetime'),
-                   OBSERVATION_WEATHER.keys())
+                   OBSERVATION_A.keys())
         serialized_data = WeatherObservation.objects.filter(id=observation.id) \
             .values(*keys)[0]
         serialized_data['datetime'] = serialized_data['minute__datetime']
         del serialized_data['minute__datetime']
-        weather_data = copy.copy(OBSERVATION_WEATHER)
+        weather_data = copy.copy(OBSERVATION_A)
         weather_data['datetime'] = parse_datetime(weather_data['datetime'])
         assert_equal(weather_data, serialized_data)
 
@@ -272,7 +272,7 @@ class TestWeatherTokenAuthentication(ViewAuthenticationTest):
     @classmethod
     def setUpClass(cls):
         super(TestWeatherTokenAuthentication, cls) \
-            .setUpClass(_URL, OBSERVATION_WEATHER)
+            .setUpClass(_URL, OBSERVATION_A)
 
     def test_that_no_authentication_header_returns_http_401(self):
         self._test_that_no_authentication_header_returns_http_401()

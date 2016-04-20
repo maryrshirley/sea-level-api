@@ -6,7 +6,8 @@ from selenium import webdriver
 
 from api.libs.test_utils.datetime_utils import delta
 from api.libs.view_helpers import format_datetime
-from api.libs.test_utils.weather import CreateObservationMixin, encode_datetime
+from api.libs.test_utils.weather import (CreateObservationMixin, OBSERVATION_B,
+                                         encode_datetime)
 
 DEFAULT_WAIT = 5
 
@@ -116,7 +117,7 @@ class ObservationWeatherTest(FunctionalTest, CreateObservationMixin):
         self.assertSubmitPayload(url, payload)
 
         payload_2 = [
-            encode_datetime(self.payload_observation(True,
+            encode_datetime(self.payload_observation(OBSERVATION_B,
                                                      datetime=delta(hours=-2)))
         ]
 
@@ -146,7 +147,7 @@ class ObservationWeatherTest(FunctionalTest, CreateObservationMixin):
         self.assertSubmitPayload(base_url, payload)
 
         payload_2 = [
-            encode_datetime(self.payload_observation(True,
+            encode_datetime(self.payload_observation(OBSERVATION_B,
                                                      datetime=delta(hours=-6)))
         ]
 
