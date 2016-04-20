@@ -6,7 +6,8 @@ from selenium import webdriver
 
 from api.libs.test_utils.datetime_utils import delta
 from api.libs.view_helpers import format_datetime
-from api.libs.test_utils.weather import CreateObservationMixin, encode_datetime
+from api.libs.test_utils.weather import (CreateObservationMixin, OBSERVATION_B,
+                                         OBSERVATION_C, encode_datetime)
 
 DEFAULT_WAIT = 5
 
@@ -116,7 +117,7 @@ class ObservationWeatherTest(FunctionalTest, CreateObservationMixin):
         self.assertSubmitPayload(url, payload)
 
         payload_2 = [
-            encode_datetime(self.payload_observation(True,
+            encode_datetime(self.payload_observation(OBSERVATION_B,
                                                      datetime=delta(hours=-2)))
         ]
 
@@ -146,7 +147,7 @@ class ObservationWeatherTest(FunctionalTest, CreateObservationMixin):
         self.assertSubmitPayload(base_url, payload)
 
         payload_2 = [
-            encode_datetime(self.payload_observation(True,
+            encode_datetime(self.payload_observation(OBSERVATION_B,
                                                      datetime=delta(hours=-6)))
         ]
 
@@ -182,6 +183,22 @@ class ObservationWeatherTest(FunctionalTest, CreateObservationMixin):
 
         # A single record exists
         self.assertEqual(1, len(data))
+
+        # The user data matches the original  payload
+        self.assertPayloadMatchesData(data[0], payload[0])
+
+    def test_fields_are_optional(self):
+        # A user has partial observation data
+        payload = [encode_datetime(
+            self.payload_observation_now(OBSERVATION_C))]
+
+        # The user submits the data to the endpoint
+        self.assertSubmitPayload(self.live_server_url + self.endpoint, payload)
+
+        # The user queries for the recent record
+        base_url = self.live_server_url + self.endpoint
+        recent_url = "{0}/recent".format(base_url)
+        data = self.assertRecordJSONExists(recent_url)
 
         # The user data matches the original payload
         self.assertPayloadMatchesData(data[0], payload[0])

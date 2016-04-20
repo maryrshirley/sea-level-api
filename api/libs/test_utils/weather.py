@@ -34,7 +34,7 @@ PREDICTION_WEATHER_B = {
     'valid_to': '2016-03-27T18:00:00Z',
 }
 
-OBSERVATION_WEATHER = {
+OBSERVATION_A = {
     'precipitation': 7.1,
     'pressure': 8.2,
     'wind_gust': 9.3,
@@ -45,7 +45,7 @@ OBSERVATION_WEATHER = {
     'datetime': '2014-06-10T10:34:00Z',
 }
 
-OBSERVATION_WEATHER_B = {
+OBSERVATION_B = {
     'precipitation': 17.9,
     'pressure': 18.8,
     'wind_gust': 19.7,
@@ -53,6 +53,10 @@ OBSERVATION_WEATHER_B = {
     'wind_direction': u'W',
     'wind_degrees': 25.5,
     'temperature': 26.4,
+    'datetime': '2014-06-12T10:34:00Z',
+}
+
+OBSERVATION_C = {
     'datetime': '2014-06-12T10:34:00Z',
 }
 
@@ -100,16 +104,13 @@ class CreateObservationMixin(object):
 
         return self.create_observation(**payload)
 
-    def payload_observation(self, alternative=False, **kwargs):
-        if alternative:
-            data = copy.copy(OBSERVATION_WEATHER)
-        else:
-            data = copy.copy(OBSERVATION_WEATHER_B)
+    def payload_observation(self, observation=OBSERVATION_A, **kwargs):
+        data = copy.copy(observation)
         data.update(**kwargs)
         return data
 
-    def payload_observation_now(self, alternative=False, **kwargs):
-        return self.payload_observation(alternative, datetime=delta())
+    def payload_observation_now(self, observation=OBSERVATION_A, **kwargs):
+        return self.payload_observation(observation, datetime=delta())
 
 
 def encode_datetime(payload):
