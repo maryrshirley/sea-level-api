@@ -217,7 +217,7 @@ class TestWeatherView(APITestCase, CreateObservationMixin):
         observation.delete()
 
         assert_equal(400, response.status_code)
-        assert_equal(_(u'End range cannot be in the future'),
+        assert_equal(_('End range cannot be in the future'),
                      json.loads(response.content.decode('utf-8'))['detail'])
 
     def test_that_http_get_no_range_returns_bad_request(self):
@@ -248,7 +248,7 @@ class TestWeatherView(APITestCase, CreateObservationMixin):
         observation = self.create_observation()
         with self.assertRaises(ValidationError) as validationError:
             self.create_observation()
-        error = u'Weather observation with this Location and Minute'\
+        error = 'Weather observation with this Location and Minute'\
             ' already exists.'
         errors = validationError.exception.message_dict['__all__']
         self.assertEquals(error, errors[0])
