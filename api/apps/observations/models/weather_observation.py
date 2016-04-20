@@ -1,3 +1,4 @@
+from collections import namedtuple
 import datetime
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -7,6 +8,7 @@ from django.dispatch import receiver
 from django.utils.encoding import python_2_unicode_compatible
 
 from api.apps.locations.models import Location
+from api.apps.status.views.common import Status
 from api.libs.minute_in_time.models import Minute
 from api.libs.param_parsers.parse_time import parse_datetime
 from api.libs.view_helpers import now_rounded
@@ -30,6 +32,7 @@ CARDINAL_DIRECTIONS = (
     ('NW', 'North West'),
     ('NNW', 'North North West'),
 )
+LocationStatus = namedtuple('LocationStatus', 'location_name,status')
 
 
 class WeatherObservationManager(models.Manager):
@@ -68,6 +71,19 @@ class WeatherObservationManager(models.Manager):
             return []
 
         return [objects[0]]
+
+    def status(self, location):
+        if location is None:
+            return Status(False, "Invalid location")
+
+        objs = self.now_minus_24(location)
+        if objs.exists():
+            return Status(True, "OK")
+        return Status(False, "Missing data for the previous 24 hours")
+
+    def all_location_status(self):
+        return [LocationStatus(location.name, self.status(location))
+                for location in Location.objects.all()]
 
 
 @python_2_unicode_compatible
