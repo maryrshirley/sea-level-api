@@ -56,6 +56,10 @@ OBSERVATION_B = {
     'datetime': '2014-06-12T10:34:00Z',
 }
 
+OBSERVATION_C = {
+    'datetime': '2014-06-12T10:34:00Z',
+}
+
 
 class CreatePredictionMixin(object):
     def create_prediction(self, **kwargs):
