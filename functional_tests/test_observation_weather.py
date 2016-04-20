@@ -184,7 +184,7 @@ class ObservationWeatherTest(FunctionalTest, CreateObservationMixin):
         # A single record exists
         self.assertEqual(1, len(data))
 
-        # The user data matches the original payload
+        # The user data matches the original  payload
         self.assertPayloadMatchesData(data[0], payload[0])
 
     def test_fields_are_optional(self):
