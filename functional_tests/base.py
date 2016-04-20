@@ -4,6 +4,8 @@ from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
 import requests
 
+from selenium import webdriver
+
 from rest_framework.authtoken.models import Token
 
 from api.apps.locations.models import Location
@@ -61,3 +63,17 @@ class FunctionalTest(StaticLiveServerTestCase):
         for field, value in payload.items():
             self.assertIn(field, data)
             self.assertEqual(value, data[field])
+
+
+class SeleniumTest(StaticLiveServerTestCase):
+
+    DEFAULT_WAIT = 5
+
+    def setUp(self):
+        self.browser = webdriver.Firefox()
+        self.browser.implicitly_wait(self.DEFAULT_WAIT)
+        super(SeleniumTest, self).setUp()
+
+    def tearDown(self):
+        self.browser.quit()
+        super(SeleniumTest, self).tearDown()

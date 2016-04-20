@@ -1,27 +1,16 @@
-from .base import FunctionalTest
+from .base import FunctionalTest, SeleniumTest
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-
-from selenium import webdriver
 
 from api.libs.test_utils.datetime_utils import delta
 from api.libs.view_helpers import format_datetime
 from api.libs.test_utils.weather import (CreateObservationMixin, OBSERVATION_B,
                                          OBSERVATION_C, encode_datetime)
 
-DEFAULT_WAIT = 5
 
-
-class ObservationWeatherBrowser(StaticLiveServerTestCase):
+class ObservationWeatherBrowser(SeleniumTest):
 
     endpoint = '/1/observations/weather/'
-
-    def setUp(self):
-        self.browser = webdriver.Firefox()
-        self.browser.implicitly_wait(DEFAULT_WAIT)
-
-    def tearDown(self):
-        self.browser.quit()
 
     def test_has_documentation(self):
         # User visits the weather api
