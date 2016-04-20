@@ -9,9 +9,9 @@ class RootTest(FunctionalTest):
 
     def test_root_has_links(self):
         fixture_links = [
-            u'locations/', u'observations/weather/',
-            u'predictions/tide-levels/', u'predictions/tide-windows/',
-            u'predictions/weather/', u'sea-levels/']
+            'locations/', 'observations/weather/',
+            'predictions/tide-levels/', 'predictions/tide-windows/',
+            'predictions/weather/', 'sea-levels/']
 
         root_url = self.live_server_url + self.endpoint
 

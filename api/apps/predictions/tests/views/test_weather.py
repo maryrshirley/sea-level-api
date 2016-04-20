@@ -267,7 +267,7 @@ class TestWeatherView(APITestCase, PostJsonMixin, CreatePredictionMixin):
         prediction = self.create_prediction()
         with self.assertRaises(ValidationError) as validationError:
             self.create_prediction()
-        error_base = u'Weather prediction with this Location and Minute {0}'\
+        error_base = 'Weather prediction with this Location and Minute {0}'\
             ' already exists.'
         error1 = error_base.format('from')
         error2 = error_base.format('to')
@@ -280,7 +280,7 @@ class TestWeatherView(APITestCase, PostJsonMixin, CreatePredictionMixin):
         prediction = self.create_prediction()
         with self.assertRaises(ValidationError) as validationError:
             self.create_prediction(valid_to=delta())
-        error_base = u'Weather prediction with this Location and Minute {0}'\
+        error_base = 'Weather prediction with this Location and Minute {0}'\
             ' already exists.'
         error1 = error_base.format('from')
         errors = validationError.exception.message_dict['__all__']
@@ -291,7 +291,7 @@ class TestWeatherView(APITestCase, PostJsonMixin, CreatePredictionMixin):
         prediction = self.create_prediction()
         with self.assertRaises(ValidationError) as validationError:
             self.create_prediction(valid_from=delta())
-        error_base = u'Weather prediction with this Location and Minute {0}'\
+        error_base = 'Weather prediction with this Location and Minute {0}'\
             ' already exists.'
         error1 = error_base.format('to')
         errors = validationError.exception.message_dict['__all__']

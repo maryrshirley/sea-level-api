@@ -73,7 +73,7 @@ class WeatherObservationManager(models.Manager):
 @python_2_unicode_compatible
 class WeatherObservation(models.Model):
     location = models.ForeignKey(Location)
-    minute = models.ForeignKey(Minute, related_name='weather-observations')
+    minute = models.ForeignKey(Minute, related_name='+')
     precipitation = models.FloatField(null=True, blank=True)
     pressure = models.FloatField(null=True, blank=True)
     wind_gust = models.FloatField(null=True, blank=True)

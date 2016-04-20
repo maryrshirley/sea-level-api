@@ -10,6 +10,7 @@ from api.libs.minute_in_time.models import Minute
 class TestMinuteModel(TestCase):
     @classmethod
     def setUpClass(cls):
+        super(TestMinuteModel, cls).setUpClass()
         cls.unrounded_datetime = datetime.datetime(
             2014, 8, 3, 17, 12, 56, 2345, tzinfo=pytz.UTC)
         cls.rounded_datetime = datetime.datetime(

@@ -91,8 +91,8 @@ class WeatherPrediction(models.Model):
     wind_degrees = models.FloatField()
     temperature = models.FloatField()
     supplier = models.CharField(max_length=10, choices=SUPPLIERS)
-    minute_from = models.ForeignKey(Minute, related_name='weather-minute-from')
-    minute_to = models.ForeignKey(Minute, related_name='weather-minute-to')
+    minute_from = models.ForeignKey(Minute, related_name='+')
+    minute_to = models.ForeignKey(Minute, related_name='+')
     objects = WeatherPredictionManager()
 
     class Meta:
