@@ -118,16 +118,16 @@ GET a range of predictions between a start and end (inclusive)
 ```json
 [
    {
-    'precipitation': 20.9,
-    'pressure': 21.8,
-    'wind_gust': 22.7,
-    'wind_direction': u'S',
-    'wind_degrees': 24.5,
-    'wind_speed': 25.4,
-    'temperature': 26.3,
-    'supplier': u'met_office',
-    'valid_from': '2016-03-27T12:00:00Z',
-    'valid_to': '2016-03-27T18:00:00Z',
+    "precipitation": 20.9,
+    "pressure": 21.8,
+    "wind_gust": 22.7,
+    "wind_direction": u"S",
+    "wind_degrees": 24.5,
+    "wind_speed": 25.4,
+    "temperature": 26.3,
+    "supplier": u"met_office",
+    "valid_from": "2016-03-27T12:00:00Z",
+    "valid_to": "2016-03-27T18:00:00Z",
   }
 ]
 ```
@@ -141,15 +141,15 @@ GET the last 24 hours of predictions
 ```json
 [
    {
-    'precipitation': 7.1,
-    'pressure': 8.2,
-    'wind_gust': 9.3,
-    'wind_speed': 10.4,
-    'wind_direction': u'S',
-    'wind_degrees': 12.5,
-    'temperature': 13.6,
-    'valid_from': '2016-03-27T12:00:00Z',
-    'valid_to': '2016-03-27T18:00:00Z',
+    "precipitation": 7.1,
+    "pressure": 8.2,
+    "wind_gust": 9.3,
+    "wind_speed": 10.4,
+    "wind_direction": u"S",
+    "wind_degrees": 12.5,
+    "temperature": 13.6,
+    "valid_from": "2016-03-27T12:00:00Z",
+    "valid_to": "2016-03-27T18:00:00Z",
   }
 ]
 ```
@@ -162,9 +162,9 @@ GET a range of precipitation predictions between a start and end (inclusive)
 ```json
 [
    {
-    'precipitation': 7.1,
-    'valid_from': '2016-03-27T12:00:00Z',
-    'valid_to': '2016-03-27T18:00:00Z',
+    "precipitation": 7.1,
+    "valid_from": "2016-03-27T12:00:00Z",
+    "valid_to": "2016-03-27T18:00:00Z",
   }
 ]
 ```
@@ -177,9 +177,9 @@ GET the last 24 hours of precipitation predictions
 ```json
 [
    {
-    'precipitation': 7.1,
-    'valid_from': '2016-03-27T12:00:00Z',
-    'valid_to': '2016-03-27T18:00:00Z',
+    "precipitation": 7.1,
+    "valid_from": "2016-03-27T12:00:00Z",
+    "valid_to": "2016-03-27T18:00:00Z",
   }
 ]
 ```
@@ -213,14 +213,14 @@ GET a range of observations between a start and end (inclusive)
 ```json
 [
    {
-    'precipitation': 7.1,
-    'pressure': 8.2,
-    'wind_gust': 9.3,
-    'wind_speed': 10.4,
-    'wind_direction': u'S',
-    'wind_degrees': 12.5,
-    'temperature': 13.6,
-    'datetime': '2014-06-10T10:34:00Z',
+    "precipitation": 7.1,
+    "pressure": 8.2,
+    "wind_gust": 9.3,
+    "wind_speed": 10.4,
+    "wind_direction": u"S",
+    "wind_degrees": 12.5,
+    "temperature": 13.6,
+    "datetime": "2014-06-10T10:34:00Z",
   }
 ]
 ```
@@ -234,14 +234,14 @@ GET the last 24 hours of observations
 ```json
 [
    {
-    'precipitation': 7.1,
-    'pressure': 8.2,
-    'wind_gust': 9.3,
-    'wind_speed': 10.4,
-    'wind_direction': u'S',
-    'wind_degrees': 12.5,
-    'temperature': 13.6,
-    'datetime': '2014-06-10T10:34:00Z',
+    "precipitation": 7.1,
+    "pressure": 8.2,
+    "wind_gust": 9.3,
+    "wind_speed": 10.4,
+    "wind_direction": u"S",
+    "wind_degrees": 12.5,
+    "temperature": 13.6,
+    "datetime": "2014-06-10T10:34:00Z",
   }
 ]
 ```
@@ -254,8 +254,8 @@ GET a range of precipitation observations between a start and end (inclusive)
 ```json
 [
    {
-    'precipitation': 7.1,
-    'datetime': '2014-06-10T10:34:00Z',
+    "precipitation": 7.1,
+    "datetime": "2014-06-10T10:34:00Z",
   }
 ]
 ```
@@ -268,8 +268,8 @@ GET the last 24 hours of precipitation observations
 ```json
 [
    {
-    'precipitation': 7.1,
-    'datetime': '2014-06-10T10:34:00Z',
+    "precipitation": 7.1,
+    "datetime": "2014-06-10T10:34:00Z",
   }
 ]
 ```
