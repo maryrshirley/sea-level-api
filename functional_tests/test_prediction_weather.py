@@ -1,4 +1,4 @@
-from .base import FunctionalTest
+from .base import FunctionalTest, SeleniumTest
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
@@ -40,6 +40,53 @@ class PredictionWeatherBrowser(StaticLiveServerTestCase):
         expected = 'Get weather predictions. Valid parameters are start and'\
                    ' end (in format 2014-05-01T00:17:00Z)'
         self.assertEquals(expected, page_desc.text)
+
+
+class PredictionWeatherStatus(SeleniumTest, CreatePredictionMixin):
+
+    endpoint = '/1/_status/weather-predictions/'
+
+    def test_location_has_status(self):
+        # A prediction exists
+        prediction = self.create_prediction_now()
+
+        # User visits the status page
+        self.browser.get(self.live_server_url + self.endpoint)
+
+        # User notices header
+        page_header = self.browser \
+            .find_element_by_xpath(".//div[@class='page-header']/h1")
+        self.assertEquals('Weather Predictions: OK', page_header.text)
+
+        # User notices data table
+        table = self.browser \
+            .find_element_by_xpath(".//table[@class='table']")
+
+        # User notices the table headings
+        th = table.find_elements_by_tag_name('th')
+        self.assertEquals(2, len(th))
+
+        self.assertEquals("Location", th[0].text)
+        self.assertEquals("Status", th[1].text)
+
+        # User notices the table body
+        tbody = table.find_element_by_tag_name('tbody')
+
+        # User notices a single table row
+        tr = tbody.find_elements_by_tag_name('tr')
+        self.assertEqual(1, len(tr))
+
+        # User notices two table elements
+        td = tr[0].find_elements_by_tag_name('td')
+        self .assertEqual(2, len(td))
+
+        # User notices the location name matches
+        self.assertEquals("Liverpool", td[0].text)
+
+        # User notices the status is OK
+        self.assertEquals("OK", td[1].text)
+
+        prediction.delete()
 
 
 class PredictionWeatherTest(FunctionalTest, CreatePredictionMixin):

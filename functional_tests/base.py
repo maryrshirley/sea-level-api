@@ -4,10 +4,13 @@ from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
 import requests
 
+from selenium import webdriver
+
 from rest_framework.authtoken.models import Token
 
 from api.apps.locations.models import Location
 from api.apps.users.helpers import create_user
+from api.libs.test_utils.mixins import LocationMixin
 
 
 class FunctionalTest(StaticLiveServerTestCase):
@@ -61,3 +64,19 @@ class FunctionalTest(StaticLiveServerTestCase):
         for field, value in payload.items():
             self.assertIn(field, data)
             self.assertEqual(value, data[field])
+
+
+class SeleniumTest(StaticLiveServerTestCase, LocationMixin):
+
+    DEFAULT_WAIT = 5
+
+    def setUp(self):
+        self.browser = webdriver.Firefox()
+        self.browser.implicitly_wait(self.DEFAULT_WAIT)
+        self.setUpLocation()
+        super(SeleniumTest, self).setUp()
+
+    def tearDown(self):
+        self.browser.quit()
+        self.tearDownLocation()
+        super(SeleniumTest, self).tearDown()

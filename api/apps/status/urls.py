@@ -2,7 +2,7 @@ from django.conf import settings
 from django.conf.urls import patterns, url
 
 from .views import (StatusIndex, StatusAll, SurgePredictions, TidePredictions,
-                    Observations)
+                    Observations, WeatherObservations, WeatherPredictions)
 
 urlpatterns = patterns(
     '',
@@ -19,7 +19,15 @@ urlpatterns = patterns(
         TidePredictions.as_view(),
         name='tide-predictions'),
 
+    url(r'^weather-predictions/$',
+        WeatherPredictions.as_view(),
+        name='weather-predictions'),
+
     url(r'^observations/(?P<location_slug>' + settings.SLUG_REGEX + ')/$',
         Observations.as_view(),
         name='observations'),
+
+    url(r'^weather-observations/$',
+        WeatherObservations.as_view(),
+        name='weather-observations'),
 )

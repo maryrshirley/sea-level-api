@@ -1,27 +1,14 @@
-from .base import FunctionalTest
-
-from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-
-from selenium import webdriver
+from .base import FunctionalTest, SeleniumTest
 
 from api.libs.test_utils.datetime_utils import delta
 from api.libs.view_helpers import format_datetime
 from api.libs.test_utils.weather import (CreateObservationMixin, OBSERVATION_B,
                                          OBSERVATION_C, encode_datetime)
 
-DEFAULT_WAIT = 5
 
-
-class ObservationWeatherBrowser(StaticLiveServerTestCase):
+class ObservationWeatherBrowser(SeleniumTest):
 
     endpoint = '/1/observations/weather/'
-
-    def setUp(self):
-        self.browser = webdriver.Firefox()
-        self.browser.implicitly_wait(DEFAULT_WAIT)
-
-    def tearDown(self):
-        self.browser.quit()
 
     def test_has_documentation(self):
         # User visits the weather api
@@ -41,6 +28,53 @@ class ObservationWeatherBrowser(StaticLiveServerTestCase):
         expected = 'Get weather observations. Valid parameters are start and'\
                    ' end (in format 2014-05-01T00:17:00Z)'
         self.assertEquals(expected, page_desc.text)
+
+
+class ObservationWeatherStatus(SeleniumTest, CreateObservationMixin):
+
+    endpoint = '/1/_status/weather-observations/'
+
+    def test_location_has_status(self):
+        # A prediction exists
+        observation = self.create_observation_now()
+
+        # User visits the status page
+        self.browser.get(self.live_server_url + self.endpoint)
+
+        # User notices header
+        page_header = self.browser \
+            .find_element_by_xpath(".//div[@class='page-header']/h1")
+        self.assertEquals('Weather Observations: OK', page_header.text)
+
+        # User notices data table
+        table = self.browser \
+            .find_element_by_xpath(".//table[@class='table']")
+
+        # User notices the table headings
+        th = table.find_elements_by_tag_name('th')
+        self.assertEquals(2, len(th))
+
+        self.assertEquals("Location", th[0].text)
+        self.assertEquals("Status", th[1].text)
+
+        # User notices the table body
+        tbody = table.find_element_by_tag_name('tbody')
+
+        # User notices a single table row
+        tr = tbody.find_elements_by_tag_name('tr')
+        self.assertEqual(1, len(tr))
+
+        # User notices two table elements
+        td = tr[0].find_elements_by_tag_name('td')
+        self .assertEqual(2, len(td))
+
+        # User notices the location name matches
+        self.assertEquals("Liverpool", td[0].text)
+
+        # User notices the status is OK
+        self.assertEquals("OK", td[1].text)
+
+        observation.delete()
 
 
 class ObservationWeatherTest(FunctionalTest, CreateObservationMixin):
