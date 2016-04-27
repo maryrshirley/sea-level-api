@@ -43,6 +43,7 @@ OBSERVATION_A = {
     'wind_degrees': 12.5,
     'temperature': 13.6,
     'datetime': '2014-06-10T10:34:00Z',
+    'supplier': 'met_office',
 }
 
 OBSERVATION_B = {
@@ -54,10 +55,12 @@ OBSERVATION_B = {
     'wind_degrees': 25.5,
     'temperature': 26.4,
     'datetime': '2014-06-12T10:34:00Z',
+    'supplier': 'met_office',
 }
 
 OBSERVATION_C = {
     'datetime': '2014-06-12T10:34:00Z',
+    'supplier': 'met_office',
 }
 
 

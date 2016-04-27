@@ -106,7 +106,8 @@ class ObservationWeatherTest(FunctionalTest, CreateObservationMixin):
         self.assertPayloadMatchesData(data[0], payload[0])
 
         # The user can has individual endpoints to query
-        endpoints = [key for key in payload[0].keys() if not key == 'datetime']
+        endpoints = [key for key in payload[0].keys()
+                     if key not in ['datetime', 'supplier']]
 
         # The user queries each endpoint
         for endpoint in endpoints:
