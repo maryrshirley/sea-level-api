@@ -74,7 +74,7 @@ def load_recent_range_test_cases():
 def load_test_cases():
     cases = [(_URL, 'GET, POST, HEAD, OPTIONS',)]
     keys = OBSERVATION_A.keys()
-    for uri in [key for key in keys if not key == 'datetime']:
+    for uri in [key for key in keys if key not in ['datetime', 'supplier']]:
         uri = uri.replace('_', '-')
         cases.append(("{0}/{1}".format(_URL, uri),
                      'GET, HEAD, OPTIONS',))

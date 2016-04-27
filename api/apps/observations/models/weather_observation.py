@@ -31,6 +31,11 @@ CARDINAL_DIRECTIONS = (
     ('NNW', 'North North West'),
 )
 
+SUPPLIERS = (
+    ('met_office', 'Met Office'),
+    ('seatruck', 'Sea Truck'),
+)
+
 
 class WeatherObservationManager(models.Manager):
 
@@ -82,6 +87,7 @@ class WeatherObservation(models.Model):
                                       choices=CARDINAL_DIRECTIONS)
     wind_degrees = models.FloatField(null=True, blank=True)
     temperature = models.FloatField(null=True, blank=True)
+    supplier = models.CharField(max_length=10, choices=SUPPLIERS)
 
     objects = WeatherObservationManager()
 
