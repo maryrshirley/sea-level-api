@@ -10,6 +10,7 @@ class WeatherAdminTest(SeleniumTest, AdminTest, CreateObservationMixin,
 
     def setUp(self):
         super(WeatherAdminTest, self).setUp()
+
         self.setUpAdmin()
         self.loadAdmin()
 
