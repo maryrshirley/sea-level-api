@@ -1,9 +1,12 @@
-from .base import FunctionalTest, SeleniumTest
+from django.utils import formats
 
 from api.libs.test_utils.datetime_utils import delta
 from api.libs.view_helpers import format_datetime
 from api.libs.test_utils.weather import (CreateObservationMixin, OBSERVATION_B,
                                          OBSERVATION_C, encode_datetime)
+
+from .base import FunctionalTest, SeleniumTest
+from .base_weather import WeatherAdminTest
 
 
 class ObservationWeatherBrowser(SeleniumTest):
@@ -28,6 +31,27 @@ class ObservationWeatherBrowser(SeleniumTest):
         expected = 'Get weather observations. Valid parameters are start and'\
                    ' end (in format 2014-05-01T00:17:00Z)'
         self.assertEquals(expected, page_desc.text)
+
+
+class ObservationAdmin(WeatherAdminTest):
+
+    def test_observation_admin(self):
+        observations = [
+            self.create_observation(datetime=delta(hours=-2)),
+            self.create_observation_now()
+        ]
+
+        super(ObservationAdmin, self)._test_admin(observations, 'observations',
+                                                  self.assert_datetime)
+
+        for observation in observations:
+            observation.delete()
+
+    def assert_datetime(self, row, obj):
+        datetime_field = row.find_element_by_class_name('field-datetime')
+        datetime = formats.date_format(obj.datetime,
+                                       "DATETIME_FORMAT")
+        self.assertEqual(datetime, datetime_field.text)
 
 
 class ObservationWeatherStatus(SeleniumTest, CreateObservationMixin):

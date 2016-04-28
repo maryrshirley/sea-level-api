@@ -1,6 +1,8 @@
 from .base import FunctionalTest, SeleniumTest
+from .base_weather import WeatherAdminTest
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from django.utils import formats
 
 from selenium import webdriver
 
@@ -40,6 +42,28 @@ class PredictionWeatherBrowser(StaticLiveServerTestCase):
         expected = 'Get weather predictions. Valid parameters are start and'\
                    ' end (in format 2014-05-01T00:17:00Z)'
         self.assertEquals(expected, page_desc.text)
+
+
+class PredictionAdmin(WeatherAdminTest):
+
+    def test_prediction_admin(self):
+        predictions = [
+            self.create_prediction(valid_from=delta(hours=-4),
+                                   valid_to=delta(hours=-2)),
+            self.create_prediction_now()
+        ]
+
+        super(PredictionAdmin, self)._test_admin(predictions, 'predictions',
+                                                 self.assert_valid_dates)
+
+        for prediction in predictions:
+            prediction.delete()
+
+    def assert_valid_dates(self, row, obj):
+        from_field = row.find_element_by_class_name('field-valid_from')
+        valid_from = formats.date_format(obj.valid_from,
+                                         "DATETIME_FORMAT")
+        self.assertEqual(valid_from, from_field.text)
 
 
 class PredictionWeatherStatus(SeleniumTest, CreatePredictionMixin):

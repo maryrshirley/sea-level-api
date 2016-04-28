@@ -4,6 +4,8 @@ from api.apps.observations.models import WeatherObservation
 
 @admin.register(WeatherObservation)
 class WeatherObservationAdmin(admin.ModelAdmin):
+    list_display = ('location', 'supplier', 'datetime')
+    list_filter = ('location', 'supplier')
 
     def has_add_permission(self, request):
         return False
