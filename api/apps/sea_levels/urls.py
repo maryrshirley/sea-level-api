@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, url
 from django.conf import settings
 
-from .views import SeaLevels, SeaLevelsNow
+from .views import SeaLevels, SeaLevelsLatest, SeaLevelsNow
 
 urlpatterns = patterns(
     '',
@@ -15,4 +15,8 @@ urlpatterns = patterns(
     url(r'^(?P<location_slug>' + settings.SLUG_REGEX + ')/now/$',
         SeaLevelsNow.as_view(),
         name='sea-levels'),
+
+    url(r'^(?P<location_slug>' + settings.SLUG_REGEX + ')/latest/$',
+        SeaLevelsLatest.as_view(),
+        name='sea-levels-latest'),
 )
