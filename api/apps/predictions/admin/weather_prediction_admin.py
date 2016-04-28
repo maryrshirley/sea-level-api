@@ -4,6 +4,8 @@ from api.apps.predictions.models import WeatherPrediction
 
 @admin.register(WeatherPrediction)
 class WeatherPredictionAdmin(admin.ModelAdmin):
+    list_display = ('location', 'supplier', 'valid_from', 'valid_to')
+    list_filter = ('location', 'supplier')
 
     def has_add_permission(self, request):
         return False

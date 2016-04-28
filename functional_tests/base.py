@@ -1,10 +1,12 @@
 import json
 
+from django.contrib.auth.models import User
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
 import requests
 
 from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
 
 from rest_framework.authtoken.models import Token
 
@@ -80,3 +82,26 @@ class SeleniumTest(StaticLiveServerTestCase, LocationMixin):
         self.browser.quit()
         self.tearDownLocation()
         super(SeleniumTest, self).tearDown()
+
+
+class AdminTest(object):
+
+    def setUpAdmin(self):
+        self.admin = User.objects.create_superuser('admin',
+                                                   'admin@example.com',
+                                                   'admin')
+        self.admin_url = self.live_server_url + '/admin/'
+
+    def tearDownAdmin(self):
+        self.admin.delete()
+
+    def loginAdmin(self):
+        username_field = self.browser.find_element_by_name('username')
+        username_field.send_keys('admin')
+        password_field = self.browser.find_element_by_name('password')
+        password_field.send_keys('admin')
+        password_field.send_keys(Keys.RETURN)
+
+    def loadAdmin(self):
+        self.browser.get(self.admin_url)
+        self.loginAdmin()
