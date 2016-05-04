@@ -41,4 +41,4 @@ class StatusTest(StaticLiveServerTestCase):
         xpath = ".//h2/a"
         sublinks = self.browser.find_elements_by_xpath(xpath)
         hrefs = self.parse_hrefs(sublinks)
-        self.assertEqual(OrderedDict(self.fixture_links), hrefs)
+        self.assertEqual(set(self.fixture_links), set(hrefs))
