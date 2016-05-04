@@ -2,7 +2,10 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.views.generic.base import RedirectView
 
+from rest_framework.authtoken.views import obtain_auth_token
+
 from .api_root_view import ApiRoot
+from .apps.users.views.token import validate_token
 
 urlpatterns = [
     # Examples:
@@ -12,6 +15,9 @@ urlpatterns = [
     url(r'^$', RedirectView.as_view(url='/1/', permanent=False)),
 
     url(r'^1/$', ApiRoot.as_view(), name='api-root'),
+
+    url(r'^1/authenticate$', obtain_auth_token),
+    url(r'^1/authenticate/validate$', validate_token),
 
     url(r'^admin/', include(admin.site.urls)),
 
