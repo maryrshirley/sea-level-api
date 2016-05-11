@@ -75,6 +75,7 @@ INSTALLED_APPS = (
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
+    'nopassword',
 
     'api.apps.predictions',
     'api.apps.locations',
@@ -85,6 +86,7 @@ INSTALLED_APPS = (
     'api.apps.surge_model_converter',
     'api.apps.tide_gauges',
     'api.apps.users',
+    'api.apps.authentication',
 
     'api.libs.minute_in_time',
 )
@@ -182,3 +184,14 @@ CORS_ALLOW_METHODS = (
 CORS_ALLOW_CREDENTIALS = False
 
 CORS_PREFLIGHT_MAX_AGE = 3 * 3600
+
+EMAIL_AUTHENTICATION_BACKENDS = \
+    ['api.apps.authentication.backends.email.EmailBackend']
+AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend'] \
+    + EMAIL_AUTHENTICATION_BACKENDS
+
+NOPASSWORD_HIDE_USERNAME = True
+NOPASSWORD_TWILIO_SID = os.environ.get('NOPASSWORD_TWILIO_SID', None)
+NOPASSWORD_TWILIO_AUTH_TOKEN = os.environ.get('NOPASSWORD_TWILIO_AUTH_TOKEN',
+                                              None)
+DEFAULT_FROM_NUMBER = '+441315101818'
