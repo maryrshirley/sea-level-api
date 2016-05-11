@@ -2,11 +2,11 @@ from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 
 
-def create_user(username, *args, **kwargs):
+def create_user(username, email='', *args, **kwargs):
     is_internal_collector = kwargs.pop('is_internal_collector', None)
     available_locations = kwargs.pop('available_locations', [])
 
-    user = User.objects.create(username=username, *args, **kwargs)
+    user = User.objects.create(username=username, email=email, *args, **kwargs)
     profile = user.user_profile
 
     if is_internal_collector is not None:

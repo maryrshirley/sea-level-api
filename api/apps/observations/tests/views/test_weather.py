@@ -93,7 +93,9 @@ class TestWeatherView(APITestCase, CreateObservationMixin):
         cls.liverpool = Location.objects.create(slug='liverpool',
                                                 name='Liverpool')
         cls.location = cls.liverpool
-        cls.user = create_user('collector', is_internal_collector=True)
+        cls.user = create_user('collector',
+                               'collector@sealevelresearch.com',
+                               is_internal_collector=True)
 
     @classmethod
     def tearDownClass(cls):
