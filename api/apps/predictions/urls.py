@@ -11,7 +11,8 @@ from .serializers.weather_serializer import (
     WeatherWindSpeedSerializer,
     WeatherWindDirectionSerializer,
     WeatherWindDegreesSerializer,
-    WeatherTemperatureSerializer)
+    WeatherTemperatureSerializer,
+    WeatherTypeSerializer)
 from .views import (TideLevels, TideLevelsNow, TideWindows, TideWindowsNow,
                     SurgeLevels)
 from .views.weather import (WeatherPredictions, WeatherRange, WeatherNow,
@@ -28,7 +29,8 @@ endpoints = (
     EndPoint('wind-speed', WeatherWindSpeedSerializer),
     EndPoint('wind-direction', WeatherWindDirectionSerializer),
     EndPoint('wind-degrees', WeatherWindDegreesSerializer),
-    EndPoint('temperature', WeatherTemperatureSerializer)
+    EndPoint('temperature', WeatherTemperatureSerializer),
+    EndPoint('weather-type', WeatherTypeSerializer)
 )
 
 urlpatterns = [

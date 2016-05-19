@@ -34,6 +34,41 @@ CARDINAL_DIRECTIONS = (
     ('NNW', 'North North West'),
 )
 
+WEATHER_TYPES = (
+    ('not_available', 'Not available'),
+    ('clear_night', 'Clear night'),
+    ('sunny_day', 'Sunny day'),
+    ('partly_cloudy_night', 'Partly cloudy (night)'),
+    ('partly_cloudy_day', 'Partly cloudy (day)'),
+    ('not_used', 'Not used'),
+    ('mist', 'Mist'),
+    ('fog', 'Fog'),
+    ('cloudy', 'Cloudy'),
+    ('overcast', 'Overcast'),
+    ('light_rain_shower_night', 'Light rain shower (night)'),
+    ('light_rain_shower_day', 'Light rain shower (day)'),
+    ('drizzle', 'Drizzle'),
+    ('light_rain', 'Light rain'),
+    ('heavy_rain_shower_night', 'Heavy rain shower (night)'),
+    ('heavy_rain_shower_day', 'Heavy rain shower (day)'),
+    ('heavy_rain', 'Heavy rain'),
+    ('sleet_shower_night', 'Sleet shower (night)'),
+    ('sleet_shower_day', 'Sleet shower (day)'),
+    ('sleet', 'Sleet'),
+    ('hail_shower_night', 'Hail shower (night)'),
+    ('hail_shower_day', 'Hail shower (day)'),
+    ('hail', 'Hail'),
+    ('light_snow_shower_night', 'Light snow shower (night)'),
+    ('light_snow_shower_day', 'Light snow shower (day)'),
+    ('light_snow', 'Light snow'),
+    ('heavy_snow_shower_night', 'Heavy snow shower (night)'),
+    ('heavy_snow_shower_day', 'Heavy snow shower (day)'),
+    ('heavy_snow', 'Heavy snow'),
+    ('thunder_shower_night', 'Thunder shower (night)'),
+    ('thunder_shower_day', 'Thunder shower (day)'),
+    ('thunder', 'Thunder'),
+)
+
 SUPPLIERS = (
     ('met_office', 'Met Office'),
     ('dnmi', 'Norwegian Meteorological Institute'),
@@ -106,6 +141,10 @@ class WeatherPrediction(models.Model):
                                       choices=CARDINAL_DIRECTIONS)
     wind_degrees = models.FloatField()
     temperature = models.FloatField()
+    weather_type = models.CharField(max_length=50,
+                                    choices=WEATHER_TYPES,
+                                    default='not_available'
+                                    )
     supplier = models.CharField(max_length=10, choices=SUPPLIERS)
     minute_from = models.ForeignKey(Minute, related_name='+')
     minute_to = models.ForeignKey(Minute, related_name='+')
