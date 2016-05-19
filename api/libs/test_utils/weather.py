@@ -17,6 +17,7 @@ PREDICTION_WEATHER = {
     'wind_speed': 15.5,
     'temperature': 16.6,
     'supplier': 'met_office',
+    'weather_type': 'drizzle',
     'valid_from': '2016-03-26T12:00:00Z',
     'valid_to': '2016-03-26T18:00:00Z',
 }
@@ -29,6 +30,7 @@ PREDICTION_WEATHER_B = {
     'wind_degrees': 24.5,
     'wind_speed': 25.4,
     'temperature': 26.3,
+    'weather_type': 'cloudy',
     'supplier': 'met_office',
     'valid_from': '2016-03-27T12:00:00Z',
     'valid_to': '2016-03-27T18:00:00Z',

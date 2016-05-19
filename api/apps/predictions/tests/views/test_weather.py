@@ -165,6 +165,21 @@ class TestWeatherView(APITestCase, PostJsonMixin, CreatePredictionMixin):
         assert_equal(1, len(data))
         prediction.delete()
 
+    def test_that_default_weather_type_is_unavailable(self):
+        WeatherPrediction.objects.create(precipitation=20,
+                                         location=self.location,
+                                         pressure=21,
+                                         wind_gust=22,
+                                         wind_direction='N',
+                                         wind_degrees=24,
+                                         wind_speed=25,
+                                         temperature=26,
+                                         supplier='met_office',
+                                         valid_from=delta(hours=2),
+                                         valid_to=delta(hours=4))
+        prediction = WeatherPrediction.objects.get()
+        self.assertEquals('not_available', prediction.weather_type)
+
     def test_that_http_get_returns_multiple_weather_prediction(self):
         prediction1 = self.create_prediction_now()
         prediction2 = \
@@ -176,6 +191,7 @@ class TestWeatherView(APITestCase, PostJsonMixin, CreatePredictionMixin):
                                        wind_speed=25,
                                        temperature=26,
                                        supplier='met_office',
+                                       weather_type='thunder',
                                        valid_from=delta(hours=2),
                                        valid_to=delta(hours=4))
 

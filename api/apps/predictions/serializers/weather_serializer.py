@@ -59,3 +59,9 @@ class WeatherTemperatureSerializer(WeatherSerializer):
     class Meta:
         model = WeatherPrediction
         fields = ('valid_from', 'valid_to', 'temperature',)
+
+
+class WeatherTypeSerializer(WeatherSerializer):
+    class Meta:
+        model = WeatherPrediction
+        fields = ('valid_from', 'valid_to', 'weather_type',)
