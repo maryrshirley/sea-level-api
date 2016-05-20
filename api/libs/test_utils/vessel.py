@@ -1,12 +1,12 @@
 import copy
 
-from api.apps.vessel.models.vessel import Vessel
+from api.apps.vessel.models import Vessel
 
 VESSEL_A = {
-    'slug': 'sample',
-    'name': 'Sample',
-    'imo': '1234567',
-    'draft': 1.2,
+    'slug': 'isle-of-arran',
+    'name': 'ISLE OF ARRAN',
+    'imo': '8219554',
+    'draft': 3.2,
 }
 
 

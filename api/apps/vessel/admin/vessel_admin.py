@@ -1,5 +1,5 @@
 from django.contrib import admin
-from api.apps.vessel.models import Vessel
+from ..models import Vessel
 
 
 @admin.register(Vessel)

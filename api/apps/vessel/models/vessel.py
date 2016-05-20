@@ -13,9 +13,7 @@ class Vessel(models.Model):
         validators=[MinLengthValidator(7),
                     MaxLengthValidator(7),
                     RegexValidator(regex="^\d+$", code='invalid_imo',
-                                   message=_("Must be numbers only"))]
-        )
-    
+                                   message=_("Must be numbers only"))])
     draft = models.FloatField(validators=[MinValueValidator(0)])
 
     def save(self, *args, **kwargs):

@@ -10,16 +10,15 @@ from selenium.webdriver.common.keys import Keys
 
 from rest_framework.authtoken.models import Token
 
-from api.apps.locations.models import Location
+from api.libs.test_utils.location import LocationMixin
 from api.apps.users.helpers import create_user
 
 
-class FunctionalTest(StaticLiveServerTestCase):
+class FunctionalTest(StaticLiveServerTestCase, LocationMixin):
 
     def setUp(self):
         super(FunctionalTest, self).setUp()
-        self.liverpool = Location.objects.create(
-            slug='liverpool', name='Liverpool')
+        self.liverpool = self.create_location()
         self.user = create_user('permitted', is_internal_collector=True)
 
     def tearDown(self):
@@ -103,15 +102,18 @@ class AdminTest(object):
         self.browser.get(self.admin_url)
         self.loginAdmin()
 
-    def add_record(self, slug, label, record):
+    def load_model_page(self, slug, label):
         # User clicks on the admin page
-        admin_page = self.browser.find_element_by_class_name('model-'+slug) \
+        admin_page = self.browser.find_element_by_class_name('model-' + slug) \
             .find_element_by_link_text(label)
         admin_page.click()
 
+    def add_record(self, slug, label, record):
+        self.load_model_page(slug, label)
+
         # User notices the addlink button
         addlink = self.browser.find_element_by_class_name('addlink')
-        self.assertEquals("Add "+slug, addlink.text)
+        self.assertEquals("Add " + slug, addlink.text)
 
         # User clicks on the add button
         addlink.click()
