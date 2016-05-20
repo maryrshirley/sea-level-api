@@ -3,21 +3,23 @@ import pytz
 
 from api.apps.locations.models import Location
 from api.apps.predictions.utils import create_surge_prediction
+from api.libs.test_utils.mixins import LocationMixin
 from .base import AdminTest, SeleniumTest
 
 BASE_TIME = datetime.datetime(2014, 8, 1, 10, 0, 0, tzinfo=pytz.UTC)
 
 
-class SurgeAdminTest(SeleniumTest, AdminTest):
+class SurgeAdminTest(SeleniumTest, AdminTest, LocationMixin):
 
     def setUp(self):
         super(SurgeAdminTest, self).setUp()
-
+        self.setUpLocation()
         self.setUpAdmin()
         self.loadAdmin()
 
     def tearDown(self):
         self.tearDownAdmin()
+        self.tearDownLocation()
         super(SurgeAdminTest, self).tearDown()
 
     def test_admin(self):

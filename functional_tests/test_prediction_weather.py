@@ -7,6 +7,7 @@ from django.utils import formats
 from selenium import webdriver
 
 from api.libs.test_utils.datetime_utils import delta
+from api.libs.test_utils.mixins import LocationMixin
 from api.libs.test_utils.weather import CreatePredictionMixin, encode_datetime
 from api.libs.view_helpers import format_datetime
 
@@ -66,9 +67,18 @@ class PredictionAdmin(WeatherAdminTest):
         self.assertEqual(valid_from, from_field.text)
 
 
-class PredictionWeatherStatus(SeleniumTest, CreatePredictionMixin):
+class PredictionWeatherStatus(SeleniumTest, CreatePredictionMixin,
+                              LocationMixin):
 
     endpoint = '/1/_status/weather-predictions/'
+
+    def setUp(self):
+        super(PredictionWeatherStatus, self).setUp()
+        self.setUpLocation()
+
+    def tearDown(self):
+        self.tearDownLocation()
+        super(PredictionWeatherStatus, self).tearDown()
 
     def test_location_has_status(self):
         # A prediction exists

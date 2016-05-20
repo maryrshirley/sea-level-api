@@ -1,4 +1,5 @@
 from api.apps.locations.models import Location
+from api.libs.test_utils.mixins import LocationMixin
 from api.libs.test_utils.weather import (CreateObservationMixin,
                                          CreatePredictionMixin)
 
@@ -6,16 +7,18 @@ from .base import AdminTest, SeleniumTest
 
 
 class WeatherAdminTest(SeleniumTest, AdminTest, CreateObservationMixin,
-                       CreatePredictionMixin):
+                       CreatePredictionMixin, LocationMixin):
 
     def setUp(self):
         super(WeatherAdminTest, self).setUp()
 
+        self.setUpLocation()
         self.setUpAdmin()
         self.loadAdmin()
 
     def tearDown(self):
         self.tearDownAdmin()
+        self.tearDownLocation()
         super(WeatherAdminTest, self).tearDown()
 
     def _test_admin(self, objects, label, assert_function):
