@@ -17,8 +17,6 @@ class LocationAdminTest(SeleniumTest, AdminTest, LocationMixin):
     def test_add_location(self):
         # Add a record
         records = [self.payload_location]
-        records = [{'slug': 'sample-location', 'name': 'Sample',
-                    'min_depth': 2.1, 'under_keal': 4.5}]
         self.add_record('location', 'Locations', records[0])
 
         # Check the record now exists
