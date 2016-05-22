@@ -1,18 +1,19 @@
 from django.test import TestCase
 from nose.tools import assert_equal, assert_in, assert_not_in
 
+from api.apps.locations.models import Location
 from api.apps.predictions.utils import (
     create_tide_prediction, create_surge_prediction)
 from api.apps.observations.utils import create_observation
-from api.apps.locations.models import Location
 from api.libs.test_utils import decode_json
+from api.libs.test_utils.location import LocationMixin
 
 import datetime
 
 import pytz
 
 
-class TestSeaLevelsViewBase(TestCase):
+class TestSeaLevelsViewBase(TestCase, LocationMixin):
     BASE_PATH = '/1/sea-levels/'
     EXAMPLE_FULL_PATH = (
         BASE_PATH + 'liverpool/'
@@ -20,6 +21,16 @@ class TestSeaLevelsViewBase(TestCase):
         '&end=2014-06-17T09:05:00Z')
 
     fixtures = ['api/apps/locations/fixtures/two_locations.json']
+
+    @classmethod
+    def setUpClass(cls):
+        super(TestSeaLevelsViewBase, cls).setUpClass()
+        cls.location = Location.objects.get(slug='liverpool')
+        cls.liverpool = cls.location
+
+    @classmethod
+    def tearDownClass(cls):
+        super(TestSeaLevelsViewBase, cls).tearDownClass()
 
     def _get(self, start, end, location='liverpool'):
         response = self.client.get(
@@ -29,6 +40,7 @@ class TestSeaLevelsViewBase(TestCase):
 
 
 class TestSeaLevelsView(TestSeaLevelsViewBase):
+
     fixtures = TestSeaLevelsViewBase.fixtures + [
         'api/apps/predictions/fixtures/predictions_two_locations.json',
     ]
@@ -86,18 +98,18 @@ class TestSeaLevelsView(TestSeaLevelsViewBase):
 class TestSeaLevelsViewShowsObservations(TestSeaLevelsViewBase):
 
     @classmethod
-    def setUp(cls):
+    def setUpClass(cls):
+        super(TestSeaLevelsViewShowsObservations, cls).setUpClass()
         base_time = datetime.datetime(2014, 6, 1, 10, 30, tzinfo=pytz.UTC)
-        location = Location.objects.get(slug='liverpool')
         for minute, tide_level in [(0, 5.0), (1, 5.1), (2, 5.2)]:
             create_tide_prediction(
-                location,
+                cls.location,
                 base_time + datetime.timedelta(minutes=minute),
                 tide_level
             )
 
         create_observation(
-            location,
+            cls.location,
             base_time + datetime.timedelta(minutes=1),
             4.8, True)
 
@@ -131,16 +143,15 @@ class TestSeaLevelsViewShowsSurgePredictions(TestSeaLevelsViewBase):
     @classmethod
     def setUp(cls):
         base_time = datetime.datetime(2014, 6, 1, 10, 30, tzinfo=pytz.UTC)
-        location = Location.objects.get(slug='liverpool')
         for minute, tide_level in [(0, 5.0), (1, 5.1), (2, 5.2)]:
             create_tide_prediction(
-                location,
+                cls.location,
                 base_time + datetime.timedelta(minutes=minute),
                 tide_level
             )
 
         create_surge_prediction(
-            location,
+            cls.location,
             base_time + datetime.timedelta(minutes=1),
             0.15)
 
@@ -171,16 +182,16 @@ class TestSeaLevelsViewShowsSurgePredictions(TestSeaLevelsViewBase):
 
 class TestSeaLevelsViewLimitingQueries(TestSeaLevelsViewBase):
     @classmethod
-    def setUp(cls):
+    def setUpClass(cls):
+        super(TestSeaLevelsViewLimitingQueries, cls).setUpClass()
         cls.base_time = datetime.datetime(2014, 6, 1, 10, 30, tzinfo=pytz.UTC)
         cls.create_lots_of_tide_level_entries()
 
     @classmethod
     def create_lots_of_tide_level_entries(cls):
-        location = Location.objects.get(slug='liverpool')
         for minute in range(30 * 60):
             create_tide_prediction(
-                location,
+                cls.location,
                 cls.base_time + datetime.timedelta(minutes=minute),
                 5.0
             )
@@ -197,16 +208,16 @@ class TestSeaLevelsViewLimitingQueries(TestSeaLevelsViewBase):
 
 class TestSeaLevelsIntevalParameter(TestSeaLevelsViewBase):
     @classmethod
-    def setUp(cls):
+    def setUpClass(cls):
+        super(TestSeaLevelsIntevalParameter, cls).setUpClass()
         cls.base_time = datetime.datetime(2014, 6, 1, 10, 30, tzinfo=pytz.UTC)
         cls.create_60_entries()
 
     @classmethod
     def create_60_entries(cls):
-        location = Location.objects.get(slug='liverpool')
         for minute in range(60):
             create_tide_prediction(
-                location,
+                cls.location,
                 cls.base_time + datetime.timedelta(minutes=minute),
                 5.0
             )
@@ -281,10 +292,9 @@ class TestSeaLevelsViewOrderingResults(TestSeaLevelsViewBase):
 
     @classmethod
     def create_unordered_tide_level_entries(cls):
-        location = Location.objects.get(slug='liverpool')
         for minute in [0, 4, 2, 3, 1]:
             create_tide_prediction(
-                location,
+                cls.location,
                 cls.base_time + datetime.timedelta(minutes=minute),
                 5.0
             )

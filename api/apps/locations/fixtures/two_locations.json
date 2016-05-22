@@ -2,7 +2,9 @@
 {
     "fields": {
         "slug": "liverpool",
-        "name": "Liverpool"
+        "name": "Liverpool",
+				"min_depth": 2.1,
+				"under_keal": 4.5
     },
     "model": "locations.location",
     "pk": 1
@@ -10,7 +12,9 @@
 {
     "fields": {
         "slug": "southampton",
-        "name": "Southampton"
+        "name": "Southampton",
+				"min_depth": 2.1,
+				"under_keal": 4.5
     },
     "model": "locations.location",
     "pk": 2

@@ -7,9 +7,9 @@ from django.test import TestCase
 
 from nose.tools import assert_equal
 
-from api.apps.locations.models import Location
 from api.apps.predictions.models import TidePrediction
 from api.apps.predictions.utils import create_tide_prediction
+from api.libs.test_utils.location import LocationMixin
 
 from api.apps.predictions.management.commands.import_predictions import (
     do_load_predictions, delete_existing_predictions)
@@ -20,17 +20,24 @@ except ImportError:
     from cStringIO import StringIO  # Python 2
 
 
-class TestImportTidePredictionsCommand(TestCase):
-    fixtures = ['api/apps/locations/fixtures/two_locations.json']
+class TestImportTidePredictionsCommand(TestCase, LocationMixin):
 
     TEST_CSV = ('datetime,predicted_tide_level,predicted_is_high\n'
                 '2014-06-01T00:00:00Z,8.55,\n'
                 '2014-06-01T00:01:00Z,8.56,1\n')
 
     @classmethod
-    def setUp(cls):
-        cls.csv_fobj = StringIO(cls.TEST_CSV)
-        cls.liverpool = Location.objects.get(slug='liverpool')
+    def setUpClass(cls):
+        super(TestImportTidePredictionsCommand, cls).setUpClass()
+
+    def setUp(self):
+        super(TestImportTidePredictionsCommand, self).setUp()
+        self.csv_fobj = StringIO(self.TEST_CSV)
+        self.liverpool = self.create_location()
+
+    def tearDown(self):
+        self.liverpool.delete()
+        super(TestImportTidePredictionsCommand, self).tearDown()
 
     @staticmethod
     def _serialize(prediction):
@@ -77,15 +84,12 @@ class TestImportTidePredictionsCommand(TestCase):
             self._serialize(TidePrediction.objects.get(minute__datetime=dt)))
 
 
-class TestDeleteExistingTidePredictions(TestCase):
-    fixtures = [
-        'api/apps/locations/fixtures/two_locations.json',
-    ]
+class TestDeleteExistingTidePredictions(TestCase, LocationMixin):
 
     @classmethod
     def setUp(cls):
-        cls.liv = Location.objects.get(slug='liverpool')
-        cls.south = Location.objects.get(slug='southampton')
+        cls.liv = cls.create_location(slug='liverpool', name='Liverpool')
+        cls.south = cls.create_location(slug='southampton', name='Southampton')
         cls.datetime = datetime.datetime(
             2014, 8, 3, 13, 0, tzinfo=pytz.UTC)
 

@@ -2,13 +2,10 @@ import datetime
 
 from freezegun import freeze_time
 
-from django.test import TestCase
 from nose.tools import assert_equal
 
 
 from api.apps.predictions.models import SurgePrediction
-
-from api.apps.locations.models import Location
 
 from api.apps.status.views.surge_predictions import (
     check_surge_predictions)
@@ -16,23 +13,21 @@ from api.apps.status.views.surge_predictions import (
 from api.apps.status.alert_manager import AlertType, disable_alert_until
 
 from .helpers import (BASE_TIME, _make_good_surge_predictions,
-                      _setup_locations, TestCheckBase)
+                      TestCheckBase)
 
 
-class TestSurgePredictionsView(TestCase):
+class TestSurgePredictionsView(TestCheckBase):
     BASE_PATH = '/1/_status/surge-predictions/'
 
     def _setup_all_ok(self):
-        liverpool, southampton = _setup_locations()
-        _make_good_surge_predictions()
-        southampton.delete()  # so that it doesn't come up as a failure
+        _make_good_surge_predictions(self.liverpool)
+        self.southampton.delete()  # so that it doesn't come up as a failure
 
     def _setup_not_ok(self):
         """
         Create two locations but with no data - this will cause a failure.
         """
 
-        liverpool, southampton = _setup_locations()
         SurgePrediction.objects.all().delete()  # to ensure error
 
     def test_surge_predictions_page_has_status_ok_when_all_ok(self):
@@ -50,14 +45,14 @@ class TestSurgePredictionsView(TestCase):
 
 
 class TestFunctionCheckSurgePredictions(TestCheckBase):
-    @classmethod
-    def setUpClass(self):
-        _make_good_surge_predictions()
 
-    @classmethod
-    def tearDownClass(self):
-        Location.objects.all().delete()
+    def setUp(self):
+        super(TestFunctionCheckSurgePredictions, self).setUp()
+        _make_good_surge_predictions(self.liverpool)
+
+    def tearDown(self):
         SurgePrediction.objects.all().delete()
+        super(TestFunctionCheckSurgePredictions, self).tearDown()
 
     def test_that_surge_predictions_for_next_36_hours_every_minute_is_ok(self):
         with freeze_time(BASE_TIME):

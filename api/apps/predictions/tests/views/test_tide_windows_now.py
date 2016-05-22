@@ -12,7 +12,8 @@ class TestTideWindowsNow(TestTideWindowsViewBase):
     """
 
     @classmethod
-    def setUp(cls):
+    def setUpClass(cls):
+        super(TestTideWindowsNow, cls).setUpClass()
         cls.create_two_days_of_tide()
 
     @classmethod

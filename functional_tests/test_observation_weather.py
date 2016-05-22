@@ -119,9 +119,18 @@ class ObservationWeatherStatus(SeleniumTest, CreateObservationMixin,
         observation.delete()
 
 
-class ObservationWeatherTest(FunctionalTest, CreateObservationMixin):
+class ObservationWeatherTest(FunctionalTest, CreateObservationMixin,
+                             LocationMixin):
 
     endpoint = '/1/observations/weather/liverpool'
+
+    def setUp(self):
+        super(ObservationWeatherTest, self).setUp()
+        self.setUpLocation()
+
+    def tearDown(self):
+        self.tearDownLocation()
+        super(ObservationWeatherTest, self).tearDown()
 
     def test_can_save_observation(self):
         # A user has observation data

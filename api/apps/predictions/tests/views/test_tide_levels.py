@@ -2,8 +2,9 @@ from django.test import TestCase
 from nose.tools import assert_equal, assert_in, assert_not_in
 
 from api.apps.predictions.utils import create_tide_prediction
-from api.apps.locations.models import Location
 from api.libs.test_utils import decode_json
+from api.apps.locations.models import Location
+from api.libs.test_utils.location import LocationMixin
 
 from .test_location_parsing import LocationParsingTestMixin
 from .test_time_parsing import TimeParsingTestMixin
@@ -14,7 +15,7 @@ import datetime
 import pytz
 
 
-class TestTideLevelsViewBase(TestCase):
+class TestTideLevelsViewBase(TestCase, LocationMixin):
     BASE_PATH = '/1/predictions/tide-levels/'
     EXAMPLE_FULL_PATH = (
         BASE_PATH + 'liverpool/'
@@ -22,6 +23,15 @@ class TestTideLevelsViewBase(TestCase):
         '&end=2014-06-17T09:05:00Z')
 
     fixtures = ['api/apps/locations/fixtures/two_locations.json']
+
+    @classmethod
+    def setUpClass(cls):
+        super(TestTideLevelsViewBase, cls).setUpClass()
+        cls.location = Location.objects.get(slug='liverpool')
+
+    @classmethod
+    def tearDownClass(cls):
+        super(TestTideLevelsViewBase, cls).tearDownClass()
 
 
 class TestTideLevelsView(TestTideLevelsViewBase, LocationParsingTestMixin,
@@ -97,16 +107,16 @@ class TestTideLevelsView(TestTideLevelsViewBase, LocationParsingTestMixin,
 
 class TestTideLevelsViewLimitingQueries(TestTideLevelsViewBase):
     @classmethod
-    def setUp(cls):
+    def setUpClass(cls):
+        super(TestTideLevelsViewLimitingQueries, cls).setUpClass()
         cls.base_time = datetime.datetime(2014, 6, 1, 10, 30, tzinfo=pytz.UTC)
         cls.create_lots_of_tide_level_entries()
 
     @classmethod
     def create_lots_of_tide_level_entries(cls):
-        location = Location.objects.get(slug='liverpool')
         for minute in range(30 * 60):
             create_tide_prediction(
-                location,
+                cls.location,
                 cls.base_time + datetime.timedelta(minutes=minute),
                 5.0
             )
@@ -123,16 +133,16 @@ class TestTideLevelsViewLimitingQueries(TestTideLevelsViewBase):
 
 class TestTideLevelsIntevalParameter(TestTideLevelsViewBase):
     @classmethod
-    def setUp(cls):
+    def setUpClass(cls):
+        super(TestTideLevelsIntevalParameter, cls).setUpClass()
         cls.base_time = datetime.datetime(2014, 6, 1, 10, 30, tzinfo=pytz.UTC)
         cls.create_60_entries()
 
     @classmethod
     def create_60_entries(cls):
-        location = Location.objects.get(slug='liverpool')
         for minute in range(60):
             create_tide_prediction(
-                location,
+                cls.location,
                 cls.base_time + datetime.timedelta(minutes=minute),
                 5.0
             )
@@ -201,16 +211,16 @@ class TestTideLevelsIntevalParameter(TestTideLevelsViewBase):
 
 class TestTideLevelsViewOrderingResults(TestTideLevelsViewBase):
     @classmethod
-    def setUp(cls):
+    def setUpClass(cls):
+        super(TestTideLevelsViewOrderingResults, cls).setUpClass()
         cls.base_time = datetime.datetime(2014, 6, 1, 10, 30, tzinfo=pytz.UTC)
         cls.create_unordered_tide_level_entries()
 
     @classmethod
     def create_unordered_tide_level_entries(cls):
-        location = Location.objects.get(slug='liverpool')
         for minute in [0, 4, 2, 3, 1]:
             create_tide_prediction(
-                location,
+                cls.location,
                 cls.base_time + datetime.timedelta(minutes=minute),
                 5.0
             )

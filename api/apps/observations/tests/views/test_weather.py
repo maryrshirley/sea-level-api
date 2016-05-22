@@ -9,7 +9,6 @@ from nose_parameterized import parameterized
 
 from rest_framework.test import APITestCase
 
-from api.apps.locations.models import Location
 from api.apps.users.helpers import create_user
 from api.libs.test_utils import ViewAuthenticationTest
 from api.libs.test_utils.datetime_utils import delta
@@ -17,6 +16,7 @@ from api.libs.param_parsers.parse_time import parse_datetime
 from api.libs.view_helpers import format_datetime
 from api.libs.test_utils.weather import (OBSERVATION_A,
                                          CreateObservationMixin)
+from api.libs.test_utils.location import LocationMixin
 
 from ...models import WeatherObservation
 
@@ -85,14 +85,11 @@ def load_test_cases():
     return cases
 
 
-class TestWeatherView(APITestCase, CreateObservationMixin):
+class TestWeatherView(APITestCase, CreateObservationMixin, LocationMixin):
 
     @classmethod
     def setUpClass(cls):
         super(TestWeatherView, cls).setUpClass()
-        cls.liverpool = Location.objects.create(slug='liverpool',
-                                                name='Liverpool')
-        cls.location = cls.liverpool
         cls.user = create_user('collector',
                                'collector@sealevelresearch.com',
                                is_internal_collector=True)
@@ -100,11 +97,18 @@ class TestWeatherView(APITestCase, CreateObservationMixin):
     @classmethod
     def tearDownClass(cls):
         cls.user.delete()
-        cls.liverpool.delete()
         super(TestWeatherView, cls).tearDownClass()
 
     def setUp(self):
+        super(TestWeatherView, self).setUp()
+        self.liverpool = self.create_location(slug='liverpool',
+                                              name='Liverpool')
+        self.location = self.liverpool
         self.client.force_authenticate(user=self.user)
+
+    def tearDown(self):
+        self.liverpool.delete()
+        super(TestWeatherView, self).tearDown()
 
     @parameterized.expand(load_test_cases)
     def test_that_endpoint_exists(self, url, allow):

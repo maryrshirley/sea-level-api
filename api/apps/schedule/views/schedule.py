@@ -1,3 +1,4 @@
+from rest_framework.exceptions import ParseError
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework.mixins import CreateModelMixin
@@ -26,6 +27,8 @@ class Schedule(GenericAPIView, CreateModelMixin):
 
         # Treat later items in the list as newer
         for record in reversed(data):
+            if 'code' not in record:
+                raise ParseError(detail='Required field code not found')
             code = record['code']
             instance = existing_object(code)
 

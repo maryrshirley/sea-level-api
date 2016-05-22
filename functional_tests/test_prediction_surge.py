@@ -1,7 +1,6 @@
 import datetime
 import pytz
 
-from api.apps.locations.models import Location
 from api.apps.predictions.utils import create_surge_prediction
 from api.libs.test_utils.mixins import LocationMixin
 from .base import AdminTest, SeleniumTest
@@ -23,7 +22,7 @@ class SurgeAdminTest(SeleniumTest, AdminTest, LocationMixin):
         super(SurgeAdminTest, self).tearDown()
 
     def test_admin(self):
-        location2 = Location.objects.create(slug='location2', name='Location2')
+        location2 = self.create_location(slug='location2', name='Location2')
 
         for minute in range((36 * 60) + 10):
             create_surge_prediction(

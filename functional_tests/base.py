@@ -18,12 +18,10 @@ class FunctionalTest(StaticLiveServerTestCase, LocationMixin):
 
     def setUp(self):
         super(FunctionalTest, self).setUp()
-        self.liverpool = self.create_location()
         self.user = create_user('permitted', is_internal_collector=True)
 
     def tearDown(self):
         self.user.delete()
-        self.liverpool.delete()
         super(FunctionalTest, self).tearDown()
 
     @property
@@ -56,7 +54,6 @@ class FunctionalTest(StaticLiveServerTestCase, LocationMixin):
 
         # The user receives a valid OK response
         self.assertEqual(200, response.status_code)
-
         # The response is JSON
         return response.json()
 

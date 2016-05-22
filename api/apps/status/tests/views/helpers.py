@@ -7,15 +7,13 @@ from django.test import TestCase
 
 from api.apps.predictions.models import TidePrediction, SurgePrediction
 from api.apps.predictions.utils import create_surge_prediction
-
-from api.apps.locations.models import Location
+from api.libs.test_utils.location import LocationMixin
 
 
 BASE_TIME = datetime.datetime(2014, 8, 1, 10, 0, 0, tzinfo=pytz.UTC)
 
 
-def _make_good_surge_predictions():
-    liverpool, _ = _setup_locations()
+def _make_good_surge_predictions(liverpool):
 
     for minute in range((36 * 60) + 10):
         create_surge_prediction(
@@ -24,19 +22,18 @@ def _make_good_surge_predictions():
             0.2)
 
 
-def _setup_locations():
-    liverpool, _ = Location.objects.get_or_create(
-        slug='liverpool', name='Liverpool')
-    southampton, _ = Location.objects.get_or_create(
-        slug='southampton', name='Southampton')
-    return liverpool, southampton
+class TestCheckBase(TestCase, LocationMixin):
 
-
-class TestCheckBase(TestCase):
     def setUp(self):
-        self.liverpool, self.southampton = _setup_locations()
+        super(TestCheckBase, self).setUp()
+        self.liverpool = self.create_location()
+        self.southampton = self.create_location(self.LOCATION_B)
 
     def tearDown(self):
-        Location.objects.all().delete()
         TidePrediction.objects.all().delete()
         SurgePrediction.objects.all().delete()
+        if self.liverpool.id is not None:
+            self.liverpool.delete()
+        if self.southampton.id is not None:
+            self.southampton.delete()
+        super(TestCheckBase, self).tearDown()

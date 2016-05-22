@@ -3,21 +3,19 @@ from nose.tools import assert_equal
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase
 
-from api.apps.locations.models import Location
 from api.apps.users.helpers import create_user
 from api.libs.test_utils import decode_json
+from api.libs.test_utils.location import LocationMixin
 
 from .mixins import PostJsonMixin
 
 
-class ViewAuthenticationTest(APITestCase, PostJsonMixin):
+class ViewAuthenticationTest(APITestCase, PostJsonMixin, LocationMixin):
     @classmethod
     def setUpClass(cls, url, good_data):
         super(ViewAuthenticationTest, cls).setUpClass()
 
         cls.url = url
-        cls.liverpool = Location.objects.create(
-            slug='liverpool', name='Liverpool')
 
         cls.permitted = create_user('permitted', is_internal_collector=True)
         cls.forbidden = create_user('forbidden', is_internal_collector=False)
@@ -30,7 +28,15 @@ class ViewAuthenticationTest(APITestCase, PostJsonMixin):
 
         cls.permitted.delete()
         cls.forbidden.delete()
-        cls.liverpool.delete()
+
+    def setUp(self):
+        self.liverpool = self.create_location(slug='liverpool',
+                                              name='Liverpool')
+        super(ViewAuthenticationTest, self).setUp()
+
+    def tearDown(self):
+        self.liverpool.delete()
+        super(ViewAuthenticationTest, self).tearDown()
 
     def _test_that_no_authentication_header_returns_http_401(self):
         # 401 vs 403: http://stackoverflow.com/a/6937030

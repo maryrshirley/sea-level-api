@@ -2,19 +2,22 @@ import datetime
 
 from api.libs.test_utils.datetime_utils import delta
 from api.apps.predictions.utils import create_tide_prediction
+from api.libs.test_utils.mixins import LocationMixin
 
 from .base import FunctionalTest
 
 
-class SeaLevelTest(FunctionalTest):
+class SeaLevelTest(FunctionalTest, LocationMixin):
 
     endpoint = '/1/sea-levels/liverpool'
 
     def setUp(self):
         super(SeaLevelTest, self).setUp()
-        self.create_over_twenty_four_hours_of_tide(self.liverpool)
+        self.setUpLocation()
+        self.create_over_twenty_four_hours_of_tide(self.location)
 
     def tearDown(self):
+        self.tearDownLocation()
         super(SeaLevelTest, self).tearDown()
 
     def create_over_twenty_four_hours_of_tide(cls, location):

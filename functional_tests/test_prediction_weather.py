@@ -123,9 +123,18 @@ class PredictionWeatherStatus(SeleniumTest, CreatePredictionMixin,
         prediction.delete()
 
 
-class PredictionWeatherTest(FunctionalTest, CreatePredictionMixin):
+class PredictionWeatherTest(FunctionalTest, CreatePredictionMixin,
+                            LocationMixin):
 
     endpoint = '/1/predictions/weather/liverpool'
+
+    def setUp(self):
+        super(PredictionWeatherTest, self).setUp()
+        self.setUpLocation()
+
+    def tearDown(self):
+        self.tearDownLocation()
+        super(PredictionWeatherTest, self).tearDown()
 
     def test_can_save_forecast(self):
         # A user has forecast data

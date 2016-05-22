@@ -2,39 +2,40 @@ from rest_framework.test import APITestCase
 
 from nose.tools import assert_equal
 
-from api.apps.locations.models import Location
 from api.apps.users.helpers import create_user
 from api.libs.test_utils import decode_json
+from api.libs.test_utils.location import LocationMixin
 
 
-class TestLocationListFiltering(APITestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.location_public = Location.objects.create(
-            slug='public-1', visible=True)
-        cls.location_private_1 = Location.objects.create(
-            slug='private-1', visible=False)
-        cls.location_private_2 = Location.objects.create(
-            slug='private-2', visible=False)
+class TestLocationListFiltering(APITestCase, LocationMixin):
 
-        cls.user_1 = create_user(
-            'user-1', available_locations=[cls.location_private_1])
+    def setUp(self):
+        super(TestLocationListFiltering, self).setUp()
+        self.user_collector = create_user(
+            'user-collector', is_internal_collector=True)
+        self.location_public = self.create_location(slug='public-1',
+                                                    visible=True)
+        self.location_private_1 = self.create_location(slug='private-1',
+                                                       visible=False)
+        self.location_private_2 = self.create_location(slug='private-2',
+                                                       visible=False)
+        self.user_1 = create_user(
+            'user-1', available_locations=[self.location_private_1])
 
-        cls.user_2 = create_user(
+        self.user_2 = create_user(
             'user-2',
             available_locations=[
-                cls.location_private_1, cls.location_private_2]
+                self.location_private_1, self.location_private_2]
         )
 
-        cls.user_collector = create_user(
-            'user-collector', is_internal_collector=True)
-
-    @classmethod
-    def tearDownClass(cls):
-        for obj in (cls.location_public, cls.location_private_1,
-                    cls.location_private_2, cls.user_1, cls.user_2,
-                    cls.user_collector):
-            obj.delete()
+    def tearDown(self):
+        self.location_public.delete()
+        self.location_private_1.delete()
+        self.location_private_2.delete()
+        self.user_1.delete()
+        self.user_2.delete()
+        self.user_collector.delete()
+        super(TestLocationListFiltering, self).tearDown()
 
     PATH = '/1/locations/'
 

@@ -7,18 +7,21 @@ from nose.tools import assert_equal
 from api.apps.observations.models import Observation
 from api.apps.observations.utils import create_observation
 from api.libs.minute_in_time.models import Minute
-from api.apps.locations.models import Location
+from api.libs.test_utils.location import LocationMixin
 
 
-class TestCreateObservation(TestCase):
-    fixtures = ['api/apps/locations/fixtures/two_locations.json']
+class TestCreateObservation(TestCase, LocationMixin):
 
-    @classmethod
-    def setUp(cls):
+    def setUp(self):
+        super(TestCreateObservation, self).setUp()
         Minute.objects.all().delete()
-        cls.datetime = datetime.datetime(
+        self.datetime = datetime.datetime(
             2014, 3, 5, 17, 45, tzinfo=pytz.UTC)
-        cls.liverpool = Location.objects.get(slug='liverpool')
+        self.liverpool = self.create_location(slug='liverpool')
+
+    def tearDown(self):
+        self.liverpool.delete()
+        super(TestCreateObservation, self).tearDown()
 
     def test_that_observation_can_be_created_when_minute_already_exists(self):
         Minute.objects.create(datetime=self.datetime)

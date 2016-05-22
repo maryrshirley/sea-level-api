@@ -90,7 +90,7 @@ class TestSchedule(APITestCase, ScheduleRequirementsMixin):
 
     def test_that_http_post_can_create_multiple_schedules(self):
         payload = [self.payload_schedule(),
-                   self.payload_schedule(self.DATA_B)]
+                   self.payload_schedule(self.SCHEDULE_B)]
 
         self.postPayload(payload, 2)
 

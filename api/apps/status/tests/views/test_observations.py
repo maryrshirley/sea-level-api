@@ -2,7 +2,6 @@ import datetime
 
 from freezegun import freeze_time
 
-from django.test import TestCase
 from nose.tools import assert_equal
 
 from api.apps.observations.utils import create_observation
@@ -13,27 +12,24 @@ from api.apps.status.views.observations import check_observations
 
 from api.apps.status.alert_manager import AlertType, disable_alert_until
 
-from .helpers import (BASE_TIME, _setup_locations, TestCheckBase)
+from .helpers import (BASE_TIME, TestCheckBase)
 
 
-class TestObservationsView(TestCase):
+class TestObservationsView(TestCheckBase):
     BASE_PATH = '/1/_status/observations/liverpool/'
 
     def _setup_all_ok(self):
-        liverpool, southampton = _setup_locations()
         create_observation(
-            liverpool,
+            self.liverpool,
             BASE_TIME - datetime.timedelta(minutes=10),
             4.5,
             True)
-        southampton.delete()  # so that it doesn't come up as a failure
+        self.southampton.delete()
 
     def _setup_not_ok(self):
         """
         Create two locations but with no data - this will cause a failure.
         """
-
-        liverpool, southampton = _setup_locations()
         Observation.objects.all().delete()  # to ensure error
 
     def test_observations_page_has_status_ok_when_all_ok(self):

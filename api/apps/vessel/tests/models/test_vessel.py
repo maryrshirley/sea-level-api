@@ -22,9 +22,9 @@ class TestVessel(TestCase, VesselMixin):
             vessel2 = self.create_vessel()
             vessel2.clean_fields()
         exception = "duplicate key value violates unique constraint"\
-                    " \"vessel_vessel_imo_key\"\nDETAIL:  Key (imo)=(1234567)"\
+                    " \"vessel_vessel_imo_key\"\nDETAIL:  Key (imo)=(8219554)"\
                     " already exists.\n"
-        self.assertEqual(exception, ra.exception.message)
+        self.assertEqual(exception, str(ra.exception))
 
     def test_imo_short_length_raises(self):
         with self.assertRaises(ValidationError) as ra:
@@ -41,7 +41,7 @@ class TestVessel(TestCase, VesselMixin):
             vessel.clean_fields()
         self.assertEqual(
             'value too long for type character varying(7)\n',
-            ra.exception.message)
+            str(ra.exception))
 
     @parameterized.expand([
         ("abcdefg",),

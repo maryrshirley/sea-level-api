@@ -5,7 +5,7 @@ from nose.tools import assert_equal, assert_is_instance, assert_raises
 from freezegun import freeze_time
 from django.test import TestCase
 
-from api.apps.locations.models import Location
+from api.libs.test_utils.location import LocationMixin
 from ..alert_manager import (AlertType, disable_alert_until, enable_alert,
                              enable_all_alerts, is_alert_enabled,
                              alerts_enabled, alerts_disabled)
@@ -16,16 +16,18 @@ from ..models import LocationStatusConfig
 BASE_DATE = datetime.datetime(2014, 11, 24, 10, 0, tzinfo=pytz.UTC)
 
 
-class TestAlertManagerBase(TestCase):
+class TestAlertManagerBase(TestCase, LocationMixin):
     def setUp(self):
+        super(TestAlertManagerBase, self).setUp()
         self._clean_up()
-        self.liverpool = Location.objects.create(slug='liverpool')
+        self.liverpool = self.create_location()
 
     def tearDown(self):
         self._clean_up()
+        self.liverpool.delete()
+        super(TestAlertManagerBase, self).tearDown()
 
     def _clean_up(self):
-        Location.objects.all().delete()
         LocationStatusConfig.objects.all().delete()
 
     def _disable(self, alert_type):

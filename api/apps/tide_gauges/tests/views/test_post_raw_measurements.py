@@ -8,11 +8,11 @@ from rest_framework.test import APITestCase
 from rest_framework.authtoken.models import Token
 
 from api.libs.test_utils import decode_json
+from api.libs.test_utils.location import LocationMixin
 
 from api.apps.tide_gauges.models import (RawMeasurement, TideGauge,
                                          TideGaugeLocationLink)
 from api.apps.observations.models import Observation
-from api.apps.locations.models import Location
 from api.apps.users.helpers import create_user
 
 
@@ -192,7 +192,7 @@ class TestPostRawMeasurements(TestPutRawMeasurementsBase):
             decode_json(response.content))
 
 
-class TestTideGaugeLocationLink(TestPutRawMeasurementsBase):
+class TestTideGaugeLocationLink(TestPutRawMeasurementsBase, LocationMixin):
     PREDICTION_A = {
         "datetime": "2014-06-10T10:34:00Z",
         "height": 0.23
@@ -203,11 +203,14 @@ class TestTideGaugeLocationLink(TestPutRawMeasurementsBase):
     }
 
     def setUp(self):
+        super(TestTideGaugeLocationLink, self).setUp()
         self._clean_up()
         self.client.force_authenticate(self.permitted)
 
-        self.location_1 = Location.objects.create(slug='location_1')
-        self.location_2 = Location.objects.create(slug='location_2')
+        self.location_1 = self.create_location(slug='location_1',
+                                               name='Location1')
+        self.location_2 = self.create_location(slug='location_2',
+                                               name='Location2')
 
         TideGaugeLocationLink.objects.create(
             tide_gauge=TideGauge.objects.get(slug='gladstone'),
@@ -215,6 +218,9 @@ class TestTideGaugeLocationLink(TestPutRawMeasurementsBase):
 
     def tearDown(self):
         self._clean_up()
+        self.location_1.delete()
+        self.location_2.delete()
+        super(TestTideGaugeLocationLink, self).tearDown()
 
     def _clean_up(self):
         RawMeasurement.objects.all().delete()

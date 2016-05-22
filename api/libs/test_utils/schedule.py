@@ -13,7 +13,7 @@ from .vessel import VesselMixin
 
 class ScheduleMixin(object):
 
-    DATA_A = {
+    SCHEDULE_A = {
         'origin__slug': 'liverpool',
         'destination__slug': 'heysham',
         'vessel__imo': '8219554',
@@ -22,7 +22,7 @@ class ScheduleMixin(object):
         'code': 'ST_LIV_HEY_20160326_AM'
     }
 
-    DATA_B = {
+    SCHEDULE_B = {
         'origin__slug': 'heysham',
         'destination__slug': 'liverpool',
         'vessel__imo': '8219554',
@@ -72,7 +72,7 @@ class ScheduleMixin(object):
 
         return payload
 
-    def payload_schedule(self, payload=DATA_A, **kwargs):
+    def payload_schedule(self, payload=SCHEDULE_A, **kwargs):
         data = copy.copy(payload)
         data.update(**kwargs)
         return data

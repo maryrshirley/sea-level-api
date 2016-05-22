@@ -5,25 +5,27 @@ from nose.tools import assert_equal
 from freezegun import freeze_time
 from django.test import TestCase
 
-from api.apps.locations.models import Location
 from api.apps.status.alert_manager import (
     AlertType, disable_alert_until)
 
 from api.apps.status.models import LocationStatusConfig
+from api.libs.test_utils.location import LocationMixin
 
 
 BASE_DATE = datetime.datetime(2014, 11, 24, 10, 0, tzinfo=pytz.UTC)
 
 
-class TestDisabledAlerts(TestCase):
+class TestDisabledAlerts(TestCase, LocationMixin):
     def setUp(self):
-        self.liverpool = Location.objects.create(slug='liverpool')
+        super(TestDisabledAlerts, self).setUp()
+        self.liverpool = self.create_location()
         self.config = LocationStatusConfig.objects.create(
             location=self.liverpool)
 
     def tearDown(self):
-        Location.objects.all().delete()
         LocationStatusConfig.objects.all().delete()
+        self.liverpool.delete()
+        super(TestDisabledAlerts, self).tearDown()
 
     def _disable(self, alert_type):
         disable_alert_until(self.liverpool, alert_type,
