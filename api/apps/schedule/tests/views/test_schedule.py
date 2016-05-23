@@ -11,9 +11,13 @@ from api.apps.users.helpers import create_user
 from api.libs.test_utils.schedule import ScheduleMixin
 
 _URL = ScheduleMixin.schedule_endpoint
+_URL_LIVERPOOL = ScheduleMixin.schedule_departures_endpoint.format('liverpool')
+_URL_HEYSHAM = ScheduleMixin.schedule_arrivals_endpoint.format('heysham')
 
 url_testcases = [
     (_URL, 'POST, OPTIONS'),
+    (_URL_LIVERPOOL, 'GET, HEAD, OPTIONS'),
+    (_URL_HEYSHAM, 'GET, HEAD, OPTIONS'),
 ]
 
 
@@ -27,6 +31,11 @@ class TestSchedule(APITestCase, ScheduleMixin):
         super(TestSchedule, cls).setUpClass()
         cls.permitted = create_user('permitted', is_internal_collector=True)
         cls.forbidden = create_user('forbidden', is_internal_collector=False)
+        cls.token_permitted, _ = Token.objects.get_or_create(
+            user=cls.permitted)
+        cls.token_forbidden, _ = Token.objects.get_or_create(
+            user=cls.forbidden)
+        cls.token = cls.token_permitted
 
     @classmethod
     def tearDownClass(cls):
@@ -42,10 +51,14 @@ class TestSchedule(APITestCase, ScheduleMixin):
         self.tearDownScheduleRequirements()
         super(TestSchedule, self).tearDown()
 
+    @property
+    def auth(self):
+        return {'HTTP_AUTHORIZATION': 'Token ' + self.token.key}
+
     @parameterized.expand(url_testcases)
     def test_that_endpoint_exists(self, url, allow):
         user = User.objects.get(username='permitted')
-        token, created = Token.objects.get_or_create(user=user)
+        token, _ = Token.objects.get_or_create(user=user)
         response = self.client.options(url,
                                        HTTP_AUTHORIZATION='Token ' + token.key)
         assert_equal(200, response.status_code)
@@ -144,6 +157,43 @@ class TestSchedule(APITestCase, ScheduleMixin):
         payload = [self.payload_schedule()]
         self.postPayload(payload, 0, status=401, username=None)
 
+        response = self.client.options(_URL_LIVERPOOL)
+        assert_equal(401, response.status_code)
+
+        response = self.client.options(_URL_HEYSHAM)
+        assert_equal(401, response.status_code)
+
     def test_that_user_without_add__permission_returns_403_status(self):
         payload = [self.payload_schedule()]
         self.postPayload(payload, 0, status=403, username='forbidden')
+
+        self.token = self.token_forbidden
+        response = self.client.options(_URL_LIVERPOOL, **self.auth)
+        assert_equal(403, response.status_code)
+
+        response = self.client.options(_URL_HEYSHAM, **self.auth)
+        assert_equal(403, response.status_code)
+
+    def assertGetSchedules(self, status_code, items, url=_URL_LIVERPOOL):
+        response = self.client.get(url, **self.auth)
+        assert_equal(status_code, response.status_code)
+        data = json.loads(response.content.decode('utf-8'))
+        assert_equal(len(items), len(data))
+
+    def test_that_http_get_returns_record(self):
+        schedule = self.create_schedule()
+        self.assertGetSchedules(200, [schedule])
+        schedule.delete()
+
+    def test_that_http_get_relevant_schedules(self):
+        schedule = self.create_schedule()
+        self.assertGetSchedules(200, [schedule])
+        self.assertGetSchedules(200, [schedule], url=_URL_HEYSHAM)
+
+        # XXX: Check content?
+
+        schedule.delete()
+
+    def test_that_http_orders_datetime(self):
+        # XXX: Implement
+        pass

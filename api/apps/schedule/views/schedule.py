@@ -1,11 +1,16 @@
+from django.http import Http404
+
 from rest_framework.exceptions import ParseError
-from rest_framework.generics import GenericAPIView
+from rest_framework.generics import GenericAPIView, ListAPIView
 from rest_framework.response import Response
 from rest_framework.mixins import CreateModelMixin
 
 from api.libs.user_permissions.permissions_classes import (
     AllowInternalCollectorsReadAndWrite)
-from ..serializers import ScheduleSerializer
+from ..serializers import (ScheduleSerializer, ScheduleArrivalsListSerializer,
+                           ScheduleDeparturesListSerializer)
+
+from ..models import Schedule as ScheduleModel
 
 
 class Schedule(GenericAPIView, CreateModelMixin):
@@ -70,3 +75,27 @@ class Schedule(GenericAPIView, CreateModelMixin):
 
     def perform_update(self, serializer):
         serializer.save()
+
+
+class ScheduleArrivalsList(ListAPIView):
+
+    permission_classes = (AllowInternalCollectorsReadAndWrite,)
+    serializer_class = ScheduleArrivalsListSerializer
+
+    def get_queryset(self, *args, **kwargs):
+        location_slug = self.kwargs.get('location_slug', None)
+        if not location_slug:
+            raise Http404
+        return ScheduleModel.objects.filter(destination__slug=location_slug)
+
+
+class ScheduleDeparturesList(ListAPIView):
+
+    permission_classes = (AllowInternalCollectorsReadAndWrite,)
+    serializer_class = ScheduleDeparturesListSerializer
+
+    def get_queryset(self, *args, **kwargs):
+        location_slug = self.kwargs.get('location_slug', None)
+        if not location_slug:
+            raise Http404
+        return ScheduleModel.objects.filter(origin__slug=location_slug)
