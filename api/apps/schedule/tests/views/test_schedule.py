@@ -1,6 +1,9 @@
 import json
 
+from django.conf import settings
 from django.db.models.loading import get_model
+
+from freezegun import freeze_time
 
 from nose.tools import assert_equal
 from nose_parameterized import parameterized
@@ -11,9 +14,13 @@ from api.apps.users.helpers import create_user
 from api.libs.test_utils.schedule import ScheduleMixin
 
 _URL = ScheduleMixin.schedule_endpoint
+_URL_LIVERPOOL = ScheduleMixin.schedule_departures_endpoint.format('liverpool')
+_URL_HEYSHAM = ScheduleMixin.schedule_arrivals_endpoint.format('heysham')
 
 url_testcases = [
     (_URL, 'POST, OPTIONS'),
+    (_URL_LIVERPOOL, 'GET, HEAD, OPTIONS'),
+    (_URL_HEYSHAM, 'GET, HEAD, OPTIONS'),
 ]
 
 
@@ -27,6 +34,11 @@ class TestSchedule(APITestCase, ScheduleMixin):
         super(TestSchedule, cls).setUpClass()
         cls.permitted = create_user('permitted', is_internal_collector=True)
         cls.forbidden = create_user('forbidden', is_internal_collector=False)
+        cls.token_permitted, _ = Token.objects.get_or_create(
+            user=cls.permitted)
+        cls.token_forbidden, _ = Token.objects.get_or_create(
+            user=cls.forbidden)
+        cls.token = cls.token_permitted
 
     @classmethod
     def tearDownClass(cls):
@@ -42,10 +54,14 @@ class TestSchedule(APITestCase, ScheduleMixin):
         self.tearDownScheduleRequirements()
         super(TestSchedule, self).tearDown()
 
+    @property
+    def auth(self):
+        return {'HTTP_AUTHORIZATION': 'Token ' + self.token.key}
+
     @parameterized.expand(url_testcases)
     def test_that_endpoint_exists(self, url, allow):
         user = User.objects.get(username='permitted')
-        token, created = Token.objects.get_or_create(user=user)
+        token, _ = Token.objects.get_or_create(user=user)
         response = self.client.options(url,
                                        HTTP_AUTHORIZATION='Token ' + token.key)
         assert_equal(200, response.status_code)
@@ -144,6 +160,89 @@ class TestSchedule(APITestCase, ScheduleMixin):
         payload = [self.payload_schedule()]
         self.postPayload(payload, 0, status=401, username=None)
 
+        response = self.client.options(_URL_LIVERPOOL)
+        assert_equal(401, response.status_code)
+
+        response = self.client.options(_URL_HEYSHAM)
+        assert_equal(401, response.status_code)
+
     def test_that_user_without_add__permission_returns_403_status(self):
         payload = [self.payload_schedule()]
         self.postPayload(payload, 0, status=403, username='forbidden')
+
+        self.token = self.token_forbidden
+        response = self.client.options(_URL_LIVERPOOL, **self.auth)
+        assert_equal(403, response.status_code)
+
+        response = self.client.options(_URL_HEYSHAM, **self.auth)
+        assert_equal(403, response.status_code)
+
+    def assertGetSchedules(self, status_code, items, url=_URL_LIVERPOOL,
+                           category='departure'):
+        response = self.client.get(url, **self.auth)
+        assert_equal(status_code, response.status_code)
+        data = json.loads(response.content.decode('utf-8'))
+        assert_equal(len(items), len(data))
+
+        for index, item in enumerate(items):
+            raw = item.__dict__
+            if category == 'departure':
+                departure = raw['_departure_cache'] \
+                    .datetime.strftime(settings.DATETIME_FORMAT)
+                record = {
+                    u'vessel': raw['_vessel_cache'].name,
+                    u'departure': departure,
+                    u'sea_level': 0,
+                }
+            else:
+                arrival = raw['_arrival_cache'] \
+                    .datetime.strftime(settings.DATETIME_FORMAT)
+                record = {
+                    u'vessel': raw['_vessel_cache'].name,
+                    u'arrival': arrival,
+                    u'sea_level': 0,
+                }
+            assert_equal(record, data[index])
+
+    def test_that_http_get_returns_record(self):
+        payload = self.payload_schedule()
+        schedule = self.create_schedule(payload=payload)
+        with freeze_time(payload['departure'].datetime):
+            self.assertGetSchedules(200, [schedule])
+        schedule.delete()
+
+    def test_that_http_get_relevant_schedules(self):
+        payload = self.payload_schedule()
+        schedule = self.create_schedule(payload=payload)
+        with freeze_time(payload['departure'].datetime):
+            self.assertGetSchedules(200, [schedule])
+            self.assertGetSchedules(200, [schedule], url=_URL_HEYSHAM,
+                                    category='arrival')
+
+        schedule.delete()
+
+    def test_that_http_get_ignores_past(self):
+        schedule_old = self.create_schedule(
+            departure_datetime='2016-03-26T08:00:00Z',
+            arrival_datetime='2016-03-26T10:00:00Z')
+        payload = self.payload_schedule()
+        schedule = self.create_schedule(payload=payload)
+        with freeze_time(payload['departure'].datetime):
+            self.assertGetSchedules(200, [schedule])
+
+        schedule.delete()
+        schedule_old.delete()
+
+    def test_that_http_orders_datetime(self):
+        payload1 = self.payload_schedule(
+            departure_datetime='2016-03-26T16:00:00Z',
+            arrival_datetime='2016-03-26T18:00:00Z')
+        payload2 = self.payload_schedule()
+        schedule1 = self.create_schedule(payload=payload1)
+        schedule2 = self.create_schedule(payload=payload2)
+
+        with freeze_time(payload2['departure'].datetime):
+            self.assertGetSchedules(200, [schedule2, schedule1])
+
+        schedule1.delete()
+        schedule2.delete()

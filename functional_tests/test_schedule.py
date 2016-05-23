@@ -1,17 +1,59 @@
+from freezegun import freeze_time
+
 from api.libs.test_utils.schedule import ScheduleMixin
 
 from .base import AdminTest, FunctionalTest, SeleniumTest
 
-
-class ScheduleTest(object):
-    '''
+'''
         A schedule for a vessel moving between two locations:
             As a collector: I wish to upload schedule information with etd,
                 eta, departure, destination.
-            AAC: I wish to amend existing schedule information.
-            AAU: I wish to retrieve schedule information.
-            AAU: I wish to retrieve notifications for a location.
-    '''
+'''
+
+
+class ScheduleTest(FunctionalTest, ScheduleMixin):
+
+    def setUp(self):
+        super(ScheduleTest, self).setUp()
+        self.setUpScheduleRequirements()
+
+    def tearDown(self):
+        self.tearDownScheduleRequirements()
+        super(ScheduleTest, self).tearDown()
+
+    def test_schedule_arrival_retrieve(self):
+        # As a user, I wish to retrieve arrivals for a location
+        #   with: arrival_timestamp, vessel_name, predicted_water_level
+        payload = self.payload_schedule()
+        schedule = self.create_schedule(payload=payload)
+
+        url = self.live_server_url + \
+            self.schedule_departures_endpoint.format('liverpool')
+
+        with freeze_time(payload['departure'].datetime):
+            data = self.assertRecordJSONExists(url)
+
+        self.assertPayloadMatchesData(data[0],
+                                      self.payload_schedule_read(payload))
+
+        schedule.delete()
+
+    def test_schedule_departure_retrieve(self):
+        # As a user, I wish to retirieve departures for a location
+        #   with: arrival_timestamp, vessel_name, predicted_water_level
+        payload = self.payload_schedule()
+        schedule = self.create_schedule(payload=payload)
+
+        url = self.live_server_url + \
+            self.schedule_arrivals_endpoint.format('heysham')
+
+        with freeze_time(payload['departure'].datetime):
+            data = self.assertRecordJSONExists(url)
+
+        self.assertPayloadMatchesData(data[0],
+                                      self.payload_schedule_read(payload))
+
+        schedule.delete()
 
 
 class ScheduleCollectorTest(FunctionalTest, ScheduleMixin):
