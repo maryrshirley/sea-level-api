@@ -35,14 +35,16 @@ class ScheduleDeparturesListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Schedule
-        fields = ('vessel', 'departure',)
+        fields = ('vessel', 'departure', 'sea_level')
 
 
 class ScheduleArrivalsListSerializer(serializers.ModelSerializer):
 
     vessel = serializers.SlugRelatedField(read_only=True,
                                           slug_field='name')
+    arrival = serializers.SlugRelatedField(read_only=True,
+                                           slug_field='datetime')
 
     class Meta:
         model = Schedule
-        fields = ('vessel', 'arrival',)
+        fields = ('vessel', 'arrival', 'sea_level')

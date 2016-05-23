@@ -86,7 +86,7 @@ class ScheduleArrivalsList(ListAPIView):
         location_slug = self.kwargs.get('location_slug', None)
         if not location_slug:
             raise Http404
-        return ScheduleModel.objects.filter(destination__slug=location_slug)
+        return ScheduleModel.objects.active(destination__slug=location_slug)
 
 
 class ScheduleDeparturesList(ListAPIView):
@@ -98,4 +98,4 @@ class ScheduleDeparturesList(ListAPIView):
         location_slug = self.kwargs.get('location_slug', None)
         if not location_slug:
             raise Http404
-        return ScheduleModel.objects.filter(origin__slug=location_slug)
+        return ScheduleModel.objects.active(origin__slug=location_slug)

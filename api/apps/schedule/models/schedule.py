@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 
@@ -12,6 +14,10 @@ class ScheduleManager(models.Manager):
             return self.filter(code=code).latest('id')
         except ObjectDoesNotExist:
             return None
+
+    def active(self, **kwargs):
+        return self.exclude(departure__datetime__lt=datetime.now()) \
+            .filter(**kwargs).order_by('departure__datetime')
 
 
 class Schedule(models.Model):
@@ -45,3 +51,7 @@ class Schedule(models.Model):
             value = parse_datetime(value)
         self.arrival, created = Minute.objects.get_or_create(datetime=value)
         return self.arrival
+
+    @property
+    def sea_level(self, value):
+        return 0

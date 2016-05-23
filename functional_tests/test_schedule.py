@@ -1,3 +1,5 @@
+from freezegun import freeze_time
+
 from api.libs.test_utils.schedule import ScheduleMixin
 
 from .base import AdminTest, FunctionalTest, SeleniumTest
@@ -28,7 +30,8 @@ class ScheduleTest(FunctionalTest, ScheduleMixin):
         url = self.live_server_url + \
             self.schedule_departures_endpoint.format('liverpool')
 
-        data = self.assertRecordJSONExists(url)
+        with freeze_time(payload['departure'].datetime):
+            data = self.assertRecordJSONExists(url)
 
         self.assertPayloadMatchesData(data[0],
                                       self.payload_schedule_read(payload))
@@ -44,7 +47,8 @@ class ScheduleTest(FunctionalTest, ScheduleMixin):
         url = self.live_server_url + \
             self.schedule_arrivals_endpoint.format('heysham')
 
-        data = self.assertRecordJSONExists(url)
+        with freeze_time(payload['departure'].datetime):
+            data = self.assertRecordJSONExists(url)
 
         self.assertPayloadMatchesData(data[0],
                                       self.payload_schedule_read(payload))

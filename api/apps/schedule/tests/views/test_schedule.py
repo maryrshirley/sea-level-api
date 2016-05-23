@@ -1,6 +1,9 @@
 import json
 
+from django.conf import settings
 from django.db.models.loading import get_model
+
+from freezegun import freeze_time
 
 from nose.tools import assert_equal
 from nose_parameterized import parameterized
@@ -174,26 +177,68 @@ class TestSchedule(APITestCase, ScheduleMixin):
         response = self.client.options(_URL_HEYSHAM, **self.auth)
         assert_equal(403, response.status_code)
 
-    def assertGetSchedules(self, status_code, items, url=_URL_LIVERPOOL):
+    def assertGetSchedules(self, status_code, items, url=_URL_LIVERPOOL,
+                           category='departure'):
         response = self.client.get(url, **self.auth)
         assert_equal(status_code, response.status_code)
         data = json.loads(response.content.decode('utf-8'))
         assert_equal(len(items), len(data))
 
+        for index, item in enumerate(items):
+            raw = item.__dict__
+            if category == 'departure':
+                departure = raw['_departure_cache'] \
+                    .datetime.strftime(settings.DATETIME_FORMAT)
+                record = {
+                    u'vessel': unicode(raw['_vessel_cache'].name),
+                    u'departure': unicode(departure)}
+            else:
+                arrival = raw['_arrival_cache'] \
+                    .datetime.strftime(settings.DATETIME_FORMAT)
+                record = {
+                    u'vessel': unicode(raw['_vessel_cache'].name),
+                    u'arrival': unicode(arrival)}
+            assert_equal(record, data[index])
+
     def test_that_http_get_returns_record(self):
-        schedule = self.create_schedule()
-        self.assertGetSchedules(200, [schedule])
+        payload = self.payload_schedule()
+        schedule = self.create_schedule(payload=payload)
+        with freeze_time(payload['departure'].datetime):
+            self.assertGetSchedules(200, [schedule])
         schedule.delete()
 
     def test_that_http_get_relevant_schedules(self):
-        schedule = self.create_schedule()
-        self.assertGetSchedules(200, [schedule])
-        self.assertGetSchedules(200, [schedule], url=_URL_HEYSHAM)
-
-        # XXX: Check content?
+        payload = self.payload_schedule()
+        schedule = self.create_schedule(payload=payload)
+        with freeze_time(payload['departure'].datetime):
+            self.assertGetSchedules(200, [schedule])
+            self.assertGetSchedules(200, [schedule], url=_URL_HEYSHAM,
+                                    category='arrival')
 
         schedule.delete()
 
+    def test_that_http_get_ignores_past(self):
+        schedule_old = self.create_schedule(
+            departure_datetime='2016-03-26T08:00:00Z',
+            arrival_datetime='2016-03-26T10:00:00Z')
+        payload = self.payload_schedule()
+        schedule = self.create_schedule(payload=payload)
+        with freeze_time(payload['departure'].datetime):
+            self.assertGetSchedules(200, [schedule])
+
+        schedule.delete()
+        schedule_old.delete()
+
     def test_that_http_orders_datetime(self):
-        # XXX: Implement
-        pass
+        payload1 = self.payload_schedule(
+            departure_datetime='2016-03-26T16:00:00Z',
+            arrival_datetime='2016-03-26T18:00:00Z')
+        payload2 = self.payload_schedule()
+        schedule1 = self.create_schedule(payload=payload1)
+        schedule2 = self.create_schedule(payload=payload2)
+
+        with freeze_time(payload2['departure'].datetime):
+            self.assertGetSchedules(200, [schedule2, schedule1])
+
+        schedule1.delete()
+        schedule2.delete()
