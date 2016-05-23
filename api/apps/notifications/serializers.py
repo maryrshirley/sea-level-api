@@ -5,8 +5,8 @@ from .models import Notification
 
 class NotificationSerializer(serializers.ModelSerializer):
 
-    location = serializers.SlugRelatedField(slug_field='slug', read_only=True)
+    vessel = serializers.SlugRelatedField(slug_field='name', read_only=True)
 
     class Meta:
         model = Notification
-        fields = ('location', 'timestamp', 'category', 'status', )
+        fields = ('timestamp', 'category', 'status', 'vessel')
