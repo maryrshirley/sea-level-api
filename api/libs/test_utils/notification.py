@@ -5,6 +5,8 @@ from api.apps.locations.models import Location
 from api.apps.schedule.models import Schedule
 from api.apps.vessel.models import Vessel
 from api.apps.notifications.models import Notification
+from api.apps.notifications.models.notification import (CATEGORY_CHOICES,
+                                                        STATUS_CHOICES)
 
 from .schedule import ScheduleMixin
 
@@ -39,6 +41,20 @@ class NotificationMixin(ScheduleMixin):
         payload['location'] = get_location(payload, 'location')
         payload['schedule'] = get_schedule(payload, 'schedule')
         payload['vessel'] = get_vessel(payload, 'vessel')
+        del payload['location__slug']
+        del payload['schedule__code']
+        del payload['vessel__imo']
+        return payload
+
+    def admin_notification_payload(self, payload):
+        get_location = lambda x, y: Location.objects.get(slug=x[y + '__slug'])
+        payload['location'] = get_location(payload, 'location').name
+
+        # XXX: Temporary workaround for missing feature
+        payload['schedule'] = 'Schedule object'
+        payload['vessel'] = 'Vessel object'
+        payload['category'] = dict(CATEGORY_CHOICES).get(payload['category'])
+        payload['status'] = dict(STATUS_CHOICES).get(payload['status'])
         del payload['location__slug']
         del payload['schedule__code']
         del payload['vessel__imo']

@@ -1,6 +1,6 @@
 from api.libs.test_utils.notification import NotificationMixin
 
-from .base import FunctionalTest
+from .base import AdminTest, FunctionalTest, SeleniumTest
 
 
 class NotificationGeneratorTest(object):
@@ -11,9 +11,30 @@ class NotificationGeneratorTest(object):
     '''
 
 
-class NotificationAdminTest(object):
-    # XXX: Ignore admin notifications for now
-    pass
+class NotificationAdminTest(AdminTest, SeleniumTest, NotificationMixin):
+
+    def setUp(self):
+        super(NotificationAdminTest, self).setUp()
+        self.setUpNotificationRequirements()
+        self.setUpAdmin()
+        self.loadAdmin()
+
+    def tearDown(self):
+        self.tearDownAdmin()
+        self.tearDownNotificationRequirements()
+        super(NotificationAdminTest, self).tearDown()
+
+    def test_add_notification(self):
+        # As an admin: I wish to create a notification
+        # Add a record
+        records = [self.admin_notification_payload(
+            self.payload_notification())]
+
+        # The user adds the record
+        self.add_record('notification', 'Notifications', records[0])
+
+        # The user observes the record
+        self.check_records(records)
 
 
 class NotificationTest(FunctionalTest, NotificationMixin):
