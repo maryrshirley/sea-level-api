@@ -8,8 +8,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase
 
 from api.apps.users.helpers import create_user
-from api.libs.test_utils.schedule import (ScheduleRequirementsMixin,
-                                          ScheduleMixin)
+from api.libs.test_utils.schedule import ScheduleMixin
 
 _URL = ScheduleMixin.schedule_endpoint
 
@@ -21,7 +20,7 @@ url_testcases = [
 User = get_model('auth', 'User')
 
 
-class TestSchedule(APITestCase, ScheduleRequirementsMixin):
+class TestSchedule(APITestCase, ScheduleMixin):
 
     @classmethod
     def setUpClass(cls):

@@ -27,6 +27,8 @@ urlpatterns = [
 
     url(r'^1/schedule/', include('api.apps.schedule.urls')),
 
+    url(r'^1/notifications/', include('api.apps.notifications.urls')),
+
     url(r'^1/_status/', include('api.apps.status.urls')),
 
     url(r'^1/_debug/', include('api.apps.debug.urls')),

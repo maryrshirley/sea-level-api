@@ -11,7 +11,7 @@ from api.libs.test_utils.location import LocationMixin
 from .vessel import VesselMixin
 
 
-class ScheduleMixin(object):
+class ScheduleMixin(LocationMixin, VesselMixin):
 
     SCHEDULE_A = {
         'origin__slug': 'liverpool',
@@ -41,6 +41,7 @@ class ScheduleMixin(object):
 
         return Schedule.objects.create(**payload)
 
+    # XXX: BAD NAME
     def related_payload(self, payload):
         get_location = lambda x, y: Location.objects.get(slug=x[y + '__slug'])
         get_minute = lambda x, y: \
@@ -59,6 +60,7 @@ class ScheduleMixin(object):
         del payload['vessel__imo']
         return payload
 
+    # XXX: BAD NAME
     def values_payload(self, payload):
         for field in payload:
             match = re.search('(\w+)__(\w+)', field)
@@ -80,10 +82,6 @@ class ScheduleMixin(object):
     @property
     def objects(self):
         return Schedule.objects
-
-
-class ScheduleRequirementsMixin(LocationMixin, VesselMixin,
-                                ScheduleMixin):
 
     def setUpScheduleRequirements(self):
         self.vessel = self.create_vessel()

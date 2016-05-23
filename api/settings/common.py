@@ -89,6 +89,7 @@ INSTALLED_APPS = (
     'api.apps.authentication',
     'api.apps.vessel',
     'api.apps.schedule',
+    'api.apps.notifications',
 
     'api.libs.minute_in_time',
 )
