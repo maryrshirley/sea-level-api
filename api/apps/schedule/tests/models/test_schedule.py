@@ -1,9 +1,9 @@
 from django.test import TestCase
 
-from api.libs.test_utils.schedule import ScheduleRequirementsMixin
+from api.libs.test_utils.schedule import ScheduleMixin
 
 
-class TestSchedule(TestCase, ScheduleRequirementsMixin):
+class TestSchedule(TestCase, ScheduleMixin):
 
     def setUp(self):
         super(TestSchedule, self).setUp()

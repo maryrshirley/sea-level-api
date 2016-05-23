@@ -1,4 +1,4 @@
-from api.libs.test_utils.schedule import ScheduleRequirementsMixin
+from api.libs.test_utils.schedule import ScheduleMixin
 
 from .base import AdminTest, FunctionalTest, SeleniumTest
 
@@ -14,7 +14,7 @@ class ScheduleTest(object):
     '''
 
 
-class ScheduleCollectorTest(FunctionalTest, ScheduleRequirementsMixin):
+class ScheduleCollectorTest(FunctionalTest, ScheduleMixin):
 
     def setUp(self):
         super(ScheduleCollectorTest, self).setUp()
@@ -39,7 +39,7 @@ class ScheduleCollectorTest(FunctionalTest, ScheduleRequirementsMixin):
         # XXX: Query a latest endpoint
 
 
-class ScheduleAdminTest(SeleniumTest, AdminTest, ScheduleRequirementsMixin):
+class ScheduleAdminTest(SeleniumTest, AdminTest, ScheduleMixin):
 
     def setUp(self):
         super(ScheduleAdminTest, self).setUp()
