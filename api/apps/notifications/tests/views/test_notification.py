@@ -47,7 +47,7 @@ class TestNotification(APITestCase, NotificationMixin):
 
     @property
     def auth(self):
-        return {'HTTP_AUTHORIZATION':  'Token ' + self.token.key}
+        return {'HTTP_AUTHORIZATION': 'Token ' + self.token.key}
 
     @parameterized.expand(url_testcases)
     def test_that_http_exist_options_allowed(self, url, allow):
