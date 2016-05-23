@@ -1,23 +1,18 @@
-from django.test import TestCase
+from .helpers import TestCheckBase
 
 
-from .helpers import _setup_locations
-
-
-class TestStatusIndexView(TestCase):
+class TestStatusIndexView(TestCheckBase):
     BASE_PATH = '/1/_status/'
 
     def _setup_all_ok(self):
-        liverpool, southampton = _setup_locations()
+        pass
 
     def _setup_not_ok(self):
         """
         Delete locations, this will cause a failure.
         """
-
-        liverpool, southampton = _setup_locations()
-        liverpool.delete()
-        southampton.delete()
+        self.liverpool.delete()
+        self.southampton.delete()
 
     def test_that_status_index_is_ok_when_it_can_retrieve_some_locations(self):
         self._setup_all_ok()

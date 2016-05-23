@@ -5,7 +5,7 @@ import pytz
 from api.apps.predictions.views.helpers import TideWindow
 from api.apps.predictions.utils import create_tide_prediction
 
-from api.apps.locations.models import Location
+from api.libs.test_utils.location import LocationMixin
 
 
 from django.test import TestCase
@@ -15,12 +15,13 @@ TIME_HW = datetime.datetime(2015, 1, 2, 10, 0, tzinfo=pytz.UTC)
 TIME_END = datetime.datetime(2015, 1, 3, 10, 0, tzinfo=pytz.UTC)
 
 
-class TestTideWindow(TestCase):
+class TestTideWindow(TestCase, LocationMixin):
 
     @classmethod
     def setUpClass(cls):
-        cls.liverpool = Location.objects.create(slug='liverpool')
-        cls.southampton = Location.objects.create(slug='southampton')
+        cls.liverpool = cls.create_location(slug='liverpool', name='Liverpool')
+        cls.southampton = cls.create_location(slug='southampton',
+                                              name='Southampton')
 
         liv_time_window = TideWindow()
         liv_time_window.start_prediction, liv_time_window.end_prediction = (

@@ -2,24 +2,25 @@ from django.test import TestCase
 
 from nose.tools import assert_equal, assert_in
 
-from api.apps.locations.models import Location
+from api.libs.test_utils.location import LocationMixin
 from api.libs.test_utils import decode_json
 
 
-class TestLocationList(TestCase):
+class TestLocationList(TestCase, LocationMixin):
     PATH = '/1/locations/'
 
-    @classmethod
-    def setUpClass(cls):
-        cls.liverpool = Location.objects.create(
-            slug='liverpool', name='Liverpool')
+    def setUp(self):
+        super(TestLocationList, self).setUp()
+        self.liverpool = self.create_location(slug='liverpool',
+                                              name='Liverpool')
 
-        cls.southampton = Location.objects.create(
-            slug='southampton', name='Southampton')
+        self.southampton = self.create_location(slug='southampton',
+                                                name='Southampton')
 
-    @classmethod
-    def tearDownClass(cls):
-        Location.objects.all().delete()
+    def tearDown(self):
+        self.liverpool.delete()
+        self.southampton.delete()
+        super(TestLocationList, self).tearDown()
 
     def test_that_locations_endpoint_returns_http_200(self):
         self.response = self.client.get(self.PATH)
@@ -52,8 +53,8 @@ class TestLocationList(TestCase):
         assert_equal(expected, decode_json(self.response.content)['locations'])
 
     def test_that_non_visible_locations_arent_listed(self):
-        hidden_location = Location.objects.create(
-            slug='hidden', name='Hidden', visible=False)
+        hidden_location = self.create_location(slug='hidden', name='hidden',
+                                               visible=False)
         self.response = self.client.get(self.PATH)
 
         endpoint_slugs = set([l['slug'] for l in decode_json(

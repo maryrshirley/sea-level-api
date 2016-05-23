@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 
+from django.core.validators import MinValueValidator
 from django.db import models
 from django.core.validators import RegexValidator
 from django.conf import settings
@@ -29,6 +30,9 @@ class Location(models.Model):
         help_text='Whether the location should be listed in the locations '
                   'endpoint. Note that invisible locations can still be '
                   'accessed through other endpoints if their slug is known.')
+
+    min_depth = models.FloatField(validators=[MinValueValidator(0)])
+    under_keal = models.FloatField(validators=[MinValueValidator(0)])
 
     def __str__(self):
         return self.name

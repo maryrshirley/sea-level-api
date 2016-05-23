@@ -10,22 +10,18 @@ from selenium.webdriver.common.keys import Keys
 
 from rest_framework.authtoken.models import Token
 
-from api.apps.locations.models import Location
+from api.libs.test_utils.location import LocationMixin
 from api.apps.users.helpers import create_user
-from api.libs.test_utils.mixins import LocationMixin
 
 
-class FunctionalTest(StaticLiveServerTestCase):
+class FunctionalTest(StaticLiveServerTestCase, LocationMixin):
 
     def setUp(self):
         super(FunctionalTest, self).setUp()
-        self.liverpool = Location.objects.create(
-            slug='liverpool', name='Liverpool')
         self.user = create_user('permitted', is_internal_collector=True)
 
     def tearDown(self):
         self.user.delete()
-        self.liverpool.delete()
         super(FunctionalTest, self).tearDown()
 
     @property
@@ -58,7 +54,6 @@ class FunctionalTest(StaticLiveServerTestCase):
 
         # The user receives a valid OK response
         self.assertEqual(200, response.status_code)
-
         # The response is JSON
         return response.json()
 
@@ -68,19 +63,17 @@ class FunctionalTest(StaticLiveServerTestCase):
             self.assertEqual(value, data[field])
 
 
-class SeleniumTest(StaticLiveServerTestCase, LocationMixin):
+class SeleniumTest(StaticLiveServerTestCase):
 
     DEFAULT_WAIT = 5
 
     def setUp(self):
         self.browser = webdriver.Firefox()
         self.browser.implicitly_wait(self.DEFAULT_WAIT)
-        self.setUpLocation()
         super(SeleniumTest, self).setUp()
 
     def tearDown(self):
         self.browser.quit()
-        self.tearDownLocation()
         super(SeleniumTest, self).tearDown()
 
 
@@ -105,3 +98,36 @@ class AdminTest(object):
     def loadAdmin(self):
         self.browser.get(self.admin_url)
         self.loginAdmin()
+
+    def load_model_page(self, slug, label):
+        # User clicks on the admin page
+        admin_page = self.browser.find_element_by_class_name('model-' + slug) \
+            .find_element_by_link_text(label)
+        admin_page.click()
+
+    def add_record(self, slug, label, record):
+        self.load_model_page(slug, label)
+
+        # User notices the addlink button
+        addlink = self.browser.find_element_by_class_name('addlink')
+        self.assertEquals("Add " + slug, addlink.text)
+
+        # User clicks on the add button
+        addlink.click()
+
+        # User fills in the fields
+        for field in record:
+            form_field = self.browser.find_element_by_id("id_" + field)
+            form_field.send_keys(record[field])
+
+        # User clicks save
+        save_button = self.browser.find_element_by_name('_save')
+        save_button.click()
+
+    def check_records(self, records):
+        # User notices the data table
+        tbody = self.browser.find_element_by_tag_name('tbody')
+
+        # User notices the table rows
+        tr = tbody.find_elements_by_tag_name('tr')
+        self.assertEqual(len(records), len(tr))

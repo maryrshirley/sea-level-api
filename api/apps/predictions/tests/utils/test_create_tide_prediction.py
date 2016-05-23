@@ -7,18 +7,23 @@ from nose.tools import assert_equal
 from api.apps.predictions.models import TidePrediction
 from api.apps.predictions.utils import create_tide_prediction
 from api.libs.minute_in_time.models import Minute
-from api.apps.locations.models import Location
+from api.libs.test_utils.location import LocationMixin
 
 
-class TestCreateTidePrediction(TestCase):
-    fixtures = ['api/apps/locations/fixtures/two_locations.json']
+class TestCreateTidePrediction(TestCase, LocationMixin):
 
     @classmethod
-    def setUp(cls):
+    def setUpClass(cls):
+        super(TestCreateTidePrediction, cls).setUpClass()
         Minute.objects.all().delete()
         cls.datetime = datetime.datetime(
             2014, 3, 5, 17, 45, tzinfo=pytz.UTC)
-        cls.liverpool = Location.objects.get(slug='liverpool')
+        cls.liverpool = cls.create_location()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.liverpool.delete()
+        super(TestCreateTidePrediction, cls).tearDownClass()
 
     def test_that_prediction_can_be_created_when_minute_already_exists(self):
         Minute.objects.create(datetime=self.datetime)

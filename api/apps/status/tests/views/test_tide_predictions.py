@@ -2,7 +2,6 @@ import datetime
 
 from freezegun import freeze_time
 
-from django.test import TestCase
 from nose.tools import assert_equal
 
 from api.apps.predictions.utils import create_tide_prediction
@@ -13,27 +12,24 @@ from api.apps.status.views.tide_predictions import (
 
 from api.apps.status.alert_manager import AlertType, disable_alert_until
 
-from .helpers import (BASE_TIME, _setup_locations, TestCheckBase)
+from .helpers import (BASE_TIME, TestCheckBase)
 
 
-class TestTidePredictionsView(TestCase):
+class TestTidePredictionsView(TestCheckBase):
     BASE_PATH = '/1/_status/tide-predictions/'
 
     def _setup_tide_ok(self):
-        liverpool, southampton = _setup_locations()
-
         create_tide_prediction(
-            liverpool,
+            self.liverpool,
             BASE_TIME + datetime.timedelta(days=31),
             5.0)
-        southampton.delete()  # so that it doesn't come up as a failure
+        self.southampton.delete()  # so that it doesn't come up as a failure
 
     def _setup_tide_not_ok(self):
         """
         Create two locations but with no data - this will cause a failure.
         """
 
-        liverpool, southampton = _setup_locations()
         SurgePrediction.objects.all().delete()  # to ensure error
 
     def test_tide_predictions_page_has_status_ok_when_all_ok(self):

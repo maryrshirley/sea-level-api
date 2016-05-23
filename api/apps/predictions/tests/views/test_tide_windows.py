@@ -8,16 +8,16 @@ from nose.tools import assert_equal, assert_in
 
 from api.apps.predictions.models import TidePrediction
 from api.apps.predictions.utils import create_tide_prediction
-from api.apps.locations.models import Location
 from api.libs.minute_in_time.models import Minute
 from api.libs.test_utils import decode_json
+from api.libs.test_utils.location import LocationMixin
 
 from .test_location_parsing import LocationParsingTestMixin
 from .test_time_parsing import TimeParsingTestMixin
 from .test_database_queries import SingleDatabaseQueryTestMixin
 
 
-class TestTideWindowsViewBase(TestCase):
+class TestTideWindowsViewBase(TestCase, LocationMixin):
     BASE_PATH = '/1/predictions/tide-windows/'
     EXAMPLE_FULL_PATH = (
         BASE_PATH + 'liverpool/'
@@ -29,11 +29,13 @@ class TestTideWindowsViewBase(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        (cls.LOCATION, _) = Location.objects.get_or_create(slug='liverpool')
+        super(TestTideWindowsViewBase, cls).setUpClass()
+        cls.LOCATION = cls.create_location()
 
     @classmethod
     def tearDownClass(cls):
         cls.LOCATION.delete()
+        super(TestTideWindowsViewBase, cls).tearDownClass()
 
     @classmethod
     def create_predictions(cls, minutes_and_levels):

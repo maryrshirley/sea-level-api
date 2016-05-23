@@ -2,13 +2,22 @@ from django.test import TestCase
 from nose.tools import assert_equal, assert_in
 
 from api.libs.test_utils import decode_json
+from api.libs.test_utils.location import LocationMixin
 
 
-class TestAPIRootView(TestCase):
+class TestAPIRootView(TestCase, LocationMixin):
     fixtures = [
         'api/apps/locations/fixtures/two_locations.json',
         'api/apps/predictions/fixtures/predictions_two_locations.json',
     ]
+
+    @classmethod
+    def setUpClass(cls):
+        super(TestAPIRootView, cls).setUpClass()
+
+    @classmethod
+    def tearDownClass(cls):
+        super(TestAPIRootView, cls).tearDownClass()
 
     @staticmethod
     def expand_path(path):

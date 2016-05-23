@@ -1,6 +1,7 @@
 from django.utils import formats
 
 from api.libs.test_utils.datetime_utils import delta
+from api.libs.test_utils.mixins import LocationMixin
 from api.libs.view_helpers import format_datetime
 from api.libs.test_utils.weather import (CreateObservationMixin, OBSERVATION_B,
                                          OBSERVATION_C, encode_datetime)
@@ -9,9 +10,17 @@ from .base import FunctionalTest, SeleniumTest
 from .base_weather import WeatherAdminTest
 
 
-class ObservationWeatherBrowser(SeleniumTest):
+class ObservationWeatherBrowser(SeleniumTest, LocationMixin):
 
     endpoint = '/1/observations/weather/'
+
+    def setUp(self):
+        super(ObservationWeatherBrowser, self).setUp()
+        self.setUpLocation()
+
+    def tearDown(self):
+        self.tearDownLocation()
+        super(ObservationWeatherBrowser, self).tearDown()
 
     def test_has_documentation(self):
         # User visits the weather api
@@ -54,9 +63,18 @@ class ObservationAdmin(WeatherAdminTest):
         self.assertEqual(datetime, datetime_field.text)
 
 
-class ObservationWeatherStatus(SeleniumTest, CreateObservationMixin):
+class ObservationWeatherStatus(SeleniumTest, CreateObservationMixin,
+                               LocationMixin):
 
     endpoint = '/1/_status/weather-observations/'
+
+    def setUp(self):
+        super(ObservationWeatherStatus, self).setUp()
+        self.setUpLocation()
+
+    def tearDown(self):
+        self.tearDownLocation()
+        super(ObservationWeatherStatus, self).tearDown()
 
     def test_location_has_status(self):
         # A prediction exists
@@ -101,9 +119,18 @@ class ObservationWeatherStatus(SeleniumTest, CreateObservationMixin):
         observation.delete()
 
 
-class ObservationWeatherTest(FunctionalTest, CreateObservationMixin):
+class ObservationWeatherTest(FunctionalTest, CreateObservationMixin,
+                             LocationMixin):
 
     endpoint = '/1/observations/weather/liverpool'
+
+    def setUp(self):
+        super(ObservationWeatherTest, self).setUp()
+        self.setUpLocation()
+
+    def tearDown(self):
+        self.tearDownLocation()
+        super(ObservationWeatherTest, self).tearDown()
 
     def test_can_save_observation(self):
         # A user has observation data

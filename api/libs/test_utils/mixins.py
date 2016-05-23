@@ -1,6 +1,6 @@
 import json
 
-from api.apps.locations.models import Location
+from .location import LocationMixin as ParentLocationMixin
 
 
 class PostJsonMixin(object):
@@ -11,11 +11,11 @@ class PostJsonMixin(object):
                                 **extras)
 
 
-class LocationMixin(object):
+class LocationMixin(ParentLocationMixin):
 
     def setUpLocation(self):
-        self.location = Location.objects.create(
-            slug='liverpool', name='Liverpool')
+        self.location = self.create_location(slug='liverpool',
+                                             name='Liverpool')
 
     def tearDownLocation(self):
         self.location.delete()

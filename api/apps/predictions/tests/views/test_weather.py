@@ -9,7 +9,6 @@ from nose_parameterized import parameterized
 from rest_framework.test import APITestCase
 from rest_framework.authtoken.models import Token
 
-from api.apps.locations.models import Location
 from api.apps.predictions.models import WeatherPrediction
 from api.apps.users.helpers import create_user
 from api.libs.param_parsers.parse_time import parse_datetime
@@ -17,6 +16,7 @@ from api.libs.test_utils import decode_json
 from api.libs.test_utils.datetime_utils import delta
 from api.libs.test_utils.weather import (PREDICTION_WEATHER,
                                          CreatePredictionMixin)
+from api.libs.test_utils.location import LocationMixin
 from api.libs.view_helpers import format_datetime
 
 _URL = '/1/predictions/weather/liverpool'
@@ -86,23 +86,28 @@ class PostJsonMixin(object):
                                 **extras)
 
 
-class TestWeatherView(APITestCase, PostJsonMixin, CreatePredictionMixin):
+class TestWeatherView(APITestCase, PostJsonMixin, CreatePredictionMixin,
+                      LocationMixin):
 
     @classmethod
     def setUpClass(cls):
-        cls.liverpool = Location.objects.create(
-            slug='liverpool', name='Liverpool')
-        cls.location = cls.liverpool
-
+        super(TestWeatherView, cls).setUpClass()
         cls.user = create_user('collector', is_internal_collector=True)
+        cls.liverpool = cls.create_location()
+        cls.location = cls.liverpool
 
     @classmethod
     def tearDownClass(cls):
-        cls.user.delete()
+        super(TestWeatherView, cls).tearDownClass()
         cls.liverpool.delete()
+        cls.user.delete()
 
     def setUp(self):
+        super(TestWeatherView, self).setUp()
         self.client.force_authenticate(user=self.user)
+
+    def tearDown(self):
+        super(TestWeatherView, self).tearDown()
 
     @staticmethod
     def _serialize(prediction, keys):
@@ -329,11 +334,11 @@ class TestWeatherView(APITestCase, PostJsonMixin, CreatePredictionMixin):
         prediction1.delete()
 
 
-class TestWeatherTokenAuthentication(APITestCase, PostJsonMixin):
+class TestWeatherTokenAuthentication(APITestCase, PostJsonMixin,
+                                     LocationMixin):
     @classmethod
     def setUpClass(cls):
-        cls.liverpool = Location.objects.create(
-            slug='liverpool', name='Liverpool')
+        cls.liverpool = cls.create_location()
         cls.location = cls.liverpool
         cls.permitted = create_user('permitted', is_internal_collector=True)
         cls.forbidden = create_user('forbidden', is_internal_collector=False)

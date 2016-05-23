@@ -8,16 +8,22 @@ def create_test_users_locations():
         'location-public-1': Location.objects.create(
             slug='location-public-1',
             name='location-public-1',
+            min_depth=1.0,
+            under_keal=2.0,
             visible=True),
 
         'location-private-1': Location.objects.create(
             slug='location-private-1',
             name='location-private-1',
+            min_depth=1.0,
+            under_keal=2.0,
             visible=False),
 
         'location-private-2': Location.objects.create(
             slug='location-private-2',
             name='location-private-2',
+            min_depth=1.0,
+            under_keal=2.0,
             visible=False),
     }
 

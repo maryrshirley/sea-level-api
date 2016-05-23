@@ -53,7 +53,7 @@ class TestAuthentication(TestCase):
 
     def test_that_email_creates_request(self):
         response = self.postAuthEmail(self.user.email, 201)
-        self.assertEquals('OK', response.content)
+        self.assertEquals('OK', response.content.decode())
 
         self.assertEqual(1, LoginCode.objects.count())
 

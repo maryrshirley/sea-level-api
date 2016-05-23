@@ -87,6 +87,8 @@ INSTALLED_APPS = (
     'api.apps.tide_gauges',
     'api.apps.users',
     'api.apps.authentication',
+    'api.apps.vessel',
+    'api.apps.schedule',
 
     'api.libs.minute_in_time',
 )

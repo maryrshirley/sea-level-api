@@ -1,4 +1,4 @@
-from api.apps.locations.models import Location
+from api.libs.test_utils.location import LocationMixin
 from api.libs.test_utils.weather import (CreateObservationMixin,
                                          CreatePredictionMixin)
 
@@ -6,20 +6,22 @@ from .base import AdminTest, SeleniumTest
 
 
 class WeatherAdminTest(SeleniumTest, AdminTest, CreateObservationMixin,
-                       CreatePredictionMixin):
+                       CreatePredictionMixin, LocationMixin):
 
     def setUp(self):
         super(WeatherAdminTest, self).setUp()
 
+        self.location = self.create_location()
         self.setUpAdmin()
         self.loadAdmin()
 
     def tearDown(self):
         self.tearDownAdmin()
+        self.location.delete()
         super(WeatherAdminTest, self).tearDown()
 
     def _test_admin(self, objects, label, assert_function):
-        location2 = Location.objects.create(slug='location2', name='Location2')
+        location2 = self.create_location(slug='location2', name='Location2')
 
         # User clicks on the admin page
         admin_page = self.browser. \
