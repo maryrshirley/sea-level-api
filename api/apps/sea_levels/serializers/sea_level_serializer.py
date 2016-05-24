@@ -9,4 +9,5 @@ class SeaLevelSerializer(serializers.ModelSerializer):
         resource_name = 'sea_levels'
         fields = ('datetime', 'predicted_tide_level', 'predicted_is_high',
                   'predicted_surge_level', 'predicted_sea_level',
-                  'observed_sea_level', 'derived_surge_level')
+                  'observed_sea_level', 'nearest_observed_sea_level',
+                  'derived_surge_level')
