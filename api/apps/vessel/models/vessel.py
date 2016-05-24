@@ -20,3 +20,6 @@ class Vessel(models.Model):
         if not self.id:
             self.slug = slugify(self.name)
         super(Vessel, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return self.name

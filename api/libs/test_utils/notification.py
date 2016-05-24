@@ -48,11 +48,13 @@ class NotificationMixin(ScheduleMixin):
 
     def admin_notification_payload(self, payload):
         get_location = lambda x, y: Location.objects.get(slug=x[y + '__slug'])
+        get_schedule = lambda x, y: Schedule.objects.get(code=x[y + '__code'])
+        get_vessel = lambda x, y: Vessel.objects.get(imo=x[y + '__imo'])
         payload['location'] = get_location(payload, 'location').name
 
         # XXX: Temporary workaround for missing feature
-        payload['schedule'] = 'Schedule object'
-        payload['vessel'] = 'Vessel object'
+        payload['schedule'] = get_schedule(payload, 'schedule').code
+        payload['vessel'] = get_vessel(payload, 'vessel').name
         payload['category'] = dict(CATEGORY_CHOICES).get(payload['category'])
         payload['status'] = dict(STATUS_CHOICES).get(payload['status'])
         del payload['location__slug']
