@@ -55,3 +55,6 @@ class Schedule(models.Model):
     @property
     def sea_level(self):
         return 0.0
+
+    def __str__(self):
+        return self.code
