@@ -60,7 +60,6 @@ class TestSeaLevelsView(TestSeaLevelsViewBase):
             u'predicted_is_high': False,
             u'predicted_surge_level': None,
             u'predicted_sea_level': None,
-            u'nearest_observed_sea_level': None,
             u'observed_sea_level': None,
             u'derived_surge_level': None,
         }
