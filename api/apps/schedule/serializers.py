@@ -25,3 +25,26 @@ class ScheduleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Schedule
         exclude = ('departure', 'arrival')
+
+
+class ScheduleDeparturesListSerializer(serializers.ModelSerializer):
+
+    vessel = serializers.SlugRelatedField(read_only=True, slug_field='name')
+    departure = serializers.SlugRelatedField(read_only=True,
+                                             slug_field='datetime')
+
+    class Meta:
+        model = Schedule
+        fields = ('vessel', 'departure', 'sea_level')
+
+
+class ScheduleArrivalsListSerializer(serializers.ModelSerializer):
+
+    vessel = serializers.SlugRelatedField(read_only=True,
+                                          slug_field='name')
+    arrival = serializers.SlugRelatedField(read_only=True,
+                                           slug_field='datetime')
+
+    class Meta:
+        model = Schedule
+        fields = ('vessel', 'arrival', 'sea_level')

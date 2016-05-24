@@ -33,6 +33,10 @@ class ScheduleMixin(LocationMixin, VesselMixin):
 
     schedule_endpoint = '/1/schedule/'
 
+    schedule_arrivals_endpoint = '/1/schedule/{0}/arrivals/'
+
+    schedule_departures_endpoint = '/1/schedule/{0}/departures/'
+
     def create_schedule(self, payload=None, **kwargs):
         if not payload:
             payload = self.payload_schedule(**kwargs)
@@ -77,6 +81,11 @@ class ScheduleMixin(LocationMixin, VesselMixin):
     def payload_schedule(self, payload=SCHEDULE_A, **kwargs):
         data = copy.copy(payload)
         data.update(**kwargs)
+        return data
+
+    def payload_schedule_read(self, payload):
+        data = copy.copy(payload)
+        data = {}
         return data
 
     @property
