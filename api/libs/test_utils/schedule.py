@@ -16,7 +16,7 @@ class ScheduleMixin(LocationMixin, VesselMixin):
     SCHEDULE_A = {
         'origin__slug': 'liverpool',
         'destination__slug': 'heysham',
-        'vessel__imo': '8219554',
+        'vessel__slug': 'isle-of-arran',
         'departure__datetime': '2016-03-26T12:00:00Z',
         'arrival__datetime': '2016-03-26T14:00:00Z',
         'code': 'ST_LIV_HEY_20160326_AM'
@@ -25,7 +25,7 @@ class ScheduleMixin(LocationMixin, VesselMixin):
     SCHEDULE_B = {
         'origin__slug': 'heysham',
         'destination__slug': 'liverpool',
-        'vessel__imo': '8219554',
+        'vessel__slug': 'isle-of-arran',
         'departure__datetime': '2016-03-26T15:00:00Z',
         'arrival__datetime': '2016-03-26T17:00:00Z',
         'code': 'ST_LIV_HEY_20160326_PM'
@@ -51,7 +51,7 @@ class ScheduleMixin(LocationMixin, VesselMixin):
         get_minute = lambda x, y: \
             Minute.objects.get_or_create(
                 datetime=parse_datetime(x[y + '__datetime']))[0]
-        get_vessel = lambda x, y: Vessel.objects.get(imo=x[y + '__imo'])
+        get_vessel = lambda x, y: Vessel.objects.get(slug=x[y + '__slug'])
         payload['origin'] = get_location(payload, 'origin')
         payload['destination'] = get_location(payload, 'destination')
         payload['departure'] = get_minute(payload, 'departure')
@@ -61,7 +61,7 @@ class ScheduleMixin(LocationMixin, VesselMixin):
         del payload['destination__slug']
         del payload['departure__datetime']
         del payload['arrival__datetime']
-        del payload['vessel__imo']
+        del payload['vessel__slug']
         return payload
 
     # XXX: BAD NAME
