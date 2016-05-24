@@ -19,7 +19,7 @@ class ScheduleSerializer(serializers.ModelSerializer):
     )
     vessel = serializers.SlugRelatedField(
         queryset=Vessel.objects.all(),
-        slug_field='imo'
+        slug_field='slug'
     )
 
     class Meta:

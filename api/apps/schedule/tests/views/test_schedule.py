@@ -140,8 +140,8 @@ class TestSchedule(APITestCase, ScheduleMixin):
         payload = self.payload_schedule()
         self.postPayload(payload, 1, status=201)
 
-    def test_that_invalid_imo_returns_400_status(self):
-        payload = [self.payload_schedule(vessel__imo='1234567')]
+    def test_that_invalid_veseel_returns_400_status(self):
+        payload = [self.payload_schedule(vessel__slug='foo')]
         self.postPayload(payload, 0, status=400)
 
     def test_that_invalid_locations_returns_400_status(self):
