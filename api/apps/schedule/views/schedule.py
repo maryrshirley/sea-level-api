@@ -46,7 +46,7 @@ class Schedule(GenericAPIView, CreateModelMixin):
             if instance:
                 update_responses.append(self.update_object(instance, record))
 
-                if not self.many:
+                if self.many:
                     request.data.remove(record)
 
             processed.append(code)
