@@ -52,7 +52,7 @@ class Schedule(GenericAPIView, CreateModelMixin):
             processed.append(code)
 
         # Update only
-        if len(request.data) == len(update_responses):
+        if len(data) == len(update_responses):
             return Response(update_responses, status=201)
 
         create_response = self.create(request, *args, **kwargs)

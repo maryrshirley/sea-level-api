@@ -26,6 +26,30 @@ class ScheduleSerializer(serializers.ModelSerializer):
         model = Schedule
         exclude = ('departure', 'arrival')
 
+    def sea_level(self, location, minute):
+
+        surges = location.surge_predictions.filter(minute=minute) \
+            .order_by('minute__datetime')
+        tides = location.tide_predictions.filter(minute=minute) \
+            .order_by('minute__datetime')
+
+        if not len(surges) or not len(tides):
+            return None
+
+        return tides[0].tide_level + surges[0].surge_level
+
+    def save(self, **kwargs):
+        instance = super(ScheduleSerializer, self).save(**kwargs)
+
+        instance.depature_sea_level = self.sea_level(instance.origin,
+                                                     instance.departure)
+        instance.arrival_sea_level = self.sea_level(instance.destination,
+                                                    instance.arrival)
+
+        instance.save()
+
+        return instance
+
 
 class ScheduleDeparturesListSerializer(serializers.ModelSerializer):
 
@@ -35,7 +59,7 @@ class ScheduleDeparturesListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Schedule
-        fields = ('vessel', 'departure', 'sea_level')
+        fields = ('vessel', 'departure', 'departure_sea_level')
 
 
 class ScheduleArrivalsListSerializer(serializers.ModelSerializer):
@@ -47,4 +71,4 @@ class ScheduleArrivalsListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Schedule
-        fields = ('vessel', 'arrival', 'sea_level')
+        fields = ('vessel', 'arrival', 'arrival_sea_level')

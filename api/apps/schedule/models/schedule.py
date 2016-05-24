@@ -6,6 +6,9 @@ from django.db import models
 from api.libs.minute_in_time.models import Minute
 from api.libs.param_parsers.parse_time import parse_datetime
 
+TidePrediction = 'predictions.tideprediction'
+SurgePrediction = 'predictions.surgeprediction'
+
 
 class ScheduleManager(models.Manager):
 
@@ -25,7 +28,9 @@ class Schedule(models.Model):
     destination = models.ForeignKey('locations.Location', related_name='+')
     vessel = models.ForeignKey('vessel.Vessel', related_name='+')
     departure = models.ForeignKey(Minute, related_name='+')
+    departure_sea_level = models.FloatField(null=True)
     arrival = models.ForeignKey(Minute, related_name='+')
+    arrival_sea_level = models.FloatField(null=True)
     code = models.CharField(max_length=100)
 
     objects = ScheduleManager()
@@ -51,10 +56,6 @@ class Schedule(models.Model):
             value = parse_datetime(value)
         self.arrival, created = Minute.objects.get_or_create(datetime=value)
         return self.arrival
-
-    @property
-    def sea_level(self):
-        return 0.0
 
     def __str__(self):
         return self.code

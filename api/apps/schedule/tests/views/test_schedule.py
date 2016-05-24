@@ -192,7 +192,7 @@ class TestSchedule(APITestCase, ScheduleMixin):
                 record = {
                     u'vessel': raw['_vessel_cache'].name,
                     u'departure': departure,
-                    u'sea_level': 0,
+                    u'departure_sea_level': 1.2,
                 }
             else:
                 arrival = raw['_arrival_cache'] \
@@ -200,7 +200,7 @@ class TestSchedule(APITestCase, ScheduleMixin):
                 record = {
                     u'vessel': raw['_vessel_cache'].name,
                     u'arrival': arrival,
-                    u'sea_level': 0,
+                    u'arrival_sea_level': 2.5,
                 }
             assert_equal(record, data[index])
 

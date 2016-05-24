@@ -18,7 +18,9 @@ class ScheduleMixin(LocationMixin, VesselMixin):
         'destination__slug': 'heysham',
         'vessel__slug': 'isle-of-arran',
         'departure__datetime': '2016-03-26T12:00:00Z',
+        'departure_sea_level': 1.2,
         'arrival__datetime': '2016-03-26T14:00:00Z',
+        'arrival_sea_level': 2.5,
         'code': 'ST_LIV_HEY_20160326_AM'
     }
 
@@ -27,7 +29,9 @@ class ScheduleMixin(LocationMixin, VesselMixin):
         'destination__slug': 'liverpool',
         'vessel__slug': 'isle-of-arran',
         'departure__datetime': '2016-03-26T15:00:00Z',
+        'departure_sea_level': 3.9,
         'arrival__datetime': '2016-03-26T17:00:00Z',
+        'arrival_sea_level': 5.2,
         'code': 'ST_LIV_HEY_20160326_PM'
     }
 
