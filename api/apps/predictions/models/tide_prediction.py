@@ -18,7 +18,7 @@ class TidePrediction(models.Model):
         related_name='predictions'
     )
 
-    location = models.ForeignKey(Location)
+    location = models.ForeignKey(Location, related_name='tide_predictions')
 
     tide_level = models.FloatField(
         help_text='The predicted height in metres of the tidal component '

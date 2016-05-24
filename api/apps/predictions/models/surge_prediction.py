@@ -18,7 +18,7 @@ class SurgePrediction(models.Model):
         related_name='surge_predictions'
     )
 
-    location = models.ForeignKey(Location)
+    location = models.ForeignKey(Location, related_name='surge_predictions')
 
     surge_level = models.FloatField(
         help_text='The predicted additional height on top of the tide '
