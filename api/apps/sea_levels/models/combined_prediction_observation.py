@@ -38,6 +38,7 @@ class CombinedPredictionObservation(models.Model):
     def __str__(self):
         return "{}".format(self.datetime)
 
+    '''
     @property
     def nearest_observed_sea_level(self):
         if self.observed_sea_level is not None:
@@ -52,3 +53,4 @@ class CombinedPredictionObservation(models.Model):
             return None
 
         return (nearest[0].observed_sea_level, nearest[0].datetime)
+    '''
