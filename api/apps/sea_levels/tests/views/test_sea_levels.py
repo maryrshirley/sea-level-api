@@ -55,13 +55,14 @@ class TestSeaLevelsView(TestSeaLevelsViewBase):
         data = decode_json(response.content)
         sea_levels = data['sea_levels']
         expected = {
-            'datetime': '2014-06-17T09:00:00Z',
-            'predicted_tide_level': 10.3,
-            'predicted_is_high': False,
-            'predicted_surge_level': None,
-            'predicted_sea_level': None,
-            'observed_sea_level': None,
-            'derived_surge_level': None,
+            u'datetime': u'2014-06-17T09:00:00Z',
+            u'predicted_tide_level': 10.3,
+            u'predicted_is_high': False,
+            u'predicted_surge_level': None,
+            u'predicted_sea_level': None,
+            u'nearest_observed_sea_level': None,
+            u'observed_sea_level': None,
+            u'derived_surge_level': None,
         }
         assert_equal(expected, sea_levels[0])
 
