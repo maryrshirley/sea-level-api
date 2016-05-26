@@ -1,6 +1,6 @@
 import json
 
-from django.db.models.loading import get_model
+from django.apps import apps
 
 from nose.tools import assert_equal
 from nose_parameterized import parameterized
@@ -21,7 +21,7 @@ url_testcases = [
     (_URL_LIVERPOOL, 'GET, HEAD, OPTIONS'),
 ]
 
-User = get_model('auth', 'User')
+User = apps.get_model('auth', 'User')
 
 
 class TestNotification(APITestCase, NotificationMixin):

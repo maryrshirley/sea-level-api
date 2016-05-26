@@ -1,7 +1,7 @@
 import json
 
+from django.apps import apps
 from django.conf import settings
-from django.db.models.loading import get_model
 
 from freezegun import freeze_time
 
@@ -24,7 +24,7 @@ url_testcases = [
 ]
 
 
-User = get_model('auth', 'User')
+User = apps.get_model('auth', 'User')
 
 
 class TestSchedule(APITestCase, ScheduleMixin):
