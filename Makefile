@@ -12,7 +12,11 @@ clean_python_bytecode:
 
 .PHONY: test
 test:
-	pip install --upgrade "Django${DJANGO_VERSION_CASE}"
+	@if [ "${DJANGO_PRE}" -eq 1 ]; then\
+		pip install --upgrade --pre django;\
+	else\
+		pip install --upgrade "Django${DJANGO_VERSION_CASE}";\
+	fi
 	pip install -r requirements_for_tests.txt
 	pip freeze
 	./run_tests.sh
