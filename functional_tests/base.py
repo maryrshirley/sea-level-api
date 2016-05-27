@@ -1,5 +1,6 @@
 import json
 
+import django
 from django.contrib.auth.models import User
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
@@ -110,7 +111,10 @@ class AdminTest(object):
 
         # User notices the addlink button
         addlink = self.browser.find_element_by_class_name('addlink')
-        self.assertEquals("Add " + slug, addlink.text)
+
+        text = "Add " + slug
+        self.assertEquals(text.upper() if django.VERSION[1] > 8 else text,
+                          addlink.text)
 
         # User clicks on the add button
         addlink.click()

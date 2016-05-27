@@ -1,3 +1,7 @@
+import unittest
+
+import django
+
 from .base import FunctionalTest, SeleniumTest
 from .base_weather import WeatherAdminTest
 
@@ -25,7 +29,8 @@ class PredictionWeatherBrowser(StaticLiveServerTestCase):
     def tearDown(self):
         self.browser.quit()
 
-    def test_has_documentation(self):
+    @unittest.skipIf(django.VERSION[1] > 8, "Authentication now hides docs")
+    def _test_has_documentation(self):
         # User visits the weather api
         self.browser.get(self.live_server_url + self.endpoint)
 

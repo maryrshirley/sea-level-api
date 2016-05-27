@@ -1,12 +1,12 @@
-from django.db.models.loading import get_model
+from django.apps import apps
 from django.shortcuts import render
 from django.views.generic import View
 
 
 class WeatherObservations(View):
     def get(self, request, *args, **kwargs):
-        WeatherObservation = get_model(app_label='observations',
-                                       model_name='WeatherObservation')
+        WeatherObservation = apps.get_model('observations',
+                                            'WeatherObservation')
         statuses = WeatherObservation.objects.all_location_status()
         all_ok = all([locationStatus.status.ok for locationStatus in statuses])
         status_code = 200 if all_ok else 500
