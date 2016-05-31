@@ -1,8 +1,9 @@
 from django.conf import settings
 from django.conf.urls import patterns, url
 
-from .views import (StatusIndex, StatusAll, SurgePredictions, TidePredictions,
-                    Observations, WeatherObservations, WeatherPredictions)
+from .views import (Schedules, StatusIndex, StatusAll, SurgePredictions,
+                    TidePredictions, Observations, WeatherObservations,
+                    WeatherPredictions)
 
 urlpatterns = patterns(
     '',
@@ -30,4 +31,8 @@ urlpatterns = patterns(
     url(r'^weather-observations/$',
         WeatherObservations.as_view(),
         name='weather-observations'),
+
+    url(r'^schedule/$',
+        Schedules.as_view(),
+        name='schedules'),
 )

@@ -5,3 +5,4 @@ from .surge_predictions import SurgePredictions
 from .tide_predictions import TidePredictions
 from .weather_observations import WeatherObservations
 from .weather_predictions import WeatherPredictions
+from .schedules import Schedules

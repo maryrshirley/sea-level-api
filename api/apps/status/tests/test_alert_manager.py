@@ -125,7 +125,8 @@ class TestAlertManagerEnablingDisabling(TestAlertManagerBase):
         self._disable(AlertType.tide_predictions)
 
         assert_equal(
-            set([AlertType.surge_predictions, AlertType.observations]),
+            set([AlertType.surge_predictions, AlertType.observations,
+                 AlertType.schedule]),
             alerts_enabled(self.liverpool))
 
 

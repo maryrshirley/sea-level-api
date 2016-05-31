@@ -55,3 +55,9 @@ class TestDisabledAlerts(TestCase, LocationMixin):
             self._disable(AlertType.surge_predictions)
             assert_equal('surge_predictions, tide_predictions',
                          self.config.disabled_alerts())
+
+    def test_schedule_disabled_alert_string(self):
+        with freeze_time(BASE_DATE):
+            self._disable(AlertType.schedule)
+            assert_equal('schedule',
+                         self.config.disabled_alerts())
