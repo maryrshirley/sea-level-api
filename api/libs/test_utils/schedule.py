@@ -6,7 +6,10 @@ from api.apps.vessel.models import Vessel
 from api.apps.schedule.models import Schedule
 from api.libs.minute_in_time.models import Minute
 from api.libs.param_parsers.parse_time import parse_datetime
+from api.libs.test_utils.datetime_utils import delta
 from api.libs.test_utils.location import LocationMixin
+from api.libs.view_helpers import now_rounded
+from api.libs.view_helpers.format_datetime import format_datetime
 
 from .vessel import VesselMixin
 
@@ -37,9 +40,15 @@ class ScheduleMixin(LocationMixin, VesselMixin):
 
     schedule_endpoint = '/1/schedule/'
 
+    schedule_status_endpoint = '/1/_status/schedule/'
+
     schedule_arrivals_endpoint = '/1/schedule/{0}/arrivals/'
 
     schedule_departures_endpoint = '/1/schedule/{0}/departures/'
+
+    @property
+    def Schedule(self):
+        return Schedule
 
     def create_schedule(self, payload=None, **kwargs):
         if not payload:
@@ -48,6 +57,12 @@ class ScheduleMixin(LocationMixin, VesselMixin):
         payload = self.related_payload(payload)
 
         return Schedule.objects.create(**payload)
+
+    def create_schedule_now(self, payload=None, **kwargs):
+        kwargs['departure__datetime'] = format_datetime(now_rounded())
+        kwargs['arrival__datetime'] = format_datetime(delta(hours=2))
+
+        return self.create_schedule(payload, **kwargs)
 
     # XXX: BAD NAME
     def related_payload(self, payload):

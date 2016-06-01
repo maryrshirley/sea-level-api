@@ -14,6 +14,7 @@ class StatusTest(StaticLiveServerTestCase):
         '/1/_status/tide-predictions/': 'Check Tide Predictions',
         '/1/_status/weather-predictions/': 'Check Weather Predictions',
         '/1/_status/weather-observations/': 'Check Weather Observations',
+        '/1/_status/schedule/': 'Check Schedules',
     }
 
     def setUp(self):
