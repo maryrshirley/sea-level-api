@@ -19,7 +19,7 @@ from api.libs.test_utils.datetime_utils import delta
 from api.libs.test_utils.weather import (PREDICTION_WEATHER,
                                          CreatePredictionMixin)
 from api.libs.test_utils.location import LocationMixin
-from api.libs.view_helpers import now_rounded, format_datetime
+from api.libs.view_helpers import format_datetime
 
 _URL = '/1/predictions/weather/liverpool'
 _URL_NOW = _URL + '/now'
@@ -250,11 +250,12 @@ class TestWeatherView(APITestCase, PostJsonMixin, CreatePredictionMixin,
 
     @parameterized.expand(load_now_test_cases)
     def test_that_http_get_range_prediction_edges(self, _from, _to, _valid):
-        now = now_rounded()
+        valid_from = delta()
+        valid_to = delta(days=1)
 
-        prediction = self.create_prediction(valid_from=delta(),
-                                            valid_to=delta(hours=24))
-        with freeze_time(now):
+        prediction = self.create_prediction(valid_from=valid_from,
+                                            valid_to=valid_to)
+        with freeze_time(valid_from):
             payload = {'start': format_datetime(_from),
                        'end': format_datetime(_to)}
             response = self.client.get(_URL, payload)
