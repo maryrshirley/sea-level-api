@@ -3,6 +3,8 @@ import json
 
 from django.core.exceptions import ValidationError
 
+from freezegun import freeze_time
+
 from nose.tools import assert_equal
 from nose_parameterized import parameterized
 
@@ -17,7 +19,7 @@ from api.libs.test_utils.datetime_utils import delta
 from api.libs.test_utils.weather import (PREDICTION_WEATHER,
                                          CreatePredictionMixin)
 from api.libs.test_utils.location import LocationMixin
-from api.libs.view_helpers import format_datetime
+from api.libs.view_helpers import now_rounded, format_datetime
 
 _URL = '/1/predictions/weather/liverpool'
 _URL_NOW = _URL + '/now'
@@ -248,14 +250,17 @@ class TestWeatherView(APITestCase, PostJsonMixin, CreatePredictionMixin,
 
     @parameterized.expand(load_now_test_cases)
     def test_that_http_get_range_prediction_edges(self, _from, _to, _valid):
+        now = now_rounded()
+
         prediction = self.create_prediction(valid_from=delta(),
                                             valid_to=delta(hours=24))
-        payload = {'start': format_datetime(_from),
-                   'end': format_datetime(_to)}
-        response = self.client.get(_URL, payload)
-        assert_equal(200, response.status_code)
+        with freeze_time(now):
+            payload = {'start': format_datetime(_from),
+                       'end': format_datetime(_to)}
+            response = self.client.get(_URL, payload)
+            assert_equal(200, response.status_code)
 
-        data = json.loads(response.content.decode('utf-8'))
+            data = json.loads(response.content.decode('utf-8'))
 
         assert_equal(1 if _valid else 0, len(data))
         prediction.delete()
