@@ -8,6 +8,7 @@ from django.dispatch import receiver
 from django.utils.encoding import python_2_unicode_compatible
 
 from api.apps.locations.models import Location
+from api.apps.status.alert_manager import AlertType, is_alert_enabled
 from api.apps.status.views.common import Status
 from api.libs.minute_in_time.models import Minute
 from api.libs.param_parsers.parse_time import parse_datetime
@@ -80,6 +81,9 @@ class WeatherObservationManager(models.Manager):
     def status(self, location):
         if location is None:
             return Status(False, "Invalid location")
+
+        if not is_alert_enabled(location, AlertType.weather_observations):
+            return Status(True, 'OK (alert disabled)')
 
         objs = self.now_minus_24(location)
         if objs.exists():

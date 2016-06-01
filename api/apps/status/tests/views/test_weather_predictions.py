@@ -1,11 +1,14 @@
 from django.test import TestCase
+from freezegun import freeze_time
 
 from nose.tools import assert_equal
 
 from api.apps.predictions.models import WeatherPrediction
+from api.apps.status.alert_manager import AlertType, disable_alert_until
 from api.libs.test_utils.datetime_utils import delta
 from api.libs.test_utils.mixins import LocationMixin
 from api.libs.test_utils.weather import CreatePredictionMixin
+from api.libs.view_helpers import now_rounded
 
 
 class TestWeatherPredictionsView(TestCase, CreatePredictionMixin,
@@ -53,3 +56,10 @@ class TestWeatherPredictionsView(TestCase, CreatePredictionMixin,
 
     def test_that_no_location_has_invalid_status(self):
         self.assert_status(False, "Invalid location", None)
+
+    def test_that_weather_observations_alerts_can_be_disabled(self):
+        now = now_rounded()
+        with freeze_time(now):
+            disable_alert_until(self.location, AlertType.weather_predictions,
+                                delta(hours=1))
+            self.assert_status(True, 'OK (alert disabled)', self.location)

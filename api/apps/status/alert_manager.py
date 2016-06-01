@@ -7,7 +7,8 @@ import pytz
 from .models import LocationStatusConfig
 
 AlertType = Enum('AlertType',
-                 'tide_predictions surge_predictions observations schedule')
+                 'tide_predictions surge_predictions observations schedule \
+                  weather_observations weather_predictions')
 
 
 def disable_alert_until(location, alert_type, dt):

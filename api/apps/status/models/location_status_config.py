@@ -34,6 +34,17 @@ class LocationStatusConfig(models.Model):
         help_text='After this date/time, turn on alerts for schedules '
                   'at this location. Set to blank to turn on immediately.')
 
+    weather_predictions_alerts_disabled_until = models.DateTimeField(
+        null=True, blank=True,
+        help_text='After this date/time, turn on alerts for weather predictions\
+                    at this location. Set to blank to turn on immediately.')
+
+    weather_observations_alerts_disabled_until = models.DateTimeField(
+        null=True, blank=True,
+        help_text='After this date/time, turn on alerts for weather \
+                   observations at this location. Set to blank to turn on \
+                   immediately.')
+
     def disabled_alerts(self):
         from ..alert_manager import alerts_disabled
         disabled = [a.name for a in alerts_disabled(self.location)]
