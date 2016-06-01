@@ -99,9 +99,14 @@ INSTALLED_APPS = [
 
 if DSN:
     import raven
+    RAVEN_RELEASE = os.environ.get('SOURCE_VERSION', None)
+
+    if not RAVEN_RELEASE:
+        RAVEN_RELEASE = raven.fetch_git_sha(BASE_DIR + '/..')
+
     RAVEN_CONFIG = {
         'dsn': DSN,
-        'release': raven.fetch_git_sha(BASE_DIR + '/..'),
+        'release': RAVEN_RELEASE,
     }
     INSTALLED_APPS.append('raven.contrib.django.raven_compat')
 
