@@ -11,3 +11,4 @@ sqlparse==0.1.15
 enum34==1.0.4
 django-nopassword==2.1.1
 twilio==5.4.0
+raven==5.19.0
