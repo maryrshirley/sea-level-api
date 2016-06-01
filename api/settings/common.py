@@ -25,6 +25,8 @@ try:
 except ImportError:
     from urlparse import urlparse
 
+DSN = os.environ.get('DSN', None)
+
 
 BASE_DIR = abspath(pjoin(dirname(__file__), '..'))
 
@@ -64,7 +66,7 @@ ALLOWED_HOSTS = [
 
 # Application definition
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -76,6 +78,7 @@ INSTALLED_APPS = (
     'rest_framework.authtoken',
     'corsheaders',
     'nopassword',
+
 
     'api.apps.predictions',
     'api.apps.locations',
@@ -92,7 +95,15 @@ INSTALLED_APPS = (
     'api.apps.notifications',
 
     'api.libs.minute_in_time',
-)
+]
+
+if DSN:
+    import raven
+    RAVEN_CONFIG = {
+        'dsn': DSN,
+        'release': raven.fetch_git_sha(BASE_DIR + '/..'),
+    }
+    INSTALLED_APPS.append('raven.contrib.django.raven_compat')
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
