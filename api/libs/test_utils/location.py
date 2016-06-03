@@ -30,3 +30,13 @@ class LocationMixin(object):
         data = copy.copy(payload)
         data.update(**kwargs)
         return data
+
+    @property
+    def Location(self):
+        return Location
+
+    def payload_location_slug(self, payload):
+        payload['location'] = Location.objects.get(
+            slug=payload['location__slug'])
+        del payload['location__slug']
+        return payload
