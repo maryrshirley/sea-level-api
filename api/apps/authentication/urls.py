@@ -11,4 +11,6 @@ urlpatterns = [
     url(r'^email$', email_token, {'callback': '/login/code'}),
     url(r'^code/(?P<login_code>' + settings.SLUG_REGEX + ')/$',
         auth_code, name='auth-code'),
+    url(r'^code/$',
+        auth_code, name='auth-code'),
 ]
