@@ -81,3 +81,29 @@ class AuthenticationTest(FunctionalTest):
         # Accessing the URL
         response = self.client.get(url)
         self.assertEqual(200, response.status_code)
+        self.assertIn('token', response.data)
+        self.assertIn('email', response.data)
+
+    def test_email_token_post(self):
+        # The user makes a request for an email token
+        payload = {'email': self.user.email}
+        response = requests.post(self.url_email, json=payload)
+
+        self.assertEqual(201, response.status_code)
+
+        # The email is sent by Django
+        self.assertEqual(1, len(mail.outbox))
+
+        # The email body contains a url
+        body = mail.outbox[0].body
+        code = re.search('https?://.+code/(?P<code>.+)/.+$', body) \
+            .group('code')
+        payload = {'code': code}
+
+        url = self.live_server_url + '/1/authenticate/code/'
+
+        # Accessing the URL
+        response = requests.post(url, json=payload)
+        self.assertEqual(200, response.status_code)
+        self.assertIn('token', response.json())
+        self.assertIn('email', response.json())

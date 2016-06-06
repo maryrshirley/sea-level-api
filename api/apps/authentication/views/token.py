@@ -35,8 +35,7 @@ class AuthCodeView(APIView):
     permission_classes = ()
     lookup_url_kwarg = "login_code"
 
-    def get(self, request, *args, **kwargs):
-        login_code = self.kwargs.get('login_code')
+    def validate_code(self, login_code):
         code = get_object_or_404(LoginCode.objects.select_related('user'),
                                  code=login_code)
         username = get_username(code.user)
@@ -45,7 +44,16 @@ class AuthCodeView(APIView):
         if user is None:
             raise Http404
         token, created = Token.objects.get_or_create(user=user)
-        return Response({'token': token.key})
+        return Response({'token': token.key, 'email': code.user.email})
+
+    def get(self, request, *args, **kwargs):
+        login_code = self.kwargs.get('login_code', None)
+
+        return self.validate_code(login_code)
+
+    def post(self, request, *args, **kwargs):
+        login_code = request.data.get('code', None)
+        return self.validate_code(login_code)
 
 
 class BaseTokenView(CreateAPIView):
