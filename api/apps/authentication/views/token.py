@@ -35,7 +35,8 @@ class AuthCodeView(APIView):
     permission_classes = ()
     lookup_url_kwarg = "login_code"
 
-    def validate_code(self, login_code):
+    @staticmethod
+    def validate_code(login_code):
         code = get_object_or_404(LoginCode.objects.select_related('user'),
                                  code=login_code)
         username = get_username(code.user)
