@@ -3,12 +3,17 @@ import json
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
+from freezegun import freeze_time
+
 from nose_parameterized import parameterized
 from nose.tools import assert_equal
 
 from nopassword.models import LoginCode
 
 from api.apps.users.helpers import create_user
+from api.libs.view_helpers import now_rounded
+
+from ..models import LoginCodeExpired
 
 
 _URL_AUTH = '/1/authenticate/'
@@ -89,3 +94,22 @@ class TestAuthentication(TestCase):
         msg = "Email {0} is already used".format(user2.email)
         self.assertEquals(msg, ex.exception.message)
         user2.delete()
+
+    def test_that_code_expires(self):
+        code = LoginCode.objects.create(user=self.user)
+        data = json.dumps({'code': code.code})
+        url = '/1/authenticate/code/'
+        now = now_rounded()
+
+        with freeze_time(now):
+            response = self.client.post(url, data=data,
+                                        content_type='application/json')
+            self.assertEqual(200, response.status_code)
+            self.assertEqual(0, LoginCode.objects.all().count())
+
+            self.assertEqual(1, LoginCodeExpired.objects.all().count())
+        expired_code = LoginCodeExpired.objects.get()
+        self.assertEqual(code.code, expired_code.code)
+        self.assertEqual("success", expired_code.status)
+        self.assertEqual(self.user, expired_code.user)
+        self.assertEqual(now, expired_code.datetime)
