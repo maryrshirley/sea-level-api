@@ -25,7 +25,8 @@ class TideWindowSerializer(serializers.Serializer):
     def get_end(self, obj):
         return self._serialize_prediction(obj.end_prediction)
 
-    def get_duration(self, obj):
+    @staticmethod
+    def get_duration(obj):
         """
         Predictions are minutely, and the time window is defined by the first
         and last minute where the level is above a certain amount. That means

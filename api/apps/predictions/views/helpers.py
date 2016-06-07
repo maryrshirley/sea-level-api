@@ -3,16 +3,14 @@ from itertools import tee
 from ..models import TidePrediction
 
 import datetime
+import sys
 
 import logging
 logger = logging.getLogger(__name__)
 
 
-try:
+if sys.version_info[0] == 2:
     from itertools import izip as zip  # On 2, replace zip with izip
-except ImportError:
-    pass  # Python 3 has zip already
-
 
 TimeRange = namedtuple('TimeRange', 'start,end')
 ONE_DAY = datetime.timedelta(hours=24)

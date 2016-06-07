@@ -27,7 +27,8 @@ class TestAlertManagerBase(TestCase, LocationMixin):
         self.liverpool.delete()
         super(TestAlertManagerBase, self).tearDown()
 
-    def _clean_up(self):
+    @staticmethod
+    def _clean_up():
         LocationStatusConfig.objects.all().delete()
 
     def _disable(self, alert_type):
@@ -133,10 +134,12 @@ class TestAlertManagerEnablingDisabling(TestAlertManagerBase):
 
 class TestAlertManagerImplementation(TestAlertManagerBase):
 
-    def _assert_no_config(self):
+    @staticmethod
+    def _assert_no_config():
         assert_equal(0, LocationStatusConfig.objects.all().count())
 
-    def _assert_has_config(self):
+    @staticmethod
+    def _assert_has_config():
         assert_equal(1, LocationStatusConfig.objects.all().count())
 
     def test_that__is_alert_enabled__works_without_prior_config(self):

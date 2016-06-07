@@ -6,7 +6,8 @@ from api.apps.locations.models import Location
 
 
 class StatusIndex(View):
-    def get(self, request, *args, **kwargs):
+    @staticmethod
+    def get(request, *args, **kwargs):
 
         locations = Location.objects.all()
         ok = locations.count() > 0

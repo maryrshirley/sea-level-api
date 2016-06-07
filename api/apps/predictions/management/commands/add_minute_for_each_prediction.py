@@ -57,6 +57,7 @@ class Command(BaseCommand):
             prediction.save()
         transaction.commit()
 
-    def assert_all_predictions_have_minutes(self):
+    @staticmethod
+    def assert_all_predictions_have_minutes():
         count = Prediction.objects.filter(minute=None).count()
         assert 0 == count, "{} Predictions have minute=NULL!".format(count)

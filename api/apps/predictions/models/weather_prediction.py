@@ -171,13 +171,13 @@ class WeatherPrediction(models.Model):
 
     @valid_from.setter
     def valid_from(self, value):
-        if type(value) is str:
+        if isinstance(value, str):
             value = parse_datetime(value)
         self.minute_from, _ = Minute.objects.get_or_create(datetime=value)
 
     @valid_to.setter
     def valid_to(self, value):
-        if type(value) is str:
+        if isinstance(value, str):
             value = parse_datetime(value)
         self.minute_to, _ = Minute.objects.get_or_create(datetime=value)
 

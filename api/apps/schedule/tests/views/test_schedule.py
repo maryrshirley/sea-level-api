@@ -76,7 +76,7 @@ class TestSchedule(APITestCase, ScheduleMixin):
         assert_equal(allow, response['Allow'])
 
     def postPayload(self, payload, count, status=201, username='permitted'):
-        if type(payload) is list:
+        if isinstance(payload, list):
             payload = [self.values_payload(x) for x in payload]
         else:
             payload = self.values_payload(payload)

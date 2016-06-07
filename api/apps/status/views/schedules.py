@@ -4,7 +4,8 @@ from django.shortcuts import render
 
 
 class Schedules(View):
-    def get(self, request, *args, **kwargs):
+    @staticmethod
+    def get(request, *args, **kwargs):
         Schedule = apps.get_model('schedule', 'Schedule')
 
         statuses = Schedule.objects.all_location_status()

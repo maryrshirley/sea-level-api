@@ -14,8 +14,8 @@ Check = namedtuple('Check', 'name,status_text,status_class')
 
 
 class StatusAll(View):
-    def get(self, request, *args, **kwargs):
-
+    @staticmethod
+    def get(request, *args, **kwargs):
         all_ok, location_statuses = get_checks_by_location()
         status_code = 200 if all_ok else 500
         summary_status = 'OK' if all_ok else 'ERROR'

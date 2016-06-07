@@ -22,7 +22,8 @@ class EmailTokenSerializer(serializers.Serializer):
 class AuthTokenSerializer(serializers.Serializer):
     token = serializers.CharField(label=_("Token"))
 
-    def validate(self, attrs):
+    @staticmethod
+    def validate(attrs):
         token = attrs.get('token')
         if not token:
             msg = _('Must pass "token".')

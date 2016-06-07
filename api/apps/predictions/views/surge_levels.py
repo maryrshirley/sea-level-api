@@ -53,7 +53,8 @@ class SurgeLevels(GenericAPIView):
 
         return Response({'detail': 'OK.'}, status=status.HTTP_200_OK)
 
-    def get_serializer(self, instance=None, data=None):
+    @staticmethod
+    def get_serializer(instance=None, data=None):
         assert instance is None and data is None, (
             'instance={}, data={}'.format(instance, data))
         return SurgeLevelSerializer()

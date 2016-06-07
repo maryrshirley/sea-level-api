@@ -73,7 +73,7 @@ class Schedule(models.Model):
 
     @departure_datetime.setter
     def departure_datetime(self, value):
-        if type(value) is str:
+        if isinstance(value, str):
             value = parse_datetime(value)
         self.departure, _ = Minute.objects.get_or_create(datetime=value)
         return self.departure

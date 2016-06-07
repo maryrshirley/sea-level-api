@@ -222,7 +222,8 @@ class TestTideGaugeLocationLink(TestPutRawMeasurementsBase, LocationMixin):
         self.location_2.delete()
         super(TestTideGaugeLocationLink, self).tearDown()
 
-    def _clean_up(self):
+    @staticmethod
+    def _clean_up():
         RawMeasurement.objects.all().delete()
         Observation.objects.all().delete()
         TideGaugeLocationLink.objects.all().delete()

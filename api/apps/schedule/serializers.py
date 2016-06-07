@@ -26,8 +26,8 @@ class ScheduleSerializer(serializers.ModelSerializer):
         model = Schedule
         exclude = ('departure', 'arrival')
 
-    def sea_level(self, location, minute):
-
+    @staticmethod
+    def sea_level(location, minute):
         surges = location.surge_predictions.filter(minute=minute) \
             .order_by('minute__datetime')
         tides = location.tide_predictions.filter(minute=minute) \

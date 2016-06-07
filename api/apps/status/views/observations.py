@@ -17,7 +17,8 @@ LocationStatus = namedtuple('LocationStatus', 'location_name,status')
 
 
 class Observations(View):
-    def get(self, request, *args, **kwargs):
+    @staticmethod
+    def get(request, *args, **kwargs):
 
         location = Location.objects.get(slug=kwargs['location_slug'])
 

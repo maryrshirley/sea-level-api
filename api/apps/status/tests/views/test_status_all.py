@@ -29,7 +29,8 @@ class TestStatusAllView(TestCheckBase):
             True)
         self.southampton.delete()  # so that it doesn't come up as a failure
 
-    def _setup_not_ok(self):
+    @staticmethod
+    def _setup_not_ok():
         """
         Create two locations but with no data - this will cause a failure.
         """

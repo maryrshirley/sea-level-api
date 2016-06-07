@@ -4,7 +4,8 @@ from django.views.generic import View
 
 
 class MailAdmins(View):
-    def get(self, request, *args, **kwargs):
+    @staticmethod
+    def get(request, *args, **kwargs):
         mail_admins('Debug: mail-admins', 'Hello! Your request: {}'.format(
             request))
         return JsonResponse({'status': 'OK, mail sent.'})

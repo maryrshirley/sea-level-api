@@ -1,13 +1,12 @@
 import datetime
+import sys
 
 from functools import partial
 
-try:
+if sys.version_info[0] == 2:
     # Python 2: use iterator versions
     from itertools import imap as map
     from itertools import ifilter as filter
-except ImportError:
-    pass
 
 from rest_framework.generics import ListAPIView
 
