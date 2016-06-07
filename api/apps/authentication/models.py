@@ -23,7 +23,8 @@ STATUS_CHOICES = (
 
 
 class LoginCodeExpiredManager(models.Manager):
-    def expire(self, login_code, status='success'):
+    @staticmethod
+    def expire(login_code, status='success'):
         LoginCodeExpired.objects.create(datetime=now_rounded(),
                                         status=status,
                                         code=login_code.code,

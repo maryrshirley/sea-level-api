@@ -34,7 +34,8 @@ class NoPasswordBackend(ModelBackend):
                 LoginCode.DoesNotExist, FieldError):
             return None
 
-    def generate_code(self, user):
+    @staticmethod
+    def generate_code(user):
         code = LoginCode.create_code_for_user(user)
         while LoginCode.objects.exclude(user=user).filter(code=code).exists() \
                 or LoginCodeExpired.objects.filter(code=code).exists():
