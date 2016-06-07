@@ -91,7 +91,7 @@ class BaseTokenView(CreateAPIView):
 
     def create(self, request, *args, **kwargs):
         callback = request.data.get('callback', '/login/code')
-        next = request.data.get('next', None)
+        next_uri = request.data.get('next', None)
 
         host, is_remote = self.get_host(request)
         if not is_remote:
@@ -99,7 +99,7 @@ class BaseTokenView(CreateAPIView):
 
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        code = LoginCode.create_code_for_user(serializer.user, next)
+        code = LoginCode.create_code_for_user(serializer.user, next_uri)
         self.send_login_code(
             code,
             host,
