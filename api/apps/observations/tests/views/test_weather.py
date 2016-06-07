@@ -276,9 +276,9 @@ class TestWeatherView(APITestCase, CreateObservationMixin, LocationMixin):
 class TestWeatherTokenAuthentication(ViewAuthenticationTest):
 
     @classmethod
-    def setUpClass(cls):
+    def setUpClass(cls, url=_URL, good_data=OBSERVATION_A):
         super(TestWeatherTokenAuthentication, cls) \
-            .setUpClass(_URL, OBSERVATION_A)
+            .setUpClass(url, good_data)
 
     def test_that_no_authentication_header_returns_http_401(self):
         self._test_that_no_authentication_header_returns_http_401()

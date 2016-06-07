@@ -33,14 +33,14 @@ def load_endpoint_test_cases():
 class TestAuthentication(TestCase):
 
     def setUp(self):
-        super(TestCase, self).setUp()
+        super(TestAuthentication, self).setUp()
         self.user = create_user('sampleuser')
         self.user.email = 'peter@sealevelresearch.com'
         self.user.save()
 
     def tearDown(self):
         self.user.delete()
-        super(TestCase, self).tearDown()
+        super(TestAuthentication, self).tearDown()
 
     @parameterized.expand(load_endpoint_test_cases)
     def test_that_http_options_allowed(self, url, allow):
