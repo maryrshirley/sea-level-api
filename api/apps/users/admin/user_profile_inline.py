@@ -16,10 +16,12 @@ class UserAdmin(AuthUserAdmin):
     list_display = ('username', 'first_name', 'last_name',
                     'is_internal_collector', 'available_locations')
 
-    def is_internal_collector(self, user):
+    @staticmethod
+    def is_internal_collector(user):
         return user.user_profile.is_internal_collector
 
-    def available_locations(self, user):
+    @staticmethod
+    def available_locations(user):
         if user.user_profile.is_internal_collector:
             return '-'
         else:

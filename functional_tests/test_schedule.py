@@ -4,12 +4,6 @@ from api.libs.test_utils.schedule import ScheduleMixin
 
 from .base import AdminTest, FunctionalTest, SeleniumTest
 
-'''
-        A schedule for a vessel moving between two locations:
-            As a collector: I wish to upload schedule information with etd,
-                eta, departure, destination.
-'''
-
 
 class ScheduleTest(FunctionalTest, ScheduleMixin):
 

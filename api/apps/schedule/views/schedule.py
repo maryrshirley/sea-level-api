@@ -20,11 +20,10 @@ class Schedule(GenericAPIView, CreateModelMixin):
 
     @property
     def many(self):
-        return type(self.request.data) is list
+        return isinstance(self.request.data, list)
 
     def post(self, request, *args, **kwargs):
         model = self.serializer_class.Meta.model
-        existing_object = lambda x: model.objects.existing_object(x)
         data = [request.data] if not self.many else request.data
 
         processed = []
@@ -35,7 +34,7 @@ class Schedule(GenericAPIView, CreateModelMixin):
             if 'code' not in record:
                 raise ParseError(detail='Required field code not found')
             code = record['code']
-            instance = existing_object(code)
+            instance = model.objects.existing_object(code)
 
             # Ignore this record if one has been processed already
             if code in processed:
@@ -73,7 +72,8 @@ class Schedule(GenericAPIView, CreateModelMixin):
         self.perform_update(serializer)
         return serializer.data
 
-    def perform_update(self, serializer):
+    @staticmethod
+    def perform_update(serializer):
         serializer.save()
 
 

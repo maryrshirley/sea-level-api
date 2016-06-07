@@ -120,9 +120,9 @@ class WeatherObservation(models.Model):
 
     @datetime.setter
     def datetime(self, value):
-        if type(value) is str:
+        if isinstance(value, str):
             value = parse_datetime(value)
-        self.minute, created = Minute.objects.get_or_create(datetime=value)
+        self.minute, _ = Minute.objects.get_or_create(datetime=value)
         return self.minute
 
     def __str__(self):

@@ -179,6 +179,7 @@ class TestWeatherView(APITestCase, CreateObservationMixin, LocationMixin):
         observation2.delete()
 
     '''
+    # XXX: This test should be re-enabled but with freeze-gun
     @parameterized.expand(load_recent_test_cases)
     def test_that_http_get_relevant_observation(self, _datetime, _valid):
         observation = self.create_observation(datetime=_datetime)
@@ -201,6 +202,7 @@ class TestWeatherView(APITestCase, CreateObservationMixin, LocationMixin):
         observation.delete()
 
     '''
+    # XXX: This test should be re-enabled but with freeze-gun
     @parameterized.expand(load_recent_range_test_cases)
     def test_that_http_get_range_observation_edges(self, _start, _end, _valid):
         observation = self.create_observation(datetime=delta())
@@ -276,9 +278,11 @@ class TestWeatherView(APITestCase, CreateObservationMixin, LocationMixin):
 class TestWeatherTokenAuthentication(ViewAuthenticationTest):
 
     @classmethod
-    def setUpClass(cls):
+    def setUpClass(cls, url=_URL, good_data=None):
+        if not good_data:
+            good_data = OBSERVATION_A
         super(TestWeatherTokenAuthentication, cls) \
-            .setUpClass(_URL, OBSERVATION_A)
+            .setUpClass(url, good_data)
 
     def test_that_no_authentication_header_returns_http_401(self):
         self._test_that_no_authentication_header_returns_http_401()

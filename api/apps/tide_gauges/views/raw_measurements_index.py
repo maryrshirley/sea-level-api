@@ -8,5 +8,6 @@ class NoTideGaugeException(APIException):
 
 
 class RawMeasurementsIndex(generics.GenericAPIView):
-    def get(self, req, format=None):
+    @staticmethod
+    def get(req, format=None):
         raise NoTideGaugeException()

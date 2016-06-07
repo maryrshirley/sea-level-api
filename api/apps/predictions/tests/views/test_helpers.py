@@ -55,7 +55,8 @@ class FakePrediction(object):
 
 
 class TestSplitPrediction(TestCase):
-    def _split_these_predictions(self, predictions):
+    @staticmethod
+    def _split_these_predictions(predictions):
         return [FakeTideWindow.from_real_window(window)
                 for window in split_predictions_into_tide_windows(predictions)]
 

@@ -18,12 +18,12 @@ class StatusTest(StaticLiveServerTestCase):
     }
 
     def setUp(self):
-        super(StaticLiveServerTestCase, self).setUp()
+        super(StatusTest, self).setUp()
         self.browser = webdriver.Firefox()
 
     def tearDown(self):
         self.browser.quit()
-        super(StaticLiveServerTestCase, self).tearDown()
+        super(StatusTest, self).tearDown()
 
     def replace_live_url(self, url):
         return url.replace(self.live_server_url, '')

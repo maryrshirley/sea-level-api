@@ -38,20 +38,3 @@ class CombinedPredictionObservation(models.Model):
 
     def __str__(self):
         return "{}".format(self.datetime)
-
-    '''
-    @property
-    def nearest_observed_sea_level(self):
-        if self.observed_sea_level is not None:
-            return self.observed_sea_level
-
-        nearest = CombinedPredictionObservation.objects.filter(
-            location=self.location,
-            datetime__lte=self.datetime) \
-            .exclude(observed_sea_level=None) \
-            .order_by('-datetime')
-        if not len(nearest):
-            return None
-
-        return (nearest[0].observed_sea_level, nearest[0].datetime)
-    '''

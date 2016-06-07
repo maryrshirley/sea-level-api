@@ -14,7 +14,8 @@ class SurgeLevelSerializer(serializers.Serializer):
     class Meta:
         model = SurgePrediction
 
-    def update(self, instance, validated_data):
+    @staticmethod
+    def update(instance, validated_data):
         # responsible for updating AND saving instance based on validated_data
         logging.info('SurgeLevelSerializer.update({}, {})'.format(
             instance, validated_data))
@@ -28,7 +29,8 @@ class SurgeLevelSerializer(serializers.Serializer):
 
         return instance
 
-    def create(self, validated_data):
+    @staticmethod
+    def create(validated_data):
         logging.info('SurgeLevelSerializer.create({})'.format(validated_data))
         instance = create_surge_prediction(**validated_data)
         logging.info(instance)

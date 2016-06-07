@@ -49,7 +49,7 @@ class AuthCodeView(APIView):
                                'code': login_code})
         if user is None:
             raise Http404
-        token, created = Token.objects.get_or_create(user=user)
+        token, _ = Token.objects.get_or_create(user=user)
         return Response({'token': token.key, 'email': code.user.email,
                          'next': code.next})
 
@@ -66,7 +66,8 @@ class AuthCodeView(APIView):
 class BaseTokenView(CreateAPIView):
     permission_classes = ()
 
-    def get_host(self, request):
+    @staticmethod
+    def get_host(request):
         origin = request.META.get('HTTP_ORIGIN')
         if origin == 'null':
             return HttpResponse('Invalid site', status=400)
@@ -77,7 +78,8 @@ class BaseTokenView(CreateAPIView):
 
         return (origin, True)
 
-    def get_backends(self, backend_paths):
+    @staticmethod
+    def get_backends(backend_paths):
         backends = []
         for backend_path in backend_paths:
             backend = load_backend(backend_path)

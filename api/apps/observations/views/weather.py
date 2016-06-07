@@ -109,7 +109,8 @@ class WeatherObservations(WeatherRange, mixins.CreateModelMixin):
     def post(self, request, *args, **kwargs):
         update_data = []
 
-        data = [request.data] if type(request.data) is dict else request.data
+        data = [request.data] if isinstance(request.data, dict) \
+            else request.data
         data = copy.copy(data)
 
         for record in data:
@@ -131,7 +132,8 @@ class WeatherObservations(WeatherRange, mixins.CreateModelMixin):
         self.perform_update(serializer)
         return serializer.data
 
-    def perform_update(self, serializer):
+    @staticmethod
+    def perform_update(serializer):
         serializer.save()
 
     def perform_create(self, serializer):

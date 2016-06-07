@@ -11,5 +11,6 @@ class TideLevelSerializer(serializers.ModelSerializer):
         resource_name = 'tide_levels'
         fields = ('tide_level', 'datetime', 'is_high_tide')
 
-    def get_datetime(self, obj):
+    @staticmethod
+    def get_datetime(obj):
         return obj.minute.datetime

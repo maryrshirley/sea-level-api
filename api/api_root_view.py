@@ -4,7 +4,8 @@ from rest_framework.reverse import reverse
 
 
 class ApiRoot(generics.GenericAPIView):
-    def get(self, req, format=None):
+    @staticmethod
+    def get(req, format=None):
         return Response({
             'links': [
                 {'href': reverse('location-list', request=req, format=format)},

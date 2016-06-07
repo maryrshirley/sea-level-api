@@ -45,7 +45,7 @@ class RawMeasurements(ListCreateAPIView):
         # This allows access to the serializer so it can create and query
         # RawMeasurement models.
 
-        c = super(ListCreateAPIView, self).get_serializer_context(
+        c = super(RawMeasurements, self).get_serializer_context(
             *args, **kwargs)
         tide_gauge = TideGauge.objects.get(slug=self.kwargs['tide_gauge_slug'])
 

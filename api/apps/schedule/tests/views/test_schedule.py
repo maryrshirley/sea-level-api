@@ -69,14 +69,14 @@ class TestSchedule(APITestCase, ScheduleMixin):
     @parameterized.expand(url_testcases)
     def test_that_http_options_allowed(self, url, allow):
         user = User.objects.get(username='permitted')
-        token, created = Token.objects.get_or_create(user=user)
+        token, _ = Token.objects.get_or_create(user=user)
         response = self.client.options(url,
                                        HTTP_AUTHORIZATION='Token ' + token.key)
         assert_equal(200, response.status_code)
         assert_equal(allow, response['Allow'])
 
     def postPayload(self, payload, count, status=201, username='permitted'):
-        if type(payload) is list:
+        if isinstance(payload, list):
             payload = [self.values_payload(x) for x in payload]
         else:
             payload = self.values_payload(payload)
@@ -119,14 +119,6 @@ class TestSchedule(APITestCase, ScheduleMixin):
         self.postPayload(payload, 1)
 
         # XXX: Check the values have changed
-
-        '''
-            What can update?
-                A schedule can be cancelled
-                Times can vary (increase/decrease)
-                Origin/destination can change
-                Vessel IMO can change
-        '''
 
     def test_that_http_post_add_replace_mixed(self):
         pass

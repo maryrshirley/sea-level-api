@@ -33,7 +33,8 @@ class TestWeatherPredictionsView(TestCase, CreatePredictionMixin,
         assert_equal(200, response.status_code)
         assert_equal('GET, HEAD, OPTIONS', response['Allow'])
 
-    def assert_status(self, ok, text, location):
+    @staticmethod
+    def assert_status(ok, text, location):
         status = WeatherPrediction.objects.status(location)
         assert_equal(ok, status.ok)
         assert_equal(text, status.text)

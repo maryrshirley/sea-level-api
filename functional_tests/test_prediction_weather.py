@@ -247,7 +247,7 @@ class PredictionWeatherTest(FunctionalTest, CreatePredictionMixin,
         data = self.assertRecordJSONExists(now_url)
 
         # The user data matches the original payload
-        for index, elem in enumerate(data):
+        for index, _ in enumerate(data):
             self.assertPayloadMatchesData(data[index], payload[index])
 
         # The user queries for a range record

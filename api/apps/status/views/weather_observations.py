@@ -4,7 +4,8 @@ from django.views.generic import View
 
 
 class WeatherObservations(View):
-    def get(self, request, *args, **kwargs):
+    @staticmethod
+    def get(request, *args, **kwargs):
         WeatherObservation = apps.get_model('observations',
                                             'WeatherObservation')
         statuses = WeatherObservation.objects.all_location_status()

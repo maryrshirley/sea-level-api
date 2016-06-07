@@ -47,10 +47,12 @@ class NoPasswordBackend(ModelBackend):
                         **kwargs):
         raise NotImplementedError
 
-    def verify_user(self, user):
+    @staticmethod
+    def verify_user(user):
         return user.is_active
 
-    def login_url(self, code, host, url):
+    @staticmethod
+    def login_url(code, host, url):
         if not url:
             url = reverse('auth-code', args=[code.code])
         else:

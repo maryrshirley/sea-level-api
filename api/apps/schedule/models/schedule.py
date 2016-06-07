@@ -73,9 +73,9 @@ class Schedule(models.Model):
 
     @departure_datetime.setter
     def departure_datetime(self, value):
-        if type(value) is str:
+        if isinstance(value, str):
             value = parse_datetime(value)
-        self.departure, created = Minute.objects.get_or_create(datetime=value)
+        self.departure, _ = Minute.objects.get_or_create(datetime=value)
         return self.departure
 
     @property
@@ -86,7 +86,7 @@ class Schedule(models.Model):
     def arrival_datetime(self, value):
         if type(value) is str:
             value = parse_datetime(value)
-        self.arrival, created = Minute.objects.get_or_create(datetime=value)
+        self.arrival, _ = Minute.objects.get_or_create(datetime=value)
         return self.arrival
 
     def __str__(self):

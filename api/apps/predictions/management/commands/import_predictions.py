@@ -16,7 +16,8 @@ from api.libs.minute_in_time.models import Minute
 class Command(DocOptCommand):
     docs = "Usage: import_predictions <location> <filename>"
 
-    def handle_docopt(self, arguments):
+    @staticmethod
+    def handle_docopt(arguments):
         location = Location.objects.get(slug=arguments['<location>'])
 
         with open(arguments['<filename>'], 'r') as f:

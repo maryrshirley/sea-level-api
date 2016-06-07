@@ -23,7 +23,8 @@ class TestSurgePredictionsView(TestCheckBase):
         _make_good_surge_predictions(self.liverpool)
         self.southampton.delete()  # so that it doesn't come up as a failure
 
-    def _setup_not_ok(self):
+    @staticmethod
+    def _setup_not_ok():
         """
         Create two locations but with no data - this will cause a failure.
         """
@@ -88,6 +89,6 @@ class TestFunctionCheckSurgePredictions(TestCheckBase):
 
     def test_that_predictions_for_liverpool_dont_affect_southampton(self):
         with freeze_time(BASE_TIME):
-            (ok, text) = check_surge_predictions(self.southampton)
+            (ok, _) = check_surge_predictions(self.southampton)
 
         assert_equal(False, ok)

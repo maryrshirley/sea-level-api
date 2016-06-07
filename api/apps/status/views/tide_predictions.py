@@ -18,7 +18,8 @@ LocationStatus = namedtuple('LocationStatus', 'location_name,status')
 
 
 class TidePredictions(View):
-    def get(self, request, *args, **kwargs):
+    @staticmethod
+    def get(request, *args, **kwargs):
 
         (all_ok, location_statuses) = check_every_location()
         status_code = 200 if all_ok else 500

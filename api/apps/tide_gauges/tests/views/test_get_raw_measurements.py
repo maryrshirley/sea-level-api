@@ -48,8 +48,8 @@ class CollectorAPITestCase(APITestCase):
         # https://docs.python.org
         # /3/library/unittest.html#setupmodule-and-teardownmodule
 
-        cls.gladstone1, c = TideGauge.objects.get_or_create(slug='gladstone-1')
-        cls.gladstone2, c = TideGauge.objects.get_or_create(slug='gladstone-2')
+        cls.gladstone1, _ = TideGauge.objects.get_or_create(slug='gladstone-1')
+        cls.gladstone2, _ = TideGauge.objects.get_or_create(slug='gladstone-2')
 
         cls.collector_user = get_or_create_user('user-collector',
                                                 is_internal_collector=True)
