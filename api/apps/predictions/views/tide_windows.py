@@ -5,8 +5,11 @@ from functools import partial
 
 if sys.version_info[0] == 2:
     # Python 2: use iterator versions
-    from itertools import imap as map
-    from itertools import ifilter as filter
+    from itertools import imap as umap
+    from itertools import ifilter as ufilter
+else:
+    umap = map
+    ufilter = filter
 
 from rest_framework.generics import ListAPIView
 
@@ -59,7 +62,7 @@ class TideWindows(ListAPIView):
             tide_level__gte=min_tide_level)
 
         tide_windows = split_predictions_into_tide_windows(predictions)
-        return filter(None, map(
+        return ufilter(None, umap(
             partial(transform_time_window, time_range, extended_time_range),
             tide_windows))
 
