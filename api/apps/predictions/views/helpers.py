@@ -10,7 +10,9 @@ logger = logging.getLogger(__name__)
 
 
 if sys.version_info[0] == 2:
-    from itertools import izip as zip  # On 2, replace zip with izip
+    from itertools import izip as uzip  # On 2, replace zip with izip
+else:
+    uzip = zip
 
 TimeRange = namedtuple('TimeRange', 'start,end')
 ONE_DAY = datetime.timedelta(hours=24)
@@ -30,7 +32,7 @@ def pairwise(iterable):
     "s -> (s0,s1), (s1,s2), (s2, s3), ..."
     a, b = tee(iterable)
     next(b, None)
-    return zip(a, b)
+    return uzip(a, b)
 
 
 def split_predictions_into_tide_windows(predictions):

@@ -87,7 +87,7 @@ class TestSchedule(APITestCase, ScheduleMixin):
         extra = {}
         if username:
             user = User.objects.get(username=username)
-            token, created = Token.objects.get_or_create(user=user)
+            token, _ = Token.objects.get_or_create(user=user)
             extra = {'HTTP_AUTHORIZATION': 'Token ' + token.key}
 
         response = self.client.post(url, data=data,
