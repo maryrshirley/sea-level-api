@@ -84,6 +84,11 @@ class AuthenticationTest(FunctionalTest):
         self.assertIn('token', response.data)
         self.assertIn('email', response.data)
 
+        # The user attempts to send the same token again
+        response = self.client.get(url)
+        self.assertEqual(410, response.status_code)
+        self.assertEqual("Link expired", response.content.decode())
+
     def test_email_token_post(self):
         # The user makes a request for an email token
         payload = {'email': self.user.email}
@@ -107,3 +112,8 @@ class AuthenticationTest(FunctionalTest):
         self.assertEqual(200, response.status_code)
         self.assertIn('token', response.json())
         self.assertIn('email', response.json())
+
+        # The user attempts to send the same token again
+        response = requests.post(url, json=payload)
+        self.assertEqual(410, response.status_code)
+        self.assertEquals("Link expired", response.content.decode())

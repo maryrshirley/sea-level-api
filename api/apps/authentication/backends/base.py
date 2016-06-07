@@ -9,6 +9,8 @@ from django.core.urlresolvers import reverse
 from nopassword.models import LoginCode
 from nopassword.utils import get_user_model
 
+from ..models import LoginCodeExpired
+
 
 class NoPasswordBackend(ModelBackend):
     def authenticate(self, code=None, **credentials):
@@ -17,7 +19,7 @@ class NoPasswordBackend(ModelBackend):
             if not self.verify_user(user):
                 return None
             if code is None:
-                return LoginCode.create_code_for_user(user)
+                return self.generate_code(user)
             else:
                 timeout = getattr(settings, 'NOPASSWORD_LOGIN_CODE_TIMEOUT',
                                   900)
@@ -26,11 +28,19 @@ class NoPasswordBackend(ModelBackend):
                                                    timestamp__gt=timestamp)
                 user = login_code.user
                 user.code = login_code
-                login_code.delete()
+                LoginCodeExpired.objects.expire(login_code)
                 return user
         except (TypeError, get_user_model().DoesNotExist,
                 LoginCode.DoesNotExist, FieldError):
             return None
+
+    def generate_code(self, user):
+        code = LoginCode.create_code_for_user(user)
+        while LoginCode.objects.exclude(user=user).filter(code=code).exists() \
+                or LoginCodeExpired.objects.filter(code=code).exists():
+            code.delete()
+            code = LoginCode.create_code_for_user(user)
+        return code
 
     def send_login_code(self, code, host=None, url=None,
                         **kwargs):

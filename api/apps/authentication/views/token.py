@@ -16,6 +16,8 @@ from nopassword.utils import get_username, get_username_field
 from ..serializers.token import (AuthTokenSerializer,
                                  EmailTokenSerializer)
 
+from ..models import LoginCodeExpired
+
 
 class ValidateToken(APIView):
     throttle_classes = ()
@@ -37,6 +39,9 @@ class AuthCodeView(APIView):
 
     @staticmethod
     def validate_code(login_code):
+        if LoginCodeExpired.objects.filter(code=login_code).exists():
+            return HttpResponse("Link expired", status=410)
+
         code = get_object_or_404(LoginCode.objects.select_related('user'),
                                  code=login_code)
         username = get_username(code.user)
