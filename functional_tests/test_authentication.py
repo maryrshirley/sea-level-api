@@ -63,7 +63,7 @@ class AuthenticationTest(FunctionalTest):
 
     def test_email_token(self):
         # The user makes a request for an email token
-        payload = {'email': self.user.email}
+        payload = {'email': self.user.email, 'next': '/foobar'}
         response = requests.post(self.url_email, json=payload)
 
         self.assertEqual(201, response.status_code)
@@ -83,6 +83,8 @@ class AuthenticationTest(FunctionalTest):
         self.assertEqual(200, response.status_code)
         self.assertIn('token', response.data)
         self.assertIn('email', response.data)
+        self.assertIn('next', response.data)
+        self.assertEqual('/foobar', response.data['next'])
 
         # The user attempts to send the same token again
         response = self.client.get(url)
@@ -117,3 +119,20 @@ class AuthenticationTest(FunctionalTest):
         response = requests.post(url, json=payload)
         self.assertEqual(410, response.status_code)
         self.assertEquals("Link expired", response.content.decode())
+
+    def test_email_token_post_callback(self):
+        # The user makes a request for an email token
+        payload = {'email': self.user.email, 'callback': '/auth'}
+        headers = {'Origin': "https://sealevelresearch.com"}
+        response = requests.post(self.url_email, json=payload, headers=headers)
+
+        self.assertEqual(201, response.status_code)
+
+        # The email is sent by Django
+        self.assertEqual(1, len(mail.outbox))
+
+        # The email body contains a url
+        body = mail.outbox[0].body
+
+        re.search('https://sealevelresearch.com/auth/(?P<code>.+).+$', body) \
+            .group('code')

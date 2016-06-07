@@ -50,7 +50,8 @@ class AuthCodeView(APIView):
         if user is None:
             raise Http404
         token, created = Token.objects.get_or_create(user=user)
-        return Response({'token': token.key, 'email': code.user.email})
+        return Response({'token': token.key, 'email': code.user.email,
+                         'next': code.next})
 
     def get(self, request, *args, **kwargs):
         login_code = self.kwargs.get('login_code', None)
@@ -88,14 +89,17 @@ class BaseTokenView(CreateAPIView):
         for backend in self.get_backends(self.auth_backends):
             backend.send_login_code(code, host=host, url=url)
 
-    def create(self, request, callback, *args, **kwargs):
+    def create(self, request, *args, **kwargs):
+        callback = request.data.get('callback', '/login/code')
+        next = request.data.get('next', None)
+
         host, is_remote = self.get_host(request)
         if not is_remote:
             callback = None
 
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        code = LoginCode.create_code_for_user(serializer.user)
+        code = LoginCode.create_code_for_user(serializer.user, next)
         self.send_login_code(
             code,
             host,
