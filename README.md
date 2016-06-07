@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/sealevelresearch/sea-level-api.svg?branch=master)](https://travis-ci.org/sealevelresearch/sea-level-api)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/072ff2001c8c420f8f43dc37d79844ee)](https://www.codacy.com/app/pbrooks/sea-level-api?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=sealevelresearch/sea-level-api&amp;utm_campaign=Badge_Grade)
 
 # Sea Level API v1
 
