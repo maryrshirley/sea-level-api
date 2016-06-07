@@ -179,6 +179,7 @@ class TestWeatherView(APITestCase, CreateObservationMixin, LocationMixin):
         observation2.delete()
 
     '''
+    # XXX: This test should be re-enabled but with freeze-gun
     @parameterized.expand(load_recent_test_cases)
     def test_that_http_get_relevant_observation(self, _datetime, _valid):
         observation = self.create_observation(datetime=_datetime)
@@ -201,6 +202,7 @@ class TestWeatherView(APITestCase, CreateObservationMixin, LocationMixin):
         observation.delete()
 
     '''
+    # XXX: This test should be re-enabled but with freeze-gun
     @parameterized.expand(load_recent_range_test_cases)
     def test_that_http_get_range_observation_edges(self, _start, _end, _valid):
         observation = self.create_observation(datetime=delta())

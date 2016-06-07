@@ -42,18 +42,10 @@ class WeatherAdminTest(SeleniumTest, AdminTest, CreateObservationMixin,
         # User notices the row elements
         location_field = tr[1].find_element_by_class_name('field-location')
         supplier_field = tr[1].find_element_by_class_name('field-supplier')
-        '''
-        datetime_field = tr[1].find_element_by_class_name('field-datetime')
-        datetime = formats.date_format(objects[0].datetime,
-                                       "DATETIME_FORMAT")
-        '''
 
         self.assertEqual(objects[0].location.__str__(), location_field.text)
         self.assertEqual(objects[0].get_supplier_display(),
                          supplier_field.text)
-        '''
-        self.assertEqual(datetime, datetime_field.text)
-        '''
         assert_function(tr[1], objects[0])
 
         # User notices filtering options

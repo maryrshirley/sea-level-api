@@ -88,6 +88,6 @@ class TestFunctionCheckSurgePredictions(TestCheckBase):
 
     def test_that_predictions_for_liverpool_dont_affect_southampton(self):
         with freeze_time(BASE_TIME):
-            (ok, text) = check_surge_predictions(self.southampton)
+            (ok, _) = check_surge_predictions(self.southampton)
 
         assert_equal(False, ok)

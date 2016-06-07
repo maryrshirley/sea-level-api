@@ -49,7 +49,7 @@ class AuthCodeView(APIView):
                                'code': login_code})
         if user is None:
             raise Http404
-        token, created = Token.objects.get_or_create(user=user)
+        token, _ = Token.objects.get_or_create(user=user)
         return Response({'token': token.key, 'email': code.user.email,
                          'next': code.next})
 

@@ -27,7 +27,7 @@ class RawMeasurementSerializer(serializers.Serializer):
 
         height = validated_data.pop('height')
 
-        (instance, was_created) = RawMeasurement.objects.update_or_create(
+        (instance, _) = RawMeasurement.objects.update_or_create(
             tide_gauge=self.context['tide_gauge'],
             datetime=validated_data['datetime'],
             defaults={'height': height})
