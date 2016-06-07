@@ -278,7 +278,9 @@ class TestWeatherView(APITestCase, CreateObservationMixin, LocationMixin):
 class TestWeatherTokenAuthentication(ViewAuthenticationTest):
 
     @classmethod
-    def setUpClass(cls, url=_URL, good_data=OBSERVATION_A):
+    def setUpClass(cls, url=_URL, good_data=None):
+        if not good_data:
+            good_data = OBSERVATION_A
         super(TestWeatherTokenAuthentication, cls) \
             .setUpClass(url, good_data)
 
