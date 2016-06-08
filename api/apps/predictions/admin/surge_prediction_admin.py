@@ -8,8 +8,8 @@ class SurgePredictionAdmin(admin.ModelAdmin):
     list_filter = ('location',)
     readonly_fields = ('surge_level', 'minute', 'location')
 
-    def minute(self, obj):
-        return obj.minute.datetime
+    def minute(self):
+        return self.minute.datetime
 
     minute.admin_order_field = 'minute__datetime'
 
