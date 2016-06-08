@@ -374,5 +374,5 @@ class PredictionWeatherTest(FunctionalTest, CreatePredictionMixin,
         self.assertEqual(1, len(data))
 
         # The user data matches the second payload
-        for index, elem in enumerate(data):
+        for index, _ in enumerate(data):
             self.assertPayloadMatchesData(data[index], payload[index])
