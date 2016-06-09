@@ -5,10 +5,7 @@ import django
 from .base import FunctionalTest, SeleniumTest
 from .base_weather import WeatherAdminTest
 
-from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.utils import formats
-
-from selenium import webdriver
 
 from api.libs.test_utils.datetime_utils import delta
 from api.libs.test_utils.mixins import LocationMixin
@@ -18,16 +15,9 @@ from api.libs.view_helpers import format_datetime
 DEFAULT_WAIT = 5
 
 
-class PredictionWeatherBrowser(StaticLiveServerTestCase):
+class PredictionWeatherBrowser(SeleniumTest):
 
     endpoint = '/1/predictions/weather/'
-
-    def setUp(self):
-        self.browser = webdriver.Firefox()
-        self.browser.implicitly_wait(DEFAULT_WAIT)
-
-    def tearDown(self):
-        self.browser.quit()
 
     @unittest.skipIf(django.VERSION[1] > 8, "Authentication now hides docs")
     def _test_has_documentation(self):

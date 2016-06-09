@@ -1,3 +1,4 @@
+from os import environ
 import json
 
 import django
@@ -8,6 +9,7 @@ import requests
 
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 
 from rest_framework.authtoken.models import Token
 
@@ -69,7 +71,9 @@ class SeleniumTest(StaticLiveServerTestCase):
     DEFAULT_WAIT = 5
 
     def setUp(self):
-        self.browser = webdriver.Firefox()
+        binary_path = environ.get('FIREFOX', None)
+        binary = FirefoxBinary(binary_path)
+        self.browser = webdriver.Firefox(firefox_binary=binary)
         self.browser.implicitly_wait(self.DEFAULT_WAIT)
         super(SeleniumTest, self).setUp()
 
