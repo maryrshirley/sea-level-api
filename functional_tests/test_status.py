@@ -1,11 +1,9 @@
 from collections import OrderedDict
 
-from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-
-from selenium import webdriver
+from .base import SeleniumTest
 
 
-class StatusTest(StaticLiveServerTestCase):
+class StatusTest(SeleniumTest):
 
     endpoint = '/1/_status/'
 
@@ -19,10 +17,8 @@ class StatusTest(StaticLiveServerTestCase):
 
     def setUp(self):
         super(StatusTest, self).setUp()
-        self.browser = webdriver.Firefox()
 
     def tearDown(self):
-        self.browser.quit()
         super(StatusTest, self).tearDown()
 
     def replace_live_url(self, url):
