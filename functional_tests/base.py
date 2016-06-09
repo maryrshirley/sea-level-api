@@ -66,7 +66,7 @@ class FunctionalTest(StaticLiveServerTestCase, LocationMixin):
 
 class SeleniumTest(StaticLiveServerTestCase):
 
-    DEFAULT_WAIT = 5
+    DEFAULT_WAIT = 15
 
     def setUp(self):
         self.browser = webdriver.Firefox()
