@@ -12,7 +12,7 @@ from ..models import WeatherPrediction
 
 from api.apps.locations.models import Location
 from api.libs.user_permissions.permissions_classes import (
-    AllowInternalCollectorsReadAndWrite)
+    AllowUserSpecificAccess)
 from api.libs.param_parsers import InvalidParameterError, parse_time_range
 
 
@@ -33,7 +33,7 @@ class WeatherEndpoint(viewsets.ModelViewSet):
 
 
 class Weather(mixins.ListModelMixin, GenericAPIView):
-    permission_classes = (AllowInternalCollectorsReadAndWrite,)
+    permission_classes = (AllowUserSpecificAccess, )
     lookup_url_kwarg = "location_slug"
 
     def get_location(self):
