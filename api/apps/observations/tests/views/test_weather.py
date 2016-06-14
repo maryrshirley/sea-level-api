@@ -7,6 +7,7 @@ from django.utils.translation import ugettext as _
 from nose.tools import assert_equal
 from nose_parameterized import parameterized
 
+from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase
 
 from api.apps.users.helpers import create_user
@@ -292,3 +293,10 @@ class TestWeatherTokenAuthentication(ViewAuthenticationTest):
 
     def test_that_user_with_add__permission_can_post(self):
         self._test_that_user_with_add__permission_can_post()
+
+    def test_that_user_with__location_permission_can_GET(self):
+        token = Token.objects.get(user__username='forbidden').key
+        response = self.client.get(_URL_RECENT,
+                                   content_type='application/json',
+                                   HTTP_AUTHORIZATION='Token {}'.format(token))
+        assert_equal(200, response.status_code)

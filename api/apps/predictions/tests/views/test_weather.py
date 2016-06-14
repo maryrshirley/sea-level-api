@@ -355,6 +355,7 @@ class TestWeatherTokenAuthentication(APITestCase, PostJsonMixin,
         cls.liverpool = cls.create_location()
         cls.location = cls.liverpool
         cls.permitted = create_user('permitted', is_internal_collector=True)
+        cls.user = create_user('user', is_internal_collector=False)
         cls.forbidden = create_user('forbidden', is_internal_collector=False)
 
         cls.good_data = PREDICTION_WEATHER
@@ -362,8 +363,15 @@ class TestWeatherTokenAuthentication(APITestCase, PostJsonMixin,
     @classmethod
     def tearDownClass(cls):
         cls.permitted.delete()
+        cls.user.delete()
         cls.forbidden.delete()
         cls.liverpool.delete()
+
+    def test_that_user_with__location_permission_can_GET(self):
+        token = Token.objects.get(user__username='user').key
+        response = self.client.get(_URL_NOW, content_type='application/json',
+                                   HTTP_AUTHORIZATION='Token {}'.format(token))
+        assert_equal(200, response.status_code)
 
     def test_that_no_authentication_header_returns_http_401(self):
         # 401 vs 403: http://stackoverflow.com/a/6937030
