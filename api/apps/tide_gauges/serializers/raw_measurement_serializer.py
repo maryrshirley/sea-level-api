@@ -16,6 +16,7 @@ class RawMeasurementSerializer(serializers.Serializer):
 
     class Meta:
         list_serializer_class = RawMeasurementListSerializer
+        resource_name = 'raw_measurements'
 
     def create(self, validated_data):
         """
