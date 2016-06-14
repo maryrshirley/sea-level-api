@@ -37,7 +37,14 @@ class RawMeasurements(ListCreateAPIView):
     # I prefer not to override `get_serializer()` just to pass in `many=True`.
     # There may be a better way than using `partial` though.
     # See http://stackoverflow.com/q/28814806/2920176
-    serializer_class = functools.partial(RawMeasurementSerializer, many=True)
+
+    @property
+    def many(self):
+        return isinstance(self.request.data, list)
+
+    def get_serializer_class(self, *args, **kwargs):
+        many = kwargs.get('many', self.many)
+        return functools.partial(RawMeasurementSerializer, many=many)
 
     def get_serializer_context(self, *args, **kwargs):
         # Augment the default context (containing response etc) with the tide
@@ -51,7 +58,6 @@ class RawMeasurements(ListCreateAPIView):
 
         def combine_dicts(a, b):
             return dict(list(a.items()) + list(b.items()))
-
         return combine_dicts(c, {'tide_gauge': tide_gauge})
 
     def get_queryset(self):

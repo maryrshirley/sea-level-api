@@ -104,15 +104,6 @@ class TestPostRawMeasurements(TestPutRawMeasurementsBase):
         response = self._post_json([self.PREDICTION_A])
         assert_json_response(response, expected_status=201)
 
-    def test_that_passing_a_non_list_json_object_gives_sane_error(self):
-        response = self._post_json(self.PREDICTION_A)
-
-        assert_equal(400, response.status_code)
-        assert_equal(
-            {'non_field_errors': [
-                'Expected a list of items but got type "dict".']},
-            decode_json(response.content))
-
     def test_that_http_post_can_create_single_measurement(self):
         response = self._post_json([self.PREDICTION_A])
         assert_json_response(response, expected_status=201)
