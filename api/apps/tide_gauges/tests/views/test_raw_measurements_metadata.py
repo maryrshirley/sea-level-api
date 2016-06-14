@@ -41,3 +41,10 @@ class TestRawMeasurementsEndpointMetadata(APITestCase):
         response = self.client.options(_URL)
         assert_equal(200, response.status_code)
         assert_equal('GET, POST, HEAD, OPTIONS', response['Allow'])
+
+    def test_that_http_invalid_location_returns_404(self):
+        url = '/1/tide-gauges/raw-measurements/invalidlocation/'\
+              '?start=2014-01-01T00:00:00Z&end=2014-01-02T00:00:00Z'
+        self.client.force_authenticate(self.collector_user)
+        response = self.client.options(url)
+        assert_equal(404, response.status_code)

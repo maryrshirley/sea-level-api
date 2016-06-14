@@ -1,6 +1,7 @@
 import datetime
 
 from django.core.exceptions import ObjectDoesNotExist
+from django.http import Http404
 
 from rest_framework.generics import ListCreateAPIView
 
@@ -54,13 +55,19 @@ class RawMeasurements(ListCreateAPIView):
 
         c = super(RawMeasurements, self).get_serializer_context(
             *args, **kwargs)
-        tide_gauge = TideGauge.objects.get(slug=self.kwargs['tide_gauge_slug'])
+
+        slug = self.kwargs['tide_gauge_slug']
+        try:
+            tide_gauge = TideGauge.objects.get(slug=slug)
+        except TideGauge.DoesNotExist:
+            raise Http404
 
         def combine_dicts(a, b):
             return dict(list(a.items()) + list(b.items()))
         return combine_dicts(c, {'tide_gauge': tide_gauge})
 
     def get_queryset(self):
+
         return parse_and_get_queryset(
             self.kwargs.get('tide_gauge_slug', None),
             self.request.query_params.get('start', None),
